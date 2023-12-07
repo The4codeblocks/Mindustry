@@ -22,15 +22,18 @@ public class LogicDisplay extends Block{
         commandColorPack = 2,
         commandStroke = 3,
         commandLine = 4,
-        commandRect = 5,
+        commandRect = 5, 
         commandLineRect = 6,
         commandPoly = 7,
         commandLinePoly = 8,
         commandTriangle = 9,
         commandImage = 10,
-        commandCharacter = 11;
+        commandCharacter = 11,
+        commandReset = 12;
 
     public int maxSides = 25;
+
+    public Color initialColor = Pal.darkerMetal;
 
     public int displaySize = 64;
     public float scaleFactor = 1f;
@@ -69,7 +72,7 @@ public class LogicDisplay extends Block{
                 if(buffer == null){
                     buffer = new FrameBuffer(displaySize, displaySize);
                     //clear the buffer - some OSs leave garbage in it
-                    buffer.begin(Pal.darkerMetal);
+                    buffer.begin(initialColor);
                     buffer.end();
                 }
             });
@@ -106,6 +109,7 @@ public class LogicDisplay extends Block{
                             case commandCharacter -> {
                                 //TODO
                             }
+                            case commandReset -> {}
                         }
                     }
 
