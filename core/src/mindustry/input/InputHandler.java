@@ -1937,13 +1937,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
 
     public void drawArrow(Block block, int x, int y, int rotation, boolean valid, boolean diagonalSymmetry){
         float trns = (block.size / 2) * tilesize;
-        float[] d4xf = {0.707106781f,-0.707106781f,-0.707106781f,0.707106781f};
-        float[] d4yf = {0.707106781f,0.707106781f,-0.707106781f,-0.707106781f};
-        float dxf = d4xf[rotation];
-        float dyf = d4yf[rotation];
         int dx = Geometry.d4(rotation).x, dy = Geometry.d4(rotation).y;
-        float offsetx = x * tilesize + block.offset + (diagonalSymmetry ? dxf : dx)*trns;
-        float offsety = y * tilesize + block.offset + (diagonalSymmetry ? dyf : dy)*trns;
+        float offsetx = x * tilesize + block.offset + (diagonalSymmetry ? ((rotation & 1) == (rotation & 2) ? 0.707106781f : -0.707106781f) : dx)*trns;
+        float offsety = y * tilesize + block.offset + (diagonalSymmetry ? (rotation < 2 ? 0.707106781f : -0.707106781f) : dy)*trns;
 
         Draw.color(!valid ? Pal.removeBack : Pal.accentBack);
         TextureRegion regionArrow = Core.atlas.find("place-arrow");
