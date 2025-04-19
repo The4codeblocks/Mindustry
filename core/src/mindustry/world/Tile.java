@@ -26,6 +26,8 @@ public class Tile implements Position, QuadTreeObject, Displayable{
     private static final TileFloorChangeEvent floorChange = new TileFloorChangeEvent();
     private static final ObjectSet<Building> tileSet = new ObjectSet<>();
 
+    public @Nullable Tiles tilespace; 
+
     /** Extra data for very specific blocks. */
     public byte data;
     /** Tile entity, usually null. */
