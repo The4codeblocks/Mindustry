@@ -52,6 +52,7 @@ public class Tiles implements Iterable<Tile>{
     public void fill(){
         for(int i = 0; i < array.length; i++){
             array[i] = new Tile(i % width, i / width);
+            array[i].tilespace = this;
         }
     }
 
