@@ -87,10 +87,22 @@ public class DataPatcher{
 
         for(String patch : patchArray){
             PatchSet set = new PatchSet(patch, new JsonValue("error"));
-            patches.add(set);
 
             try{
                 JsonValue value = parser.getJson().fromJson(null, Jval.read(patch).toString(Jformat.plain));
+                if(Vars.state.rules.planet != null && value.has("requiredPlanets")){
+                    JsonValue req = value.get("requiredPlanets");
+                    value.remove("requiredPlanets");
+
+                    //this should be ignored unless this instance is a dedicated server
+                    if(Vars.headless){
+                        String[] planets = req.isArray() ? req.asStringArray() : new String[]{req.asString()};
+                        if(!Structs.contains(planets, Vars.state.rules.planet.name)){
+                            continue;
+                        }
+                    }
+                }
+
                 set.json = value;
                 currentlyApplying = set;
                 visitStack.clear();
@@ -109,6 +121,8 @@ public class DataPatcher{
 
                 Log.err("Failed to apply patch: " + patch, e);
             }
+
+            patches.add(set);
         }
 
         afterCallbacks.each(Runnable::run);
@@ -286,8 +300,7 @@ public class DataPatcher{
                     }
 
                     if(object instanceof Seq s){
-                        var copy = s.copy();
-                        reset(() -> s.set(copy));
+                        modifiedField(parentObject, parentField, s.copy());
 
                         assignValue(object, field, metadata, () -> s.get(i), val -> s.set(i, val), value, true);
                     }else{
@@ -561,7 +574,7 @@ public class DataPatcher{
             if(usedpatches.add(record)){
                 resetters.add(() -> {
                     try{
-                        record.field.set(record.target, record.value);
+                        record.field.set(record.target, value);
                     }catch(Exception e){
                         throw new RuntimeException(e);
                     }
@@ -570,6 +583,7 @@ public class DataPatcher{
         }else if(target instanceof Seq<?> || target.getClass().isArray()){
             int i = Integer.parseInt(field);
             resetters.add(() -> {
+
                 if(target instanceof Seq seq){
                     seq.set(i, value);
                 }else{
