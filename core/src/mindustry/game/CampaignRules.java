@@ -28,7 +28,7 @@ public class CampaignRules{
             rules.teams.get(rules.waveTeam).rtsAi = enabled;
             rules.teams.get(rules.waveTeam).rtsMaxSquad = 15;
 
-            if(swapped && Vars.state.isGame()){
+            if(swapped && Vars.world.state.isGame()){
                 Groups.unit.each(u -> {
                     if(u.team == rules.waveTeam && !u.isPlayer()){
                         u.resetController();

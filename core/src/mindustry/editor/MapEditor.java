@@ -341,10 +341,10 @@ public class MapEditor{
                                 }
                             });
                             if(out != config){
-                                boolean prev = state.rules.editor;
-                                state.rules.editor = true;
+                                boolean prev = world.state.rules.editor;
+                                world.state.rules.editor = true;
                                 tile.build.configureAny(out);
-                                state.rules.editor = prev;
+                                world.state.rules.editor = prev;
                             }
                         }
                     }

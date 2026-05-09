@@ -67,7 +67,7 @@ public class MapInfoDialog extends BaseDialog{
                 var style = Styles.flatt;
 
                 r.button("@editor.rules", Icon.list, style, () -> {
-                    ruleInfo.show(Vars.state.rules, () -> Vars.state.rules = new Rules());
+                    ruleInfo.show(Vars.world.state.rules, () -> Vars.world.state.rules = new Rules());
                     hide();
                 }).marginLeft(10f);
 
@@ -79,7 +79,7 @@ public class MapInfoDialog extends BaseDialog{
                 r.row();
 
                 r.button("@editor.objectives", Icon.info, style, () -> {
-                    objectives.show(state.rules.objectives.all, state.rules.objectives.all::set);
+                    objectives.show(world.state.rules.objectives.all, world.state.rules.objectives.all::set);
                     hide();
                 }).marginLeft(10f);
 

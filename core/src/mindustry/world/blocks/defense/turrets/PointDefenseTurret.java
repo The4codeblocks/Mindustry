@@ -83,7 +83,7 @@ public class PointDefenseTurret extends ReloadTurret{
 
                 //shoot when possible
                 if(Angles.within(rotation, dest, shootCone) && reloadCounter >= reload){
-                    float realDamage = bulletDamage * state.rules.blockDamage(team);
+                    float realDamage = bulletDamage * world.state.rules.blockDamage(team);
                     if(target.damage() > realDamage){
                         target.damage(target.damage() - realDamage);
                     }else{

@@ -178,7 +178,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
 
     public final void writeBase(Writes write){
         //TODO: this code is a legacy mess; in future versions, it should be replaced with a different system that has a 1-integer module bitmask + byte version.
-        boolean writeVisibility = state.rules.fog && visibleFlags != 0;
+        boolean writeVisibility = world.state.rules.fog && visibleFlags != 0;
 
         write.f(health);
         write.b(rotation | 0b10000000);
@@ -307,11 +307,11 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
     //region utility methods
 
     public boolean isDiscovered(Team viewer){
-        if(state.rules.limitMapArea && world.getDarkness(tile.x, tile.y) >= 3){
+        if(world.state.rules.limitMapArea && world.getDarkness(tile.x, tile.y) >= 3){
             return false;
         }
 
-        if(viewer == null || !state.rules.staticFog || !state.rules.fog){
+        if(viewer == null || !world.state.rules.staticFog || !world.state.rules.fog){
             return true;
         }
         if(block.size <= 2){
@@ -331,7 +331,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
     }
 
     public void addPlan(boolean checkPrevious, boolean ignoreConditions){
-        if(!ignoreConditions && (!block.rebuildable || (team == state.rules.defaultTeam && state.isCampaign() && !block.isVisible()))) return;
+        if(!ignoreConditions && (!block.rebuildable || (team == world.state.rules.defaultTeam && state.isCampaign() && !block.isVisible()))) return;
 
         Object overrideConfig = null;
         Block toAdd = this.block;
@@ -619,9 +619,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
 
     /** @return whether this block is allowed to update based on team/environment */
     public boolean allowUpdate(){
-        return team != Team.derelict && block.supportsEnv(state.rules.env) &&
+        return team != Team.derelict && block.supportsEnv(world.state.rules.env) &&
             //check if outside map limit (privileged blocks are exempt)
-            (tile instanceof EditorTile || block.privileged || !state.rules.limitMapArea || !state.rules.disableOutsideArea || Rect.contains(state.rules.limitX, state.rules.limitY, state.rules.limitWidth, state.rules.limitHeight, tile.x, tile.y));
+            (tile instanceof EditorTile || block.privileged || !world.state.rules.limitMapArea || !world.state.rules.disableOutsideArea || Rect.contains(world.state.rules.limitX, world.state.rules.limitY, world.state.rules.limitWidth, world.state.rules.limitHeight, tile.x, tile.y));
     }
 
     public BlockStatus status(){
@@ -731,7 +731,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
     }
 
     public boolean allowDeposit(){
-        return block.alwaysAllowDeposit || !state.rules.onlyDepositCore;
+        return block.alwaysAllowDeposit || !world.state.rules.onlyDepositCore;
     }
 
     /** Called when this block is dropped as a payload. */
@@ -883,7 +883,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
 
         if(liquids.get(liquid) <= 0.0001f) return;
 
-        if(!net.client() && state.isCampaign() && team == state.rules.defaultTeam) liquid.unlock();
+        if(!net.client() && state.isCampaign() && team == world.state.rules.defaultTeam) liquid.unlock();
 
         for(int i = 0; i < proximity.size; i++){
             incrementDump(proximity.size);
@@ -1032,8 +1032,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
     }
 
     public void produced(Item item, int amount){
-        if(Vars.state.rules.sector != null && team == state.rules.defaultTeam){
-            Vars.state.rules.sector.info.handleProduction(item, amount);
+        if(Vars.world.state.rules.sector != null && team == world.state.rules.defaultTeam){
+            Vars.world.state.rules.sector.info.handleProduction(item, amount);
 
             if(!net.client()) item.unlock();
         }
@@ -1480,12 +1480,12 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
             power += this.power.status * block.consPower.capacity;
         }
 
-        if(block.hasLiquids && state.rules.damageExplosions){
+        if(block.hasLiquids && world.state.rules.damageExplosions){
             liquids.each(this::splashLiquid);
         }
 
         //cap explosiveness so fluid tanks/vaults don't instakill units
-        Damage.dynamicExplosion(x, y, flammability * block.flammabilityScale, explosiveness * 3.5f * block.explosivenessScale, power, tilesize * block.size / 2f, state.rules.damageExplosions, block.destroyEffect, block.baseShake);
+        Damage.dynamicExplosion(x, y, flammability * block.flammabilityScale, explosiveness * 3.5f * block.explosivenessScale, power, tilesize * block.size / 2f, world.state.rules.damageExplosions, block.destroyEffect, block.baseShake);
 
         if(block.createRubble && !floor().solid && !floor().isLiquid){
             Effect.rubble(x, y, block.size);
@@ -2027,7 +2027,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
     public void damage(float damage){
         if(dead()) return;
 
-        float dm = state.rules.blockHealth(team);
+        float dm = world.state.rules.blockHealth(team);
         lastDamageTime = Time.time;
 
         if(Mathf.zero(dm)){
@@ -2189,7 +2189,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
     @Replace
     @Override
     public boolean inFogTo(Team viewer){
-        if(team == viewer || !state.rules.fog) return false;
+        if(team == viewer || !world.state.rules.fog) return false;
 
         int size = block.size, of = block.sizeOffset, tx = tile.x, ty = tile.y;
 

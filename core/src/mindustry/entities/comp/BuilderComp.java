@@ -91,14 +91,14 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
             return;
         }
 
-        float finalPlaceDst = state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange;
-        boolean infinite = state.rules.infiniteResources || team().rules().infiniteResources;
+        float finalPlaceDst = world.state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange;
+        boolean infinite = world.state.rules.infiniteResources || team().rules().infiniteResources;
 
         buildCounter += Time.delta;
         if(Float.isNaN(buildCounter) || Float.isInfinite(buildCounter)) buildCounter = 0f;
         buildCounter = Math.min(buildCounter, 10f);
 
-        boolean instant = state.rules.instantBuild && state.rules.infiniteResources;
+        boolean instant = world.state.rules.instantBuild && world.state.rules.infiniteResources;
 
         //random attempt to fix a freeze that only occurs on Android
         int maxPerFrame = instant ? plans.size : 10, count = 0;
@@ -158,16 +158,16 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
                 Vars.control.sound.loop(Sounds.loopBuild, tile, 1.3f);
             }
 
-            boolean allowBuildCurrent = current.block != null && (state.isEditor() || (state.rules.waves && team == state.rules.waveTeam && current.block.isVisible()) || (current.block.unlockedNowHost() && current.block.environmentBuildable() && current.block.isPlaceable()));
+            boolean allowBuildCurrent = current.block != null && (state.isEditor() || (world.state.rules.waves && team == world.state.rules.waveTeam && current.block.isVisible()) || (current.block.unlockedNowHost() && current.block.environmentBuildable() && current.block.isPlaceable()));
 
             if(!(tile.build instanceof ConstructBuild cb)){
                 if(!current.initialized && !current.breaking && Build.validPlaceIgnoreUnits(current.block, team, current.x, current.y, current.rotation, true, true) && allowBuildCurrent){
                     if(Build.checkNoUnitOverlap(current.block, current.x, current.y)){
                         boolean hasAll = infinite || current.isRotation(team) ||
                         //derelict repair
-                        (tile.team() == Team.derelict && tile.block() == current.block && tile.build != null && tile.block().allowDerelictRepair && state.rules.derelictRepair) ||
+                        (tile.team() == Team.derelict && tile.block() == current.block && tile.build != null && tile.block().allowDerelictRepair && world.state.rules.derelictRepair) ||
                         //make sure there's at least 1 item of each type first
-                        !Structs.contains(current.block.requirements, i -> !core.items.has(i.item, Math.min(Mathf.round(i.amount * state.rules.buildCostMultiplier), 1)));
+                        !Structs.contains(current.block.requirements, i -> !core.items.has(i.item, Math.min(Mathf.round(i.amount * world.state.rules.buildCostMultiplier), 1)));
 
                         if(hasAll){
                             Call.beginPlace(self(), current.block, team, current.x, current.y, current.rotation, current.block.instantBuild ? current.config : null);
@@ -208,7 +208,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
                 continue;
             }
 
-            float bs = 1f / entity.buildCost * type.buildSpeed * buildSpeedMultiplier * state.rules.buildSpeed(team);
+            float bs = 1f / entity.buildCost * type.buildSpeed * buildSpeedMultiplier * world.state.rules.buildSpeed(team);
 
             //otherwise, update it.
             if(current.breaking){
@@ -244,10 +244,10 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
 
     /** @return whether this plan should be skipped, in favor of the next one. */
     boolean shouldSkip(BuildPlan plan, @Nullable Building core){
-        if(state.rules.infiniteResources || team.rules().infiniteResources || plan.breaking || core == null || plan.isRotation(team) || plan.isDerelictRepair()) return false;
+        if(world.state.rules.infiniteResources || team.rules().infiniteResources || plan.breaking || core == null || plan.isRotation(team) || plan.isDerelictRepair()) return false;
 
         return (plan.stuck && !core.items.has(plan.block.requirements)) ||
-            (Structs.contains(plan.block.requirements, i -> !core.items.has(i.item, Math.min(i.amount, 15)) && Mathf.round(i.amount * state.rules.buildCostMultiplier) > 0));
+            (Structs.contains(plan.block.requirements, i -> !core.items.has(i.item, Math.min(i.amount, 15)) && Mathf.round(i.amount * world.state.rules.buildCostMultiplier) > 0));
     }
 
     void removeBuild(int x, int y, boolean breaking){
@@ -302,7 +302,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
         //not actively building when not near the build plan
         if(isBuilding()){
             var plan = buildPlan();
-            if(!state.isEditor() && plan != null && !within(plan, state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange)){
+            if(!state.isEditor() && plan != null && !within(plan, world.state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange)){
                 return false;
             }
         }
@@ -325,7 +325,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
         Tile tile = plan.tile();
         var core = team.core();
 
-        if(tile == null || !within(plan, state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange)){
+        if(tile == null || !within(plan, world.state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange)){
             return;
         }
 
@@ -355,7 +355,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
         BuildPlan plan = active ? buildPlan() : lastActive;
         Tile tile = world.tile(plan.x, plan.y);
 
-        if(tile == null || !within(plan, state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange)){
+        if(tile == null || !within(plan, world.state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange)){
             return;
         }
 

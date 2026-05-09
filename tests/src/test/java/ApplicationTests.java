@@ -131,7 +131,7 @@ public class ApplicationTests{
     void resetWorld(){
         Time.setDeltaProvider(() -> 1f);
         logic.reset();
-        state.set(State.menu);
+        world.state.set(State.menu);
     }
 
     @ParameterizedTest
@@ -348,14 +348,14 @@ public class ApplicationTests{
     @Test
     void save(){
         world.loadMap(testMap);
-        assertTrue(state.teams.playerCores().size > 0);
+        assertTrue(world.state.teams.playerCores().size > 0);
         SaveIO.save(saveDirectory.child("0.msav"));
     }
 
     @Test
     void saveLoad(){
         world.loadMap(testMap);
-        Map map = state.map;
+        Map map = world.state.map;
 
         float hp = 30f;
 
@@ -372,7 +372,7 @@ public class ApplicationTests{
 
         assertEquals(world.width(), map.width);
         assertEquals(world.height(), map.height);
-        assertTrue(state.teams.playerCores().size > 0);
+        assertTrue(world.state.teams.playerCores().size > 0);
     }
 
     void updateBlocks(int times){
@@ -395,8 +395,8 @@ public class ApplicationTests{
     @Test
     void liquidOutput(){
         world.loadMap(testMap);
-        state.set(State.playing);
-        state.rules.limitMapArea = false;
+        world.state.set(State.playing);
+        world.state.rules.limitMapArea = false;
 
         world.tile(0, 0).setBlock(Blocks.liquidSource, Team.sharded);
         world.tile(0, 0).build.configureAny(Liquids.water);
@@ -412,8 +412,8 @@ public class ApplicationTests{
     @Test
     void liquidJunctionOutput(){
         world.loadMap(testMap);
-        state.set(State.playing);
-        state.rules.limitMapArea = false;
+        world.state.set(State.playing);
+        world.state.rules.limitMapArea = false;
 
         Tile source = world.rawTile(0, 0), tank = world.rawTile(1, 4), junction = world.rawTile(0, 1), conduit = world.rawTile(0, 2);
 
@@ -435,8 +435,8 @@ public class ApplicationTests{
     @Test
     void liquidRouterOutputAll() {
         world.loadMap(testMap);
-        state.set(State.playing);
-        state.rules.limitMapArea = false;
+        world.state.set(State.playing);
+        world.state.rules.limitMapArea = false;
         Tile source = world.rawTile(4,0), router = world.rawTile(4, 2), conduitUp1 = world.rawTile(4,1),
         conduitLeft = world.rawTile(3,2), conduitUp2 = world.rawTile(4, 3), conduitRight = world.rawTile(5, 2),
         leftTank = world.rawTile(1, 2), topTank = world.rawTile(4,5), rightTank = world.rawTile(7, 2);
@@ -461,8 +461,8 @@ public class ApplicationTests{
     @Test
     void sorterOutputCorrect() {
         world.loadMap(testMap);
-        state.set(State.playing);
-        state.rules.limitMapArea = false;
+        world.state.set(State.playing);
+        world.state.rules.limitMapArea = false;
         Tile source1 = world.rawTile(4, 0), source2 = world.rawTile(6, 0), s1conveyor = world.rawTile(4, 1),
         s2conveyor = world.rawTile(6, 1), s1s2conveyor = world.rawTile(5, 1), sorter = world.rawTile(5, 2),
         leftconveyor = world.rawTile(4, 2), rightconveyor = world.rawTile(6, 2), sortedconveyor = world.rawTile(5, 3),
@@ -494,8 +494,8 @@ public class ApplicationTests{
     @Test
     void routerOutputAll() {
         world.loadMap(testMap);
-        state.set(State.playing);
-        state.rules.limitMapArea = false;
+        world.state.set(State.playing);
+        world.state.rules.limitMapArea = false;
         Tile source1 = world.rawTile(5, 0),  conveyor = world.rawTile(5, 1),
         router = world.rawTile(5, 2), leftconveyor = world.rawTile(4, 2), rightconveyor = world.rawTile(6, 2),
         middleconveyor = world.rawTile(5, 3), leftVault = world.rawTile(2, 2),
@@ -522,8 +522,8 @@ public class ApplicationTests{
     @Test
     void junctionOutputCorrect() {
         world.loadMap(testMap);
-        state.set(State.playing);
-        state.rules.limitMapArea = false;
+        world.state.set(State.playing);
+        world.state.rules.limitMapArea = false;
         Tile source1 = world.rawTile(5,0),source2 = world.rawTile(7, 2),  conveyor1 = world.rawTile(5, 1),
         conveyor2 = world.rawTile(6,2), junction = world.rawTile(5, 2), conveyor3 = world.rawTile(5,3),
         conveyor4 = world.rawTile(4,2), vault2 = world.rawTile(3, 1), vault1 = world.rawTile(5,5);
@@ -548,7 +548,7 @@ public class ApplicationTests{
     @Test
     void blockOverlapRemoved(){
         world.loadMap(testMap);
-        state.set(State.playing);
+        world.state.set(State.playing);
 
         //edge block
         world.tile(1, 1).setBlock(Blocks.coreShard);
@@ -562,7 +562,7 @@ public class ApplicationTests{
     @Test
     void conveyorCrash(){
         world.loadMap(testMap);
-        state.set(State.playing);
+        world.state.set(State.playing);
 
         world.tile(0, 0).setBlock(Blocks.conveyor);
         world.tile(0, 0).build.acceptStack(Items.copper, 1000, null);
@@ -573,8 +573,8 @@ public class ApplicationTests{
         int[] itemsa = {0};
 
         world.loadMap(testMap);
-        state.set(State.playing);
-        state.rules.limitMapArea = false;
+        world.state.set(State.playing);
+        world.state.rules.limitMapArea = false;
         int length = 128;
         world.tile(0, 0).setBlock(Blocks.itemSource, Team.sharded);
         world.tile(0, 0).build.configureAny(Items.copper);
@@ -734,9 +734,9 @@ public class ApplicationTests{
         Unit d2 = UnitTypes.poly.create(Team.sharded);
 
         //infinite build range
-        state.rules.editor = true;
-        state.rules.infiniteResources = true;
-        state.rules.buildSpeedMultiplier = 999999f;
+        world.state.rules.editor = true;
+        world.state.rules.infiniteResources = true;
+        world.state.rules.buildSpeedMultiplier = 999999f;
 
         d1.set(0f, 0f);
         d2.set(20f, 20f);
@@ -776,7 +776,7 @@ public class ApplicationTests{
         Time.setDeltaProvider(() -> 9999f);
 
         //prevents range issues
-        state.rules.infiniteResources = true;
+        world.state.rules.infiniteResources = true;
 
         d1.update();
 
@@ -806,8 +806,8 @@ public class ApplicationTests{
             }
         }
         int maxHeight = 0;
-        state.rules.canGameOver = false;
-        state.rules.borderDarkness = false;
+        world.state.rules.canGameOver = false;
+        world.state.rules.borderDarkness = false;
 
         for(int x = 0, y = 0, i = 0; i < content.blocks().size; i ++){
             Block block = content.block(i);
@@ -907,19 +907,19 @@ public class ApplicationTests{
                 logic.reset();
                 //pathfinder pollutes queue with garbage, causing OOM
                 Reflect.<TaskQueue>get(HeadlessApplication.class, Core.app, "runnables").clear();
-                state.rules.sector = sector.sector;
+                world.state.rules.sector = sector.sector;
                 world.loadGenerator(sector.generator.map.width, sector.generator.map.height, tiles -> sector.generator.generate(tiles, new WorldParams()));
-                sector.rules.get(state.rules);
+                sector.rules.get(world.state.rules);
                 ObjectSet<Item> resources = new ObjectSet<>();
                 boolean hasSpawnPoint = false;
 
-                assertFalse(state.rules.infiniteResources || Team.sharded.rules().infiniteResources, "Sector " + sector.name + " must not have infinite resources.");
-                assertFalse(state.rules.allowEditRules, "Sector " + sector.name + " must not have rule editing enabled.");
-                assertFalse(state.rules.allowEditWorldProcessors, "Sector " + sector.name + " must not have world processor editing enabled.");
-                assertEquals(Team.sharded, state.rules.defaultTeam, "Sector " + sector.name + " must have the Sharded player team.");
-                assertEquals(Vars.state.getPlanet() == Planets.serpulo ? Team.crux : Team.malis, state.rules.waveTeam, "Sector " + sector.name + " must have the correct enemy team.");
+                assertFalse(world.state.rules.infiniteResources || Team.sharded.rules().infiniteResources, "Sector " + sector.name + " must not have infinite resources.");
+                assertFalse(world.state.rules.allowEditRules, "Sector " + sector.name + " must not have rule editing enabled.");
+                assertFalse(world.state.rules.allowEditWorldProcessors, "Sector " + sector.name + " must not have world processor editing enabled.");
+                assertEquals(Team.sharded, world.state.rules.defaultTeam, "Sector " + sector.name + " must have the Sharded player team.");
+                assertEquals(Vars.world.state.getPlanet() == Planets.serpulo ? Team.crux : Team.malis, world.state.rules.waveTeam, "Sector " + sector.name + " must have the correct enemy team.");
 
-                Seq<TimerObjective> timers = state.rules.objectives.all.select(m -> m instanceof TimerObjective && !m.hidden && ((TimerObjective)m).text != null &&
+                Seq<TimerObjective> timers = world.state.rules.objectives.all.select(m -> m instanceof TimerObjective && !m.hidden && ((TimerObjective)m).text != null &&
                 !((TimerObjective)m).text.isEmpty() && !((TimerObjective)m).text.contains("@")).as();
 
                 if(!timers.isEmpty()){
@@ -927,23 +927,23 @@ public class ApplicationTests{
                 }
 
                 //TODO: some Erekir sectors (origin, caldera) modify the cap, why?
-                //assertEquals(0, state.rules.unitCap, "Sector " + sector.name + " must not modify the unit cap.");
+                //assertEquals(0, world.state.rules.unitCap, "Sector " + sector.name + " must not modify the unit cap.");
 
                 for(Tile tile : world.tiles){
                     if(tile.drop() != null){
                         resources.add(tile.drop());
                     }
-                    if(tile.block() instanceof CoreBlock && tile.team() == state.rules.defaultTeam){
+                    if(tile.block() instanceof CoreBlock && tile.team() == world.state.rules.defaultTeam){
                         hasSpawnPoint = true;
                     }
                 }
 
-                if(state.rules.waves){
-                    Seq<SpawnGroup> spawns = state.rules.spawns;
+                if(world.state.rules.waves){
+                    Seq<SpawnGroup> spawns = world.state.rules.spawns;
 
                     int bossWave = 0;
-                    if(state.rules.winWave > 0){
-                        bossWave = state.rules.winWave;
+                    if(world.state.rules.winWave > 0){
+                        bossWave = world.state.rules.winWave;
                     }else{
                         outer:
                         for(int i = 1; i <= 1000; i++){
@@ -956,13 +956,13 @@ public class ApplicationTests{
                         }
                     }
 
-                    if(state.rules.attackMode){
+                    if(world.state.rules.attackMode){
                         bossWave = 100;
                     }else{
                         assertNotEquals(0, bossWave, "Sector " + sector.name + " doesn't have a boss/end wave.");
                     }
 
-                    if(state.rules.winWave > 0) bossWave = state.rules.winWave - 1;
+                    if(world.state.rules.winWave > 0) bossWave = world.state.rules.winWave - 1;
 
                     for(int i = 1; i <= bossWave; i++){
                         int total = 0;
@@ -982,7 +982,7 @@ public class ApplicationTests{
                 assertEquals(1, Team.sharded.cores().size, "Sector must have one core: " + sector + " (" + Team.sharded.cores() + ")");
 
                 assertTrue(hasSpawnPoint, "Sector \"" + sector.name + "\" has no spawn points.");
-                assertTrue(spawner.countSpawns() > 0 || (state.rules.attackMode && state.rules.waveTeam.data().hasCore()), "Sector \"" + sector.name + "\" has no enemy spawn points: " + spawner.countSpawns());
+                assertTrue(spawner.countSpawns() > 0 || (world.state.rules.attackMode && world.state.rules.waveTeam.data().hasCore()), "Sector \"" + sector.name + "\" has no enemy spawn points: " + spawner.countSpawns());
             }));
         }
 

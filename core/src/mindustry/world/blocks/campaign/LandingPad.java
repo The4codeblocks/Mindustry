@@ -153,30 +153,30 @@ public class LandingPad extends Block{
             landSound.at(x, y, 1f, landSoundVolume);
 
             if(state.isCampaign() && !isFake()){
-                state.rules.sector.info.importCooldownTimers.put(config, 0f);
+                world.state.rules.sector.info.importCooldownTimers.put(config, 0f);
             }
         }
 
         public boolean accessible(){
             //In custom games, this block can be configured by anyone except the player team; this allows for enemy builder AI to use it
-            return state.rules.editor || state.rules.allowEditWorldProcessors || state.isCampaign() || state.rules.infiniteResources || (team != state.rules.defaultTeam && !state.rules.pvp && team != Team.derelict);
+            return world.state.rules.editor || world.state.rules.allowEditWorldProcessors || state.isCampaign() || world.state.rules.infiniteResources || (team != world.state.rules.defaultTeam && !world.state.rules.pvp && team != Team.derelict);
         }
 
         public void updateTimers(){
             if(state.isCampaign() && lastUpdateId != state.updateId){
                 lastUpdateId = state.updateId;
 
-                float[] imports = state.rules.sector.info.getImportRates(state.getPlanet());
+                float[] imports = world.state.rules.sector.info.getImportRates(state.getPlanet());
 
                 for(Item item : content.items()){
                     float importedPerFrame = imports[item.id]/60f;
                     if(importedPerFrame > 0f){
                         float framesBetweenArrival = itemCapacity / importedPerFrame;
 
-                        state.rules.sector.info.importCooldownTimers.increment(item, 0f, 1f / framesBetweenArrival * Time.delta);
+                        world.state.rules.sector.info.importCooldownTimers.increment(item, 0f, 1f / framesBetweenArrival * Time.delta);
                     }else{
                         //nothing is being imported, so reset the timer
-                        state.rules.sector.info.importCooldownTimers.put(item, 0f);
+                        world.state.rules.sector.info.importCooldownTimers.put(item, 0f);
                     }
                 }
 
@@ -330,7 +330,7 @@ public class LandingPad extends Block{
 
             if(config != null && (isFake() || (state.isCampaign() && !state.getPlanet().campaignRules.legacyLaunchPads))){
 
-                if(cooldown <= 0f && efficiency > 0f && items.total() == 0 && (isFake() || (state.rules.sector.info.getImportRate(state.getPlanet(), config) > 0f && state.rules.sector.info.importCooldownTimers.get(config, 0f) >= 1f))){
+                if(cooldown <= 0f && efficiency > 0f && items.total() == 0 && (isFake() || (world.state.rules.sector.info.getImportRate(state.getPlanet(), config) > 0f && world.state.rules.sector.info.importCooldownTimers.get(config, 0f) >= 1f))){
 
                     if(isFake()){
                         //there is no queue for enemy team blocks, it's all fake
@@ -345,7 +345,7 @@ public class LandingPad extends Block{
 
         /** @return whether this pad should receive items forever, essentially acting as an item source for maps. */
         public boolean isFake(){
-            return team != state.rules.defaultTeam || !state.isCampaign();
+            return team != world.state.rules.defaultTeam || !state.isCampaign();
         }
 
         @Override

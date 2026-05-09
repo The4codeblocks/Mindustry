@@ -29,7 +29,7 @@ public class MemoryBlock extends Block{
     }
 
     public boolean accessible(){
-        return !privileged || state.rules.editor || state.rules.allowEditWorldProcessors;
+        return !privileged || world.state.rules.editor || world.state.rules.allowEditWorldProcessors;
     }
 
     @Override

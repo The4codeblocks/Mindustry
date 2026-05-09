@@ -85,7 +85,7 @@ public class BaseTurret extends Block{
 
         Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, Pal.placing);
 
-        if(fogRadiusMultiplier < 0.99f && state.rules.fog){
+        if(fogRadiusMultiplier < 0.99f && world.state.rules.fog){
             Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range * fogRadiusMultiplier, Pal.lightishGray);
         }
     }

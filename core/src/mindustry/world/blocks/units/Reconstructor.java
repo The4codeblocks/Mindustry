@@ -144,7 +144,7 @@ public class Reconstructor extends UnitBlock{
             }
         }
 
-        consumeBuilder.each(c -> c.multiplier = b -> state.rules.unitCost(b.team));
+        consumeBuilder.each(c -> c.multiplier = b -> world.state.rules.unitCost(b.team));
     }
 
     public void addUpgrade(UnitType from, UnitType to){
@@ -256,7 +256,7 @@ public class Reconstructor extends UnitBlock{
 
         @Override
         public int getMaximumAccepted(Item item){
-            return Mathf.round(capacities[item.id] * state.rules.unitCost(team));
+            return Mathf.round(capacities[item.id] * world.state.rules.unitCost(team));
         }
 
         @Override
@@ -319,7 +319,7 @@ public class Reconstructor extends UnitBlock{
                     if(moveInPayload()){
                         if(efficiency > 0){
                             valid = true;
-                            progress += edelta() * state.rules.unitBuildSpeed(team);
+                            progress += edelta() * world.state.rules.unitBuildSpeed(team);
                         }
 
                         //upgrade the unit
@@ -346,13 +346,13 @@ public class Reconstructor extends UnitBlock{
             }
 
             speedScl = Mathf.lerpDelta(speedScl, Mathf.num(valid), 0.05f);
-            time += edelta() * speedScl * state.rules.unitBuildSpeed(team);
+            time += edelta() * speedScl * world.state.rules.unitBuildSpeed(team);
         }
 
         @Override
         public double sense(LAccess sensor){
             if(sensor == LAccess.progress) return Mathf.clamp(fraction());
-            if(sensor == LAccess.itemCapacity) return Mathf.round(itemCapacity * state.rules.unitCost(team));
+            if(sensor == LAccess.itemCapacity) return Mathf.round(itemCapacity * world.state.rules.unitCost(team));
             return super.sense(sensor);
         }
 

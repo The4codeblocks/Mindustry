@@ -86,7 +86,7 @@ public class Team implements Comparable<Team>, Senseable{
 
     /** @return the team-specific rules. */
     public TeamRule rules(){
-        return state.rules.teams.get(this);
+        return world.state.rules.teams.get(this);
     }
 
     public TeamData data(){
@@ -110,7 +110,7 @@ public class Team implements Comparable<Team>, Senseable{
 
     /** @return whether this team is supposed to be AI-controlled. */
     public boolean isAI(){
-        return (state.rules.waves || state.rules.attackMode || state.isCampaign()) && this != state.rules.defaultTeam && !state.rules.pvp;
+        return (world.state.rules.waves || world.state.rules.attackMode || state.isCampaign()) && this != world.state.rules.defaultTeam && !world.state.rules.pvp;
     }
 
     /** @return whether this team is solely comprised of AI (with no players possible). */

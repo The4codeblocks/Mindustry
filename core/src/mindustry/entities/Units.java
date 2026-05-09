@@ -118,10 +118,10 @@ public class Units{
 
     public static int getCap(Team team){
         //wave team has no cap
-        if((team == state.rules.waveTeam && !state.rules.pvp) || (state.isCampaign() && team == state.rules.waveTeam) || state.rules.disableUnitCap || team.ignoreUnitCap){
+        if((team == world.state.rules.waveTeam && !world.state.rules.pvp) || (state.isCampaign() && team == world.state.rules.waveTeam) || world.state.rules.disableUnitCap || team.ignoreUnitCap){
             return Integer.MAX_VALUE;
         }
-        return Math.max(0, state.rules.unitCapVariable ? state.rules.unitCap + team.data().unitCap : state.rules.unitCap);
+        return Math.max(0, world.state.rules.unitCapVariable ? world.state.rules.unitCap + team.data().unitCap : world.state.rules.unitCap);
     }
 
     /** @return unit cap as a string, substituting the infinity symbol instead of MAX_VALUE */
@@ -132,7 +132,7 @@ public class Units{
 
     /** @return whether this player can interact with a specific tile. if either of these are null, returns true.*/
     public static boolean canInteract(Player player, Building tile){
-        return player == null || tile == null || tile.interactable(player.team()) || state.rules.editor;
+        return player == null || tile == null || tile.interactable(player.team()) || world.state.rules.editor;
     }
 
     public static boolean isHittable(@Nullable Posc target, boolean air, boolean ground){

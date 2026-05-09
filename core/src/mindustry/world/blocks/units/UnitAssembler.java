@@ -168,7 +168,7 @@ public class UnitAssembler extends PayloadBlock{
     }
 
     public void initCapacities(){
-        consumeBuilder.each(c -> c.multiplier = b -> state.rules.unitCost(b.team));
+        consumeBuilder.each(c -> c.multiplier = b -> world.state.rules.unitCost(b.team));
 
         itemCapacity = 10;
         capacities = new int[Vars.content.items().size];
@@ -460,7 +460,7 @@ public class UnitAssembler extends PayloadBlock{
             droneWarmup = Mathf.lerpDelta(droneWarmup, units.size < dronesCreated ? powerStatus : 0f, 0.1f);
             totalDroneProgress += droneWarmup * delta();
 
-            if(units.size < dronesCreated && enabled && (droneProgress += delta() * state.rules.unitBuildSpeed(team) * powerStatus / droneConstructTime) >= 1f){
+            if(units.size < dronesCreated && enabled && (droneProgress += delta() * world.state.rules.unitBuildSpeed(team) * powerStatus / droneConstructTime) >= 1f){
                 if(!net.client()){
                     var unit = droneType.create(team);
                     //If a unit isn't using AssemblerAI, it's bugged, likely because of an incorrect data patch or mod.
@@ -513,7 +513,7 @@ public class UnitAssembler extends PayloadBlock{
             if(!wasOccupied && efficiency > 0 && Units.canCreate(team, plan.unit)){
                 warmup = Mathf.lerpDelta(warmup, efficiency, 0.1f);
 
-                if((progress += edelta() * state.rules.unitBuildSpeed(team) * eff / plan.time) >= 1f){
+                if((progress += edelta() * world.state.rules.unitBuildSpeed(team) * eff / plan.time) >= 1f){
                     Call.assemblerUnitSpawned(tile);
                 }
             }else{
@@ -705,13 +705,13 @@ public class UnitAssembler extends PayloadBlock{
             var plan = plan();
             return (this.payload == null || (source instanceof UnitAssemblerModuleBuild)) &&
                     plan.requirements.contains(b -> b.item == payload.content() &&
-                    blocks.get(payload.content()) < Mathf.round(b.amount * state.rules.unitCost(team)) -
+                    blocks.get(payload.content()) < Mathf.round(b.amount * world.state.rules.unitCost(team)) -
                     (source instanceof UnitAssemblerModuleBuild && (this.payload != null && this.payload.contentEquals(payload)) ? 1 : 0));
         }
 
         @Override
         public int getMaximumAccepted(Item item){
-            return Mathf.round(capacities[item.id] * state.rules.unitCost(team));
+            return Mathf.round(capacities[item.id] * world.state.rules.unitCost(team));
         }
 
         @Override

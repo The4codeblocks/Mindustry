@@ -161,7 +161,7 @@ public class GameService{
         Events.run(Trigger.update, () -> {
             //extremely lazy timer, I just don't care
             if(campaign() && !hoverUnitLiquid.isAchieved() && Core.graphics.getFrameId() % 20 == 0){
-                var units = state.rules.defaultTeam.data().getUnits(UnitTypes.elude);
+                var units = world.state.rules.defaultTeam.data().getUnits(UnitTypes.elude);
                 if(units != null){
                     for(var unit : units){
                         if(unit.floorOn().isLiquid){
@@ -190,19 +190,19 @@ public class GameService{
         }));
 
         Events.on(BuildingBulletDestroyEvent.class, e -> {
-            if(campaign() && e.build.block == Blocks.scatter && e.build.team == state.rules.waveTeam && e.bullet.owner instanceof Unit u && u.type == UnitTypes.flare && u.team == player.team()){
+            if(campaign() && e.build.block == Blocks.scatter && e.build.team == world.state.rules.waveTeam && e.bullet.owner instanceof Unit u && u.type == UnitTypes.flare && u.team == player.team()){
                 destroyScatterFlare.complete();
             }
         });
 
         Events.on(BlockBuildEndEvent.class, e -> {
-            if(campaign() && state.rules.sector == SectorPresets.groundZero.sector && e.tile.block() == Blocks.coreNucleus){
+            if(campaign() && world.state.rules.sector == SectorPresets.groundZero.sector && e.tile.block() == Blocks.coreNucleus){
                 nucleusGroundZero.complete();
             }
         });
 
         Events.on(BlockBuildEndEvent.class, e -> {
-            if(campaign() && e.unit != null && e.unit.team == state.rules.defaultTeam && !e.breaking){
+            if(campaign() && e.unit != null && e.unit.team == world.state.rules.defaultTeam && !e.breaking){
                 SStat.blocksBuilt.add();
 
                 if(e.tile.block() == Blocks.router && e.tile.build.proximity.contains(t -> t.block == Blocks.router)){
@@ -218,10 +218,10 @@ public class GameService{
                 }
 
                 if(!allTransportOneMap.isAchieved()){
-                    Block[] allTransports = state.rules.sector.planet == Planets.erekir ? allTransportErekir : allTransportSerpulo;
+                    Block[] allTransports = world.state.rules.sector.planet == Planets.erekir ? allTransportErekir : allTransportSerpulo;
                     boolean all = true;
                     for(var block : allTransports){
-                        if(state.rules.defaultTeam.data().getCount(block) == 0){
+                        if(world.state.rules.defaultTeam.data().getCount(block) == 0){
                             all = false;
                             break;
                         }
@@ -241,7 +241,7 @@ public class GameService{
                 }
 
                 if(blocksBuilt.add(e.tile.block().name)){
-                    if(state.rules.sector.planet == Planets.erekir){
+                    if(world.state.rules.sector.planet == Planets.erekir){
                         checkAllBlocks(allBlocksErekir, allErekirBlocks);
                     }else{
                         checkAllBlocks(allBlocksSerpulo, allSerpuloBlocks);
@@ -304,7 +304,7 @@ public class GameService{
         });
 
         Events.on(UnitCreateEvent.class, e -> {
-            if(campaign() && e.unit.team == state.rules.defaultTeam){
+            if(campaign() && e.unit.team == world.state.rules.defaultTeam){
                 if(unitsBuilt.add(e.unit.type.name)){
                     SStat.unitTypesBuilt.max(content.units().count(u -> unitsBuilt.contains(u.name) && !u.isHidden()));
                     save();
@@ -320,7 +320,7 @@ public class GameService{
             if(campaign()){
                 boolean added = false;
                 for(UnitType type : Vars.content.units()){
-                    var all = state.rules.defaultTeam.data().getUnits(type);
+                    var all = world.state.rules.defaultTeam.data().getUnits(type);
                     if(all != null && all.size > 0){
                         if(t5s.contains(type)){
                             buildT5.complete();
@@ -459,7 +459,7 @@ public class GameService{
 
         Events.on(WaveEvent.class, e -> {
             if(campaign()){
-                SStat.maxWavesSurvived.max(Vars.state.wave);
+                SStat.maxWavesSurvived.max(Vars.world.state.wave);
 
                 if(state.stats.buildingsBuilt == 0 && state.wave >= 10){
                     survive10WavesNoBlocks.complete();
@@ -490,7 +490,7 @@ public class GameService{
         checkUnlocks.run();
 
         Events.on(WinEvent.class, e -> {
-            if(state.rules.pvp){
+            if(world.state.rules.pvp){
                 SStat.pvpsWon.add();
             }
         });
@@ -503,7 +503,7 @@ public class GameService{
 
         Events.on(SectorCaptureEvent.class, e -> {
             if(e.sector.isBeingPlayed() || net.client()){
-                if(Vars.state.wave <= 5 && state.rules.attackMode){
+                if(Vars.world.state.wave <= 5 && world.state.rules.attackMode){
                     defeatAttack5Waves.complete();
                 }
 
@@ -512,7 +512,7 @@ public class GameService{
                 }
             }
 
-            if(Vars.state.rules.attackMode){
+            if(Vars.world.state.rules.attackMode){
                 SStat.attacksWon.add();
             }
 
@@ -539,7 +539,7 @@ public class GameService{
         });
 
         Events.on(PayloadDropEvent.class, e -> {
-            if(campaign() && e.unit != null && e.carrier.team == state.rules.defaultTeam && state.rules.waveTeam.cores().contains(c -> c.within(e.unit, state.rules.enemyCoreBuildRadius))){
+            if(campaign() && e.unit != null && e.carrier.team == world.state.rules.defaultTeam && world.state.rules.waveTeam.cores().contains(c -> c.within(e.unit, world.state.rules.enemyCoreBuildRadius))){
                 dropUnitsCoreZone.complete();
             }
         });
@@ -593,6 +593,6 @@ public class GameService{
     }
 
     private boolean campaign(){
-        return Vars.state.isCampaign();
+        return Vars.world.state.isCampaign();
     }
 }

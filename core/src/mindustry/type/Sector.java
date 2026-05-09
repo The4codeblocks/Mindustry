@@ -127,13 +127,13 @@ public class Sector{
     }
 
     public boolean isAttacked(){
-        if(isBeingPlayed()) return state.rules.waves || state.rules.attackMode;
+        if(isBeingPlayed()) return world.state.rules.waves || world.state.rules.attackMode;
         return save != null && (info.waves || info.attack) && info.hasCore;
     }
 
     /** @return whether the player has a base (active save with a core) here. */
     public boolean hasBase(){
-        return save != null && info.hasCore && !(Vars.state.isGame() && Vars.state.rules.sector == this && state.gameOver);
+        return save != null && info.hasCore && !(Vars.world.state.isGame() && Vars.world.state.rules.sector == this && state.gameOver);
     }
 
     public boolean isFrozen(){
@@ -147,7 +147,7 @@ public class Sector{
 
     public boolean isBeingPlayed(){
         //after the launch dialog, a sector is no longer considered being played
-        return Vars.state.isGame() && Vars.state.rules.sector == this && !Vars.state.gameOver && !net.client();
+        return Vars.world.state.isGame() && Vars.world.state.rules.sector == this && !Vars.world.state.gameOver && !net.client();
     }
 
     public String name(){
@@ -179,7 +179,7 @@ public class Sector{
     }
 
     public boolean isCaptured(){
-        if(isBeingPlayed()) return !state.rules.waves && !state.rules.attackMode;
+        if(isBeingPlayed()) return !world.state.rules.waves && !world.state.rules.attackMode;
         return save != null && !info.waves && !info.attack;
     }
 
@@ -219,9 +219,9 @@ public class Sector{
     public void addItems(ItemSeq items){
 
         if(isBeingPlayed()){
-            if(state.rules.defaultTeam.core() != null){
-                ItemModule storage = state.rules.defaultTeam.items();
-                int cap = state.rules.defaultTeam.core().storageCapacity;
+            if(world.state.rules.defaultTeam.core() != null){
+                ItemModule storage = world.state.rules.defaultTeam.items();
+                int cap = world.state.rules.defaultTeam.core().storageCapacity;
                 items.each((item, amount) -> storage.add(item, Math.min(cap - storage.get(item), amount)));
             }
         }else if(hasBase()){
@@ -237,7 +237,7 @@ public class Sector{
 
         //for sectors being played on, add items directly
         if(isBeingPlayed()){
-            if(state.rules.defaultTeam.core() != null) count.add(state.rules.defaultTeam.items());
+            if(world.state.rules.defaultTeam.core() != null) count.add(world.state.rules.defaultTeam.items());
         }else{
             //add items already present
             count.add(info.items);

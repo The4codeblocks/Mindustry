@@ -51,12 +51,12 @@ public class EffectSpawnerPart extends DrawPart{
             }
         }
 
-        if(Vars.state.isPaused()) return;
+        if(Vars.world.state.isPaused()) return;
 
         float realInterval = effectIntervalFrom > 0 ? Mathf.lerp(effectIntervalFrom, effectInterval, progress.getClamp(params)) : effectInterval;
 
         for(int i = 0; i < (mirror ? 2 : 1); i++){
-            if(!Vars.state.isPaused() && (realInterval > 0f ? (effectIntervalState += Time.delta) >= realInterval : Mathf.chanceDelta(effectChance * (useProgress ? progress.getClamp(params) : 1f)))){
+            if(!Vars.world.state.isPaused() && (realInterval > 0f ? (effectIntervalState += Time.delta) >= realInterval : Mathf.chanceDelta(effectChance * (useProgress ? progress.getClamp(params) : 1f)))){
                 float sign = (i == 0 ? 1f : -1f), rot = params.rotation + (rotation * sign);
                 v1.set(x * sign, y).rotate(params.rotation - 90).add(params.x, params.y);
                 v1.add(v2.set(random(-height * 0.5f, height * 0.5f), random(-width * 0.5f, width * 0.5f)).rotate(rot));

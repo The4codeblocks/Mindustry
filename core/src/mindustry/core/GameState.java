@@ -2,6 +2,7 @@ package mindustry.core;
 
 import arc.*;
 import arc.util.*;
+import mindustry.*;
 import mindustry.game.EventType.*;
 import mindustry.game.*;
 import mindustry.gen.*;
@@ -51,6 +52,10 @@ public class GameState{
     public @Nullable Map playtestingMap;
     /** Current game state. */
     private State state = State.menu;
+
+    public GameState() {
+        Vars.state = this; // update compatibility field
+    }
 
     @Nullable
     public Unit boss(){

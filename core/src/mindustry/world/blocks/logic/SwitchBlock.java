@@ -8,7 +8,7 @@ import mindustry.gen.*;
 import mindustry.world.*;
 import mindustry.world.meta.*;
 
-import static mindustry.Vars.state;
+import static mindustry.Vars.world;
 
 public class SwitchBlock extends Block{
     public Sound clickSound = Sounds.click;
@@ -29,7 +29,7 @@ public class SwitchBlock extends Block{
     }
 
     public boolean accessible(){
-        return !privileged || state.rules.editor || state.rules.allowEditWorldProcessors;
+        return !privileged || world.state.rules.editor || world.state.rules.allowEditWorldProcessors;
     }
 
     @Override

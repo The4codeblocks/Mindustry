@@ -342,12 +342,12 @@ public class Renderer implements ApplicationListener{
 
         //render all matching environments
         for(var renderer : envRenderers){
-            if((renderer.env & state.rules.env) == renderer.env){
+            if((renderer.env & world.state.rules.env) == renderer.env){
                 renderer.renderer.run();
             }
         }
 
-        if(state.rules.lighting && drawLight){
+        if(world.state.rules.lighting && drawLight){
             Draw.draw(Layer.light, lights::draw);
         }
 
@@ -383,7 +383,7 @@ public class Renderer implements ApplicationListener{
         float scaleFactor = 4f / renderer.getDisplayScale();
 
         //draw objective markers
-        state.rules.objectives.eachRunning(obj -> {
+        world.state.rules.objectives.eachRunning(obj -> {
             for(var marker : obj.markers){
                 if(marker.world){
                     marker.draw(marker.autoscale ? scaleFactor : 1);
@@ -400,7 +400,7 @@ public class Renderer implements ApplicationListener{
         Draw.reset();
 
         Draw.draw(Layer.overlayUI, overlays::drawTop);
-        if(state.rules.fog) Draw.draw(Layer.fogOfWar, fog::drawFog);
+        if(world.state.rules.fog) Draw.draw(Layer.fogOfWar, fog::drawFog);
         Draw.draw(Layer.space, () -> {
             if(launchAnimator == null || landTime <= 0f) return;
             launchAnimator.drawLaunch();
@@ -429,16 +429,16 @@ public class Renderer implements ApplicationListener{
 
     protected void drawBackground(){
         //draw background only if there is no planet background with a skybox
-        if(state.rules.backgroundTexture != null && (state.rules.planetBackground == null || !state.rules.planetBackground.drawSkybox)){
-            if(!assets.isLoaded(state.rules.backgroundTexture, Texture.class)){
-                var file = assets.getFileHandleResolver().resolve(state.rules.backgroundTexture);
+        if(world.state.rules.backgroundTexture != null && (world.state.rules.planetBackground == null || !world.state.rules.planetBackground.drawSkybox)){
+            if(!assets.isLoaded(world.state.rules.backgroundTexture, Texture.class)){
+                var file = assets.getFileHandleResolver().resolve(world.state.rules.backgroundTexture);
 
                 //don't draw invalid/non-existent backgrounds.
                 if(!file.exists() || !file.extEquals("png")){
                     return;
                 }
 
-                var desc = assets.load(state.rules.backgroundTexture, Texture.class, new TextureParameter(){{
+                var desc = assets.load(world.state.rules.backgroundTexture, Texture.class, new TextureParameter(){{
                     wrapU = wrapV = TextureWrap.mirroredRepeat;
                     magFilter = minFilter = TextureFilter.linear;
                 }});
@@ -446,30 +446,30 @@ public class Renderer implements ApplicationListener{
                 assets.finishLoadingAsset(desc);
             }
 
-            Texture tex = assets.get(state.rules.backgroundTexture, Texture.class);
+            Texture tex = assets.get(world.state.rules.backgroundTexture, Texture.class);
             Tmp.tr1.set(tex);
             Tmp.tr1.u = 0f;
             Tmp.tr1.v = 0f;
 
             float ratio = camera.width / camera.height;
-            float size = state.rules.backgroundScl;
+            float size = world.state.rules.backgroundScl;
 
             Tmp.tr1.u2 = size;
             Tmp.tr1.v2 = size / ratio;
 
             float sx = 0f, sy = 0f;
 
-            if(!Mathf.zero(state.rules.backgroundSpeed)){
-                sx = (camera.position.x) / state.rules.backgroundSpeed;
-                sy = (camera.position.y) / state.rules.backgroundSpeed;
+            if(!Mathf.zero(world.state.rules.backgroundSpeed)){
+                sx = (camera.position.x) / world.state.rules.backgroundSpeed;
+                sy = (camera.position.y) / world.state.rules.backgroundSpeed;
             }
 
-            Tmp.tr1.scroll(sx + state.rules.backgroundOffsetX, -sy + state.rules.backgroundOffsetY);
+            Tmp.tr1.scroll(sx + world.state.rules.backgroundOffsetX, -sy + world.state.rules.backgroundOffsetY);
 
             Draw.rect(Tmp.tr1, camera.position.x, camera.position.y, camera.width, camera.height);
         }
 
-        if(state.rules.planetBackground != null){
+        if(world.state.rules.planetBackground != null){
             int size = Math.max(graphics.getWidth(), graphics.getHeight());
 
             boolean resized = false;
@@ -481,7 +481,7 @@ public class Renderer implements ApplicationListener{
             if(resized || backgroundBuffer.resizeCheck(size, size)){
                 backgroundBuffer.begin(Color.clear);
 
-                var params = state.rules.planetBackground;
+                var params = world.state.rules.planetBackground;
 
                 //override some values
                 params.viewW = size;
@@ -498,8 +498,8 @@ public class Renderer implements ApplicationListener{
             Draw.rect(Draw.wrap(backgroundBuffer.getTexture()), camera.position.x, camera.position.y, drawSize, -drawSize);
         }
 
-        if(state.rules.customBackgroundCallback != null && customBackgrounds.containsKey(state.rules.customBackgroundCallback)){
-            customBackgrounds.get(state.rules.customBackgroundCallback).run();
+        if(world.state.rules.customBackgroundCallback != null && customBackgrounds.containsKey(world.state.rules.customBackgroundCallback)){
+            customBackgrounds.get(world.state.rules.customBackgroundCallback).run();
         }
     }
 

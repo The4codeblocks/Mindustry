@@ -50,7 +50,7 @@ public final class FogRenderer{
 
         dynamicFog.resize(world.width(), world.height());
 
-        if(state.rules.staticFog && player.team() != lastTeam){
+        if(world.state.rules.staticFog && player.team() != lastTeam){
             copyFromCpu();
             lastTeam = player.team();
             clearStatic = false;
@@ -78,7 +78,7 @@ public final class FogRenderer{
         }
 
         //grab static events
-        if(state.rules.staticFog && (clearStatic || events.size > 0)){
+        if(world.state.rules.staticFog && (clearStatic || events.size > 0)){
             //set projection to whole map
             Draw.proj(0, 0, staticFog.getWidth(), staticFog.getHeight());
 
@@ -104,18 +104,18 @@ public final class FogRenderer{
             Draw.proj(Core.camera);
         }
 
-        if(state.rules.staticFog){
+        if(world.state.rules.staticFog){
             staticFog.getTexture().setFilter(TextureFilter.linear);
         }
         dynamicFog.getTexture().setFilter(TextureFilter.linear);
 
         Draw.shader(Shaders.fog);
-        Draw.color(state.rules.dynamicColor, Float.isNaN(state.rules.dynamicColor.a) ? 0.5f : Math.max(0.5f, state.rules.dynamicColor.a));
+        Draw.color(world.state.rules.dynamicColor, Float.isNaN(world.state.rules.dynamicColor.a) ? 0.5f : Math.max(0.5f, world.state.rules.dynamicColor.a));
         Draw.fbo(dynamicFog.getTexture(), world.width(), world.height(), tilesize);
         //TODO ai check?
-        if(state.rules.staticFog){
+        if(world.state.rules.staticFog){
             //TODO why does this require a half-tile offset while dynamic does not
-            Draw.color(state.rules.staticColor, 1f);
+            Draw.color(world.state.rules.staticColor, 1f);
             Draw.fbo(staticFog.getTexture(), world.width(), world.height(), tilesize, tilesize/2f);
         }
         Draw.shader();

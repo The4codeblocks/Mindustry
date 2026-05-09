@@ -421,14 +421,14 @@ public class ErekirPlanetGenerator extends PlanetGenerator{
         decoration(0.017f);
 
         //it is very hot
-        state.rules.env = sector.planet.defaultEnv;
-        state.rules.placeRangeCheck = true;
+        world.state.rules.env = sector.planet.defaultEnv;
+        world.state.rules.placeRangeCheck = true;
 
         //TODO remove slag and arkycite around core.
         Schematics.placeLaunchLoadout(spawnX, spawnY);
 
         //all sectors are wave sectors
-        state.rules.waves = false;
-        state.rules.showSpawns = true;
+        world.state.rules.waves = false;
+        world.state.rules.showSpawns = true;
     }
 }

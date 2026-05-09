@@ -122,7 +122,7 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
         var cores = team.cores();
         //if someone screws up the map and adds an invalid core, prioritize the core that's supported
         //if there's only one core, there are no other options
-        return cores.min(b -> cores.size == 1 || ((CoreBlock)b.block).unitType.supportsEnv(state.rules.env), Structs.comps(Structs.comparingInt(c -> -c.block.size), Structs.comparingFloat(c -> c.dst2(x, y))));
+        return cores.min(b -> cores.size == 1 || ((CoreBlock)b.block).unitType.supportsEnv(world.state.rules.env), Structs.comps(Structs.comparingInt(c -> -c.block.size), Structs.comparingFloat(c -> c.dst2(x, y))));
     }
 
     public TextureRegion icon(){
@@ -146,7 +146,7 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
     }
 
     public void reset(){
-        team = state.rules.defaultTeam;
+        team = world.state.rules.defaultTeam;
         admin = typing = false;
         textFadeTime = 0f;
         x = y = 0f;
@@ -361,7 +361,7 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
     }
 
     void drawPing(){
-        if(pingTime <= 0f || !renderer.showPings || name == null || (!state.rules.showOtherTeamPings && team != Vars.player.team())) return;
+        if(pingTime <= 0f || !renderer.showPings || name == null || (!world.state.rules.showOtherTeamPings && team != Vars.player.team())) return;
 
         float alpha = Math.min(Interp.pow5Out.apply(Mathf.clamp(Mathf.map(pingTime, 1f / 20f, 0f, 1f, 0f))), Interp.pow5Out.apply(Mathf.map(pingTime, 1f, 0.98f, 0f, 1f)));
 

@@ -220,8 +220,8 @@ public class LoadDialog extends BaseDialog{
                 try{
                     net.reset();
                     slot.load();
-                    state.rules.editor = false;
-                    state.rules.sector = null;
+                    world.state.rules.editor = false;
+                    world.state.rules.sector = null;
                     state.set(State.playing);
                 }catch(SaveException e){
                     Log.err(e);

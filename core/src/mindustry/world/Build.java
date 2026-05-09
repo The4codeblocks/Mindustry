@@ -92,7 +92,7 @@ public class Build{
         }
 
         //repair derelict tile
-        if(tile.team() == Team.derelict && team != Team.derelict && tile.block == result && tile.build != null && tile.block.allowDerelictRepair && state.rules.derelictRepair){
+        if(tile.team() == Team.derelict && team != Team.derelict && tile.block == result && tile.build != null && tile.block.allowDerelictRepair && world.state.rules.derelictRepair){
             tile.build.rotation = rotation;
             tile.build.changeTeam(team);
             tile.build.enabled = true;
@@ -182,13 +182,13 @@ public class Build{
     /** @return whether a tile can be placed at this location by this team. Ignores units at this location. */
     public static boolean validPlaceIgnoreUnits(Block type, Team team, int x, int y, int rotation, boolean checkVisible, boolean checkCoreRadius){
         //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
-        if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
+        if(type == null || (!world.state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(world.state.rules.waves && team == world.state.rules.waveTeam && type.isVisible())))))){
             return false;
         }
 
-        if(!state.rules.editor && checkCoreRadius){
+        if(!world.state.rules.editor && checkCoreRadius){
             //find closest core, if it doesn't match the team, placing is not legal
-            if(state.rules.polygonCoreProtection){
+            if(world.state.rules.polygonCoreProtection){
                 float mindst = Float.MAX_VALUE;
                 CoreBuild closest = null;
                 for(TeamData data : state.teams.active){
@@ -246,9 +246,9 @@ public class Build{
                 if(
                 check == null || //nothing there
                 (type.size == 2 && world.getDarkness(wx, wy) >= 3) ||
-                (state.rules.staticFog && state.rules.fog && !fogControl.isDiscovered(team, wx, wy)) ||
+                (world.state.rules.staticFog && world.state.rules.fog && !fogControl.isDiscovered(team, wx, wy)) ||
                 (check.floor().isDeep() && !type.floating && !type.requiresWater && !type.placeableLiquid) || //deep water
-                (!state.rules.derelictRepair && check.team() == Team.derelict && check.build != null) ||
+                (!world.state.rules.derelictRepair && check.team() == Team.derelict && check.build != null) ||
                 (type == check.block() && check.build != null && rotation == check.build.rotation && type.rotate && !((type == check.block && team != Team.derelict && check.team() == Team.derelict))) || //same block, same rotation
                 !check.interactable(team) || //cannot interact
                 !check.floor().placeableOn && !type.ignoreBuildDarkness || //solid floor
@@ -262,7 +262,7 @@ public class Build{
             }
         }
 
-        if(state.rules.placeRangeCheck && checkCoreRadius && !state.isEditor() && getEnemyOverlap(type, team, x, y) != null){
+        if(world.state.rules.placeRangeCheck && checkCoreRadius && !state.isEditor() && getEnemyOverlap(type, team, x, y) != null){
             return false;
         }
 
@@ -313,6 +313,6 @@ public class Build{
     /** @return whether the tile at this position is breakable by this team */
     public static boolean validBreak(Team team, int x, int y){
         Tile tile = world.tile(x, y);
-        return tile != null && tile.block() != Blocks.air && (tile.block().canBreak(tile) && (tile.breakable() || state.rules.allowEnvironmentDeconstruct)) && tile.interactable(team);
+        return tile != null && tile.block() != Blocks.air && (tile.block().canBreak(tile) && (tile.breakable() || world.state.rules.allowEnvironmentDeconstruct)) && tile.interactable(team);
     }
 }

@@ -40,7 +40,7 @@ public class SpawnPathFilter extends GenerateFilter{
             if(tile.overlay() == Blocks.spawn){
                 spawns.add(tile);
             }
-            if(tile.block() instanceof CoreBlock && tile.team() != Vars.state.rules.waveTeam){
+            if(tile.block() instanceof CoreBlock && tile.team() != Vars.world.state.rules.waveTeam){
                 cores.add(tile);
             }
         }

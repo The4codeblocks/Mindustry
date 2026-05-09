@@ -26,14 +26,14 @@ public class PausedDialog extends BaseDialog{
         stack(cont, new Table(t -> {
             t.bottom().left();
             t.button(Icon.book, () -> {
-                Rules toEdit = Vars.state.rules.copy();
-                rulesDialog.show(toEdit, () -> state.rules.copy());
+                Rules toEdit = Vars.world.state.rules.copy();
+                rulesDialog.show(toEdit, () -> world.state.rules.copy());
                 rulesDialog.hidden(() -> {
                     //apply rule changes only once it is hidden
-                    Vars.state.rules = toEdit;
+                    Vars.world.state.rules = toEdit;
                     Call.setRules(toEdit);
                 });
-            }).size(70f).tooltip("@customize").visible(() -> state.rules.allowEditRules && (net.server() || !net.active()));
+            }).size(70f).tooltip("@customize").visible(() -> world.state.rules.allowEditRules && (net.server() || !net.active()));
         })).grow().row();
 
         shown(() -> {
@@ -60,15 +60,15 @@ public class PausedDialog extends BaseDialog{
             float dw = 220f;
             cont.defaults().width(dw).height(55).pad(5f);
 
-            boolean showObjective = state.rules.sector != null && state.rules.sector.preset != null && state.rules.sector.preset.description != null;
+            boolean showObjective = world.state.rules.sector != null && world.state.rules.sector.preset != null && world.state.rules.sector.preset.description != null;
 
             if(showObjective){
-                cont.button("@objective", Icon.info, () -> ui.fullText.show("@objective", state.rules.sector != null && state.rules.sector.preset != null ? state.rules.sector.preset.description : "oh dear")).padTop(-60f);
+                cont.button("@objective", Icon.info, () -> ui.fullText.show("@objective", world.state.rules.sector != null && world.state.rules.sector.preset != null ? world.state.rules.sector.preset.description : "oh dear")).padTop(-60f);
             }
 
-            cont.button("@abandon", Icon.cancel, () -> ui.planet.abandonSectorConfirm(state.rules.sector, this::hide)).padTop(-60f)
+            cont.button("@abandon", Icon.cancel, () -> ui.planet.abandonSectorConfirm(world.state.rules.sector, this::hide)).padTop(-60f)
             .colspan(showObjective ? 1 : 2).width(showObjective ? dw : dw * 2 + 10f)
-            .disabled(b -> net.client() || state.gameOver).visible(() -> state.rules.sector != null).row();
+            .disabled(b -> net.client() || state.gameOver).visible(() -> world.state.rules.sector != null).row();
 
             cont.button("@back", Icon.left, this::hide).name("back");
             cont.button("@settings", Icon.settings, ui.settings::show).name("settings");

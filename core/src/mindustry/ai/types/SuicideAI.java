@@ -80,9 +80,9 @@ public class SuicideAI extends GroundAI{
             boolean move = true;
 
             //stop moving toward the drop zone if applicable
-            if(core == null && state.rules.waves && unit.team == state.rules.defaultTeam){
+            if(core == null && world.state.rules.waves && unit.team == world.state.rules.defaultTeam){
                 Tile spawner = getClosestSpawner();
-                if(spawner != null && unit.within(spawner, state.rules.dropZoneRadius + 120f)){
+                if(spawner != null && unit.within(spawner, world.state.rules.dropZoneRadius + 120f)){
                     move = false;
                 }
             }

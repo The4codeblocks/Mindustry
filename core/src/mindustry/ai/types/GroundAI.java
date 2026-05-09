@@ -38,14 +38,14 @@ public class GroundAI extends AIController{
         if((core == null || !unit.within(core, unit.type.range * 0.5f))){
             boolean move = true;
 
-            if(state.rules.waves && unit.team == state.rules.defaultTeam){
+            if(world.state.rules.waves && unit.team == world.state.rules.defaultTeam){
                 Tile spawner = getClosestSpawner();
-                if(spawner != null && unit.within(spawner, state.rules.dropZoneRadius + 120f)) move = false;
+                if(spawner != null && unit.within(spawner, world.state.rules.dropZoneRadius + 120f)) move = false;
                 if(spawner == null && core == null) move = false;
             }
 
             //no reason to move if there's nothing there
-            if(core == null && (!state.rules.waves || getClosestSpawner() == null)){
+            if(core == null && (!world.state.rules.waves || getClosestSpawner() == null)){
                 move = false;
             }
 

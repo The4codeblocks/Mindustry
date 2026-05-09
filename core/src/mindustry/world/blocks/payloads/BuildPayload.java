@@ -50,7 +50,7 @@ public class BuildPayload implements Payload{
 
     @Override
     public void update(@Nullable Unit unitHolder, @Nullable Building buildingHolder){
-        if(unitHolder != null && (!build.block.updateInUnits || (!state.rules.unitPayloadUpdate && !build.block.alwaysUpdateInUnits))) return;
+        if(unitHolder != null && (!build.block.updateInUnits || (!world.state.rules.unitPayloadUpdate && !build.block.alwaysUpdateInUnits))) return;
 
         build.tile = emptyTile;
         build.updatePayload(unitHolder, buildingHolder);

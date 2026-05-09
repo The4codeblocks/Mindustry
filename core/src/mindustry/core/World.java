@@ -37,6 +37,8 @@ public class World{
     private boolean generating, invalidMap;
     private ObjectMap<Map, Runnable> customMapLoaders = new ObjectMap<>();
 
+    public GameState state;
+
     public World(){
         Events.on(TileChangeEvent.class, e -> tileChanges ++);
         Events.on(TileFloorChangeEvent.class, e -> floorChanges ++);
@@ -481,7 +483,7 @@ public class World{
     public float getDarkness(int x, int y){
         float dark = 0;
 
-        if(Vars.state.rules.borderDarkness){
+        if(state.rules.borderDarkness){
             int edgeBlend = 2;
             int edgeDst;
 

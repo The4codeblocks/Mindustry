@@ -189,7 +189,7 @@ public class BaseBuilderAI{
     private Position randomPosition(){
         if(data.hasCore()){
             return data.cores.random();
-        }else if(data.team == state.rules.waveTeam){
+        }else if(data.team == world.state.rules.waveTeam){
             return spawner.getSpawns().random();
         }
         return null;

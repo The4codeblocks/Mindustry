@@ -268,7 +268,7 @@ public class Vars implements Loadable{
     public static FileTree tree = new FileTree();
     public static Net net;
     public static ContentLoader content;
-    public static GameState state;
+    public static GameState state; // compatibility field, should be a mirror of world.state
     public static EntityCollisions collisions;
     public static Waves waves;
     public static Platform platform = new Platform(){};
@@ -370,7 +370,7 @@ public class Vars implements Loadable{
             Core.files.local("jre/bin/java.exe").exists() ? Core.files.local("jre/bin/java.exe").absolutePath() : // Windows
             "java";
 
-        state = new GameState();
+        world.state = new GameState();
 
         mobile = Core.app.isMobile() || testMobile;
         ios = Core.app.isIOS();

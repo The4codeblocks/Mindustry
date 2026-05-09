@@ -539,7 +539,7 @@ public class Turret extends ReloadTurret{
                 updateCooling();
             }
 
-            if(state.rules.fog){
+            if(world.state.rules.fog){
                 float newRange = hasAmmo() ? peekAmmo().rangeChange : 0f;
                 if(newRange != lastRangeChange){
                     lastRangeChange = newRange;

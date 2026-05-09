@@ -34,7 +34,7 @@ public class CellLiquid extends Liquid{
 
     @Override
     public void update(Puddle puddle){
-        if(!Vars.state.rules.fire) return;
+        if(!Vars.world.state.rules.fire) return;
 
         if(spreadTarget != null){
             float scaling = Mathf.pow(Mathf.clamp(puddle.amount / maxLiquid), 2f);

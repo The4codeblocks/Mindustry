@@ -15,7 +15,7 @@ public class Fires{
 
     /** Start a fire on the tile. If there already is a fire there, refreshes its lifetime. */
     public static void create(Tile tile){
-        if(net.client() || tile == null || !state.rules.fire || !state.rules.hasEnv(Env.oxygen)) return; //not clientside.
+        if(net.client() || tile == null || !world.state.rules.fire || !world.state.rules.hasEnv(Env.oxygen)) return; //not clientside.
 
         Fire fire = get(tile);
 

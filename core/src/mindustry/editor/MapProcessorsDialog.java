@@ -105,7 +105,7 @@ public class MapProcessorsDialog extends BaseDialog{
                         });
                     }).size(h);
 
-                    if(Vars.state.isGame() && state.isEditor()){
+                    if(Vars.world.state.isGame() && state.isEditor()){
                         t.button(Icon.eyeSmall, Styles.graySquarei, Vars.iconMed, () -> {
                             hide();
                             control.input.config.showConfig(build);

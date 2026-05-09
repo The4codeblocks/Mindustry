@@ -131,13 +131,13 @@ public class Pathfinder implements Runnable{
             }
 
             //don't bother setting up paths unless necessary
-            if(state.rules.waveTeam.needsFlowField() && !net.client()){
-                preloadPath(getField(state.rules.waveTeam, costGround, fieldCore));
+            if(world.state.rules.waveTeam.needsFlowField() && !net.client()){
+                preloadPath(getField(world.state.rules.waveTeam, costGround, fieldCore));
                 Log.debug("Preloading ground enemy flowfield.");
 
                 //preload water on naval maps
                 if(spawner.getSpawns().contains(t -> t.floor().isLiquid)){
-                    preloadPath(getField(state.rules.waveTeam, costNaval, fieldCore));
+                    preloadPath(getField(world.state.rules.waveTeam, costNaval, fieldCore));
                     Log.debug("Preloading naval enemy flowfield.");
                 }
 
@@ -260,7 +260,7 @@ public class Pathfinder implements Runnable{
 
         return PathTile.get(
         tile.build == null || !solid || tile.block() instanceof CoreBlock ? 0 : Math.min((int)(tile.build.health / 40), 80),
-        tid == 0 && tile.build != null && state.rules.coreCapture ? 255 : tid, //use teamid = 255 when core capture is enabled to mark out derelict structures
+        tid == 0 && tile.build != null && world.state.rules.coreCapture ? 255 : tid, //use teamid = 255 when core capture is enabled to mark out derelict structures
         solid,
         tile.floor().isLiquid,
         tile.legSolid(),
@@ -553,8 +553,8 @@ public class Pathfinder implements Runnable{
 
         @Override
         protected void getPositions(IntSeq out){
-            if(state.rules.randomWaveAI && team == state.rules.waveTeam){
-                rand.setSeed(state.rules.waves ? state.wave : (int)(state.tick / (5400)) + hashCode());
+            if(world.state.rules.randomWaveAI && team == world.state.rules.waveTeam){
+                rand.setSeed(world.state.rules.waves ? state.wave : (int)(state.tick / (5400)) + hashCode());
 
                 //maximum amount of different target flag types they will attack
                 int max = 1;
@@ -581,7 +581,7 @@ public class Pathfinder implements Runnable{
             }
 
             //spawn points are also enemies.
-            if(state.rules.waves && team == state.rules.defaultTeam){
+            if(world.state.rules.waves && team == world.state.rules.defaultTeam){
                 for(Tile other : spawner.getSpawns()){
                     out.add(other.array());
                 }

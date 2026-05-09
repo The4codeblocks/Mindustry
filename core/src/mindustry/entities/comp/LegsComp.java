@@ -73,7 +73,7 @@ abstract class LegsComp implements Posc, Rotc, Hitboxc, Unitc{
             Tmp.v2.set(l.base).sub(l.joint).inv().setLength(type.legExtension);
 
             for(Vec2 vec : new Vec2[]{base, l.joint, l.base}){
-                Damage.dynamicExplosion(vec.x, vec.y, 0f, 0f, 0f, legExplodeRad, state.rules.damageExplosions, false, team, type.deathExplosionEffect);
+                Damage.dynamicExplosion(vec.x, vec.y, 0f, 0f, 0f, legExplodeRad, world.state.rules.damageExplosions, false, team, type.deathExplosionEffect);
             }
 
             Fx.legDestroy.at(base.x, base.y, 0f, new LegDestroyData(base.cpy(), l.joint, type.legRegion));
@@ -194,7 +194,7 @@ abstract class LegsComp implements Posc, Rotc, Hitboxc, Unitc{
                     }
 
                     if(type.legSplashDamage > 0 && !disarmed){
-                        Damage.damage(team, l.base.x, l.base.y, type.legSplashRange, type.legSplashDamage * state.rules.unitDamage(team), false, true);
+                        Damage.damage(team, l.base.x, l.base.y, type.legSplashRange, type.legSplashDamage * world.state.rules.unitDamage(team), false, true);
 
                         if(tile != null && tile.block().unitMoveBreakable){
                             ConstructBlock.deconstructFinish(tile, tile.block(), self());

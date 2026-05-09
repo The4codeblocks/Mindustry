@@ -998,16 +998,16 @@ public class Block extends UnlockableContent implements Senseable{
     }
 
     public boolean isVisible(){
-        return !isHidden() && (state.rules.editor || (!state.rules.hideBannedBlocks || !isBanned()));
+        return !isHidden() && (world.state.rules.editor || (!world.state.rules.hideBannedBlocks || !isBanned()));
     }
 
     public boolean isPlaceable(){
-        return isVisible() && (!isBanned() || state.rules.editor) && supportsEnv(state.rules.env);
+        return isVisible() && (!isBanned() || world.state.rules.editor) && supportsEnv(world.state.rules.env);
     }
 
     @Override
     public boolean isBanned(){
-        return state.rules.isBanned(this);
+        return world.state.rules.isBanned(this);
     }
 
     /** @return whether this block supports a specific environment. */
@@ -1509,7 +1509,7 @@ public class Block extends UnlockableContent implements Senseable{
 
     @Override
     public boolean isHidden(){
-        return !buildVisibility.visible() && !state.rules.revealedBlocks.contains(this);
+        return !buildVisibility.visible() && !world.state.rules.revealedBlocks.contains(this);
     }
 
     @Override
@@ -1642,11 +1642,11 @@ public class Block extends UnlockableContent implements Senseable{
     @Override
     public double sense(Content content){
         if(content instanceof Item item){
-            if(state.rules.infiniteResources) return 0;
+            if(world.state.rules.infiniteResources) return 0;
 
             for(ItemStack r : requirements){
                 if(r.item == item){
-                    return Math.round(r.amount * state.rules.buildCostMultiplier);
+                    return Math.round(r.amount * world.state.rules.buildCostMultiplier);
                 }
             }
             return 0f;

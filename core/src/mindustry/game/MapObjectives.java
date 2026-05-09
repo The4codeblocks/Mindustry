@@ -206,8 +206,8 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
 
         /** Called once after {@link #update()} returns true, before this objective is removed. */
         public void done(){
-            state.rules.objectiveFlags.removeAll(flagsRemoved);
-            state.rules.objectiveFlags.addAll(flagsAdded);
+            world.state.rules.objectiveFlags.removeAll(flagsRemoved);
+            world.state.rules.objectiveFlags.addAll(flagsAdded);
             completed = true;
 
             LExecutor.runLogicScript(completionLogicCode);
@@ -369,12 +369,12 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
 
         @Override
         public boolean update(){
-            return state.rules.defaultTeam.items().has(item, amount);
+            return world.state.rules.defaultTeam.items().has(item, amount);
         }
 
         @Override
         public String text(){
-            return Core.bundle.format("objective.item", state.rules.defaultTeam.items().get(item), amount, item.emoji(), item.localizedName);
+            return Core.bundle.format("objective.item", world.state.rules.defaultTeam.items().get(item), amount, item.emoji(), item.localizedName);
         }
 
         @Override
@@ -468,12 +468,12 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
 
         @Override
         public boolean update(){
-            return state.rules.defaultTeam.data().countType(unit) >= count;
+            return world.state.rules.defaultTeam.data().countType(unit) >= count;
         }
 
         @Override
         public String text(){
-            return Core.bundle.format("objective.buildunit", count - state.rules.defaultTeam.data().countType(unit), unit.emoji(), unit.localizedName);
+            return Core.bundle.format("objective.buildunit", count - world.state.rules.defaultTeam.data().countType(unit), unit.emoji(), unit.localizedName);
         }
 
         @Override
@@ -529,7 +529,7 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
 
         @Override
         public boolean update(){
-            return (countup += Time.delta) >= duration * state.rules.objectiveTimerMultiplier;
+            return (countup += Time.delta) >= duration * world.state.rules.objectiveTimerMultiplier;
         }
 
         @Override
@@ -541,7 +541,7 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
         @Override
         public String text(){
             if(text != null){
-                int i = (int)((duration * state.rules.objectiveTimerMultiplier - countup) / 60f);
+                int i = (int)((duration * world.state.rules.objectiveTimerMultiplier - countup) / 60f);
                 StringBuilder timeString = new StringBuilder();
 
                 int m = i / 60;
@@ -697,7 +697,7 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
 
         @Override
         public boolean update(){
-            return state.rules.objectiveFlags.contains(flag);
+            return world.state.rules.objectiveFlags.contains(flag);
         }
 
         @Nullable
@@ -723,7 +723,7 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
     public static class DestroyCoreObjective extends MapObjective{
         @Override
         public boolean update(){
-            return state.rules.waveTeam.cores().size == 0;
+            return world.state.rules.waveTeam.cores().size == 0;
         }
 
         @Override

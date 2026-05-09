@@ -51,7 +51,7 @@ public class WorldReloader{
                 boolean wasAdmin = p.admin;
                 p.reset();
                 p.admin = wasAdmin;
-                if(state.rules.pvp){
+                if(world.state.rules.pvp){
                     p.team(netServer.assignTeam(p, new SeqIterable<>(players)));
                 }
                 netServer.sendWorldData(p);

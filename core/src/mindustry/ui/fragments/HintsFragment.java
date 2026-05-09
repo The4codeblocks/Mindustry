@@ -27,7 +27,7 @@ import mindustry.world.meta.*;
 import static mindustry.Vars.*;
 
 public class HintsFragment{
-    private static final Boolp isTutorial = () -> Vars.state.rules.sector == SectorPresets.groundZero.sector;
+    private static final Boolp isTutorial = () -> Vars.world.state.rules.sector == SectorPresets.groundZero.sector;
     private static final float foutTime = 0.6f;
 
     /** All hints to be displayed in the game. */
@@ -162,7 +162,7 @@ public class HintsFragment{
     }
 
     static boolean isSerpulo(){
-        return !state.rules.hasEnv(Env.scorching);
+        return !world.state.rules.hasEnv(Env.scorching);
     }
 
     public enum DefaultHint implements Hint{
@@ -171,12 +171,12 @@ public class HintsFragment{
         zoom(visibleDesktop, () -> Core.input.axis(KeyCode.scroll) != 0),
 
         breaking(
-            () -> isTutorial.get() && state.rules.defaultTeam.data().getCount(Blocks.conveyor) > 5,
+            () -> isTutorial.get() && world.state.rules.defaultTeam.data().getCount(Blocks.conveyor) > 5,
             () -> ui.hints.events.contains("break")
         ),
 
         desktopShoot(visibleDesktop,
-            () -> isSerpulo() && Vars.state.enemies > 0,
+            () -> isSerpulo() && Vars.world.state.enemies > 0,
             () -> player.shooting
         ),
 
@@ -191,14 +191,14 @@ public class HintsFragment{
         ),
 
         unitControl(
-            () -> isSerpulo() && state.rules.defaultTeam.data().units.size > 2 && !net.active() && !player.dead(),
+            () -> isSerpulo() && world.state.rules.defaultTeam.data().units.size > 2 && !net.active() && !player.dead(),
             () -> !player.dead() && !player.unit().spawnedByCore
         ),
 
         unitSelectControl(
             //if the player is on fungal pass or has *ever* played fungal pass, don't show this hint, it's redundant.
             //in general, this should only be necessary if the player is doing a custom game or sequence-broke somehow
-            () -> isSerpulo() && state.rules.defaultTeam.data().units.size > 3 && !net.active() && !player.dead() && state.getSector() != SectorPresets.fungalPass.sector && SectorPresets.fungalPass.sector.save == null,
+            () -> isSerpulo() && world.state.rules.defaultTeam.data().units.size > 3 && !net.active() && !player.dead() && state.getSector() != SectorPresets.fungalPass.sector && SectorPresets.fungalPass.sector.save == null,
             () -> control.input.commandMode && control.input.selectedUnits.size > 0 && control.input.selectedUnits.first().controller() instanceof CommandAI ai && ai.targetPos != null
         ),
 
@@ -208,7 +208,7 @@ public class HintsFragment{
         ),
 
         launch(
-            () -> (isTutorial.get() || Vars.state.rules.sector == SectorPresets.onset.sector) && state.rules.sector.isCaptured(),
+            () -> (isTutorial.get() || Vars.world.state.rules.sector == SectorPresets.onset.sector) && world.state.rules.sector.isCaptured(),
             () -> ui.planet.isShown()
         ),
 
@@ -249,11 +249,11 @@ public class HintsFragment{
 
         waveFire(
             () -> Groups.fire.size() > 0 && Blocks.wave.unlockedNow(),
-            () -> indexer.getFlagged(state.rules.defaultTeam, BlockFlag.extinguisher).size > 0
+            () -> indexer.getFlagged(world.state.rules.defaultTeam, BlockFlag.extinguisher).size > 0
         ),
 
         rebuildSelect(
-            () -> state.rules.defaultTeam.data().plans.size >= 10,
+            () -> world.state.rules.defaultTeam.data().plans.size >= 10,
             () -> control.input.isRebuildSelecting()
         ),
 
@@ -267,22 +267,22 @@ public class HintsFragment{
             () -> false
         ),
 
-        factoryControl(() -> !(state.isCampaign() && state.rules.sector.preset == SectorPresets.onset) &&
-            state.rules.defaultTeam.data().getBuildings(Blocks.tankFabricator).size + state.rules.defaultTeam.data().getBuildings(Blocks.groundFactory).size > 0,
+        factoryControl(() -> !(state.isCampaign() && world.state.rules.sector.preset == SectorPresets.onset) &&
+            world.state.rules.defaultTeam.data().getBuildings(Blocks.tankFabricator).size + world.state.rules.defaultTeam.data().getBuildings(Blocks.groundFactory).size > 0,
             () -> ui.hints.events.contains("factorycontrol")
         ),
 
-        coreUpgrade(() -> state.isCampaign() && state.rules.sector.planet == Planets.serpulo && Blocks.coreFoundation.unlocked()
-            && state.rules.defaultTeam.core() != null
-            && state.rules.defaultTeam.core().block == Blocks.coreShard
-            && state.rules.defaultTeam.core().items.has(Blocks.coreFoundation.requirements),
+        coreUpgrade(() -> state.isCampaign() && world.state.rules.sector.planet == Planets.serpulo && Blocks.coreFoundation.unlocked()
+            && world.state.rules.defaultTeam.core() != null
+            && world.state.rules.defaultTeam.core().block == Blocks.coreShard
+            && world.state.rules.defaultTeam.core().items.has(Blocks.coreFoundation.requirements),
             () -> ui.hints.placedBlocks.contains(Blocks.coreFoundation)
         ),
 
         serpuloCoreZone(
             () -> state.isCampaign() && state.getPlanet() == Planets.serpulo && Vars.indexer.isBlockPresent(Blocks.coreZone) &&
-                (!state.rules.attackMode || state.stats.getDestroyed(Blocks.coreShard) + state.stats.getDestroyed(Blocks.coreFoundation) + state.stats.getDestroyed(Blocks.coreNucleus) > 0),
-            () -> state.rules.defaultTeam.cores().size > 1
+                (!world.state.rules.attackMode || state.stats.getDestroyed(Blocks.coreShard) + state.stats.getDestroyed(Blocks.coreFoundation) + state.stats.getDestroyed(Blocks.coreNucleus) > 0),
+            () -> world.state.rules.defaultTeam.cores().size > 1
         ),
 
         presetLaunch(
@@ -298,7 +298,7 @@ public class HintsFragment{
         ),
 
         coreIncinerate(
-            () -> state.isCampaign() && state.rules.defaultTeam.core() != null && state.rules.defaultTeam.core().items.get(Items.copper) >= state.rules.defaultTeam.core().storageCapacity - 10,
+            () -> state.isCampaign() && world.state.rules.defaultTeam.core() != null && world.state.rules.defaultTeam.core().items.get(Items.copper) >= world.state.rules.defaultTeam.core().storageCapacity - 10,
             () -> false
         )
         ;

@@ -99,7 +99,7 @@ public class MassDriverBolt extends BasicBulletType{
                 flammability += item.flammability * data.items[i];
                 power += item.charge * Mathf.pow(data.items[i], 1.1f) * 25f;
             }
-            Damage.dynamicExplosion(b.x, b.y, flammability / 10f, explosiveness / 10f, power, 1f, state.rules.damageExplosions);
+            Damage.dynamicExplosion(b.x, b.y, flammability / 10f, explosiveness / 10f, power, 1f, world.state.rules.damageExplosions);
         }
     }
 }

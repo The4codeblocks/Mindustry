@@ -46,7 +46,7 @@ public class Puddles{
             return;
         }
 
-        if(Vars.state.rules.hasEnv(Env.space)){
+        if(Vars.world.state.rules.hasEnv(Env.space)){
             if(Mathf.chanceDelta(0.11f) && tile != source){
                 Bullets.spaceLiquid.create(null, source.team(), ax, ay, source.angleTo(tile) + Mathf.range(50f), -1f, Mathf.random(0f, 0.2f), Mathf.random(0.6f, 1f), liquid);
             }

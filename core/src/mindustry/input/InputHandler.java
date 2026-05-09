@@ -509,7 +509,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
 
         if(net.server() && (player.unit().stack.amount <= 0 || !Units.canInteract(player, build) ||
         //to avoid rejecting deposit packets that happen to overlap due to packet speed differences, the actual cap is double the cooldown with 2 deposits.
-        (!player.isLocal() && !player.itemDepositRate.allow((long)(state.rules.itemDepositCooldown * 1000 * 2), 2)) ||
+        (!player.isLocal() && !player.itemDepositRate.allow((long)(world.state.rules.itemDepositCooldown * 1000 * 2), 2)) ||
 
         !netServer.admins.allowAction(player, ActionType.depositItem, build.tile, action -> {
             action.itemAmount = player.unit().stack.amount;
@@ -767,7 +767,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
         if(player == null) return;
 
         //make sure player is allowed to control the unit
-        if(net.server() && (!state.rules.possessionAllowed || !netServer.admins.allowAction(player, ActionType.control, action -> action.unit = unit))){
+        if(net.server() && (!world.state.rules.possessionAllowed || !netServer.admins.allowAction(player, ActionType.control, action -> action.unit = unit))){
             throw new ValidateException(player, "Player cannot control a unit.");
         }
 
@@ -1498,7 +1498,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
     }
 
     public void drawOverlapCheck(Block block, int cursorX, int cursorY, boolean valid){
-        if(!valid && state.rules.placeRangeCheck){
+        if(!valid && world.state.rules.placeRangeCheck){
             var blocker = Build.getEnemyOverlap(block, player.team(), cursorX, cursorY);
             if(blocker != null && blocker.wasVisible){
                 Drawf.selected(blocker, Pal.remove);
@@ -2080,7 +2080,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
     }
 
     boolean canRepairDerelict(Tile tile){
-        return tile != null && tile.build != null && !player.dead() && !state.rules.editor && player.team() != Team.derelict && tile.build.team == Team.derelict && tile.build.block.unlockedNowHost() &&
+        return tile != null && tile.build != null && !player.dead() && !world.state.rules.editor && player.team() != Team.derelict && tile.build.team == Team.derelict && tile.build.block.unlockedNowHost() &&
             Build.validPlace(tile.block(), player.team(), tile.build.tileX(), tile.build.tileY(), tile.build.rotation);
     }
 
@@ -2302,7 +2302,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
 
             if(build.allowDeposit() && canDepositItem(build)){
                 Call.transferInventory(player, build);
-                itemDepositCooldown = state.rules.itemDepositCooldown;
+                itemDepositCooldown = world.state.rules.itemDepositCooldown;
             }
         }else{
             Call.dropItem(player.angleTo(x, y));
@@ -2312,7 +2312,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
     public boolean canDepositItem(Building build){
         //takes advantage of itemDepositCooldown being able to be negative, allows the cooldown to be different for each building
         if(build.block.depositCooldown >= 0){
-            return itemDepositCooldown - state.rules.itemDepositCooldown <= -build.block.depositCooldown;
+            return itemDepositCooldown - world.state.rules.itemDepositCooldown <= -build.block.depositCooldown;
         }
         return itemDepositCooldown <= 0;
     }

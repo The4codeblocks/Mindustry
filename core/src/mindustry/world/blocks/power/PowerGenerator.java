@@ -109,7 +109,7 @@ public class PowerGenerator extends PowerDistributor{
         public void onDestroyed(){
             super.onDestroyed();
 
-            if(state.rules.reactorExplosions){
+            if(world.state.rules.reactorExplosions){
                 createExplosion();
             }
         }

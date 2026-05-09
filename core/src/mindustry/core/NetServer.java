@@ -55,10 +55,10 @@ public class NetServer implements ApplicationListener{
     public Administration admins = new Administration();
     public CommandHandler clientCommands = new CommandHandler("/");
     public TeamAssigner assigner = (player, players) -> {
-        if(state.rules.pvp){
+        if(world.state.rules.pvp){
             //find team with minimum amount of players and auto-assign player to that.
             TeamData re = state.teams.getActive().min(data -> {
-                if((state.rules.waveTeam == data.team && state.rules.waves) || !data.hasCore() || data.team == Team.derelict || !data.team.rules().protectCores) return Integer.MAX_VALUE;
+                if((world.state.rules.waveTeam == data.team && world.state.rules.waves) || !data.hasCore() || data.team == Team.derelict || !data.team.rules().protectCores) return Integer.MAX_VALUE;
 
                 int count = 0;
                 for(Player other : players){
@@ -71,7 +71,7 @@ public class NetServer implements ApplicationListener{
             return re == null ? null : re.team;
         }
 
-        return state.rules.defaultTeam;
+        return world.state.rules.defaultTeam;
     };
     /** Converts a message + NULLABLE player sender into a single string. Override for custom prefixes/suffixes. */
     public ChatFormatter chatFormatter = (player, message) -> player == null ? message : "[coral][[" + player.coloredName() + "[coral]]:[white] " + message;
@@ -922,7 +922,7 @@ public class NetServer implements ApplicationListener{
     }
 
     public boolean isWaitingForPlayers(){
-        if(state.rules.pvp && !state.gameOver){
+        if(world.state.rules.pvp && !state.gameOver){
             int used = 0;
             for(TeamData t : state.teams.getActive()){
                 if(Groups.player.count(p -> p.team() == t.team) > 0){
@@ -947,7 +947,7 @@ public class NetServer implements ApplicationListener{
         }
 
         if(state.isGame() && net.server()){
-            if(state.rules.pvp && state.rules.pvpAutoPause){
+            if(world.state.rules.pvp && world.state.rules.pvpAutoPause){
                 boolean waiting = isWaitingForPlayers(), paused = state.isPaused();
                 if(waiting != paused){
                     if(waiting){

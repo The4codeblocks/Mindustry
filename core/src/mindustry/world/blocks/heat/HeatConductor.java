@@ -82,9 +82,9 @@ public class HeatConductor extends Block{
         }
 
         public void updateHeat(){
-            if(lastHeatUpdate == Vars.state.updateId) return;
+            if(lastHeatUpdate == Vars.world.state.updateId) return;
 
-            lastHeatUpdate = Vars.state.updateId;
+            lastHeatUpdate = Vars.world.state.updateId;
             heat = calculateHeat(sideHeat, cameFrom);
         }
 

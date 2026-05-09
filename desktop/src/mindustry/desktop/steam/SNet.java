@@ -210,9 +210,9 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback, 
 
     void updateWave(){
         if(currentLobby != null && net.server()){
-            smat.setLobbyData(currentLobby, "mapname", state.map.name());
-            smat.setLobbyData(currentLobby, "wave", state.wave + "");
-            smat.setLobbyData(currentLobby, "gamemode", state.rules.mode().name() + "");
+            smat.setLobbyData(currentLobby, "mapname", world.state.map.name());
+            smat.setLobbyData(currentLobby, "wave", world.state.wave + "");
+            smat.setLobbyData(currentLobby, "gamemode", world.state.rules.mode().name() + "");
         }
     }
 
@@ -382,11 +382,11 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback, 
             currentLobby = steamID;
 
             smat.setLobbyData(steamID, "name", player.name);
-            smat.setLobbyData(steamID, "mapname", state.map.name());
+            smat.setLobbyData(steamID, "mapname", world.state.map.name());
             smat.setLobbyData(steamID, "version", Version.build + "");
             smat.setLobbyData(steamID, "versionType", Version.type);
-            smat.setLobbyData(steamID, "wave", state.wave + "");
-            smat.setLobbyData(steamID, "gamemode", state.rules.mode().name() + "");
+            smat.setLobbyData(steamID, "wave", world.state.wave + "");
+            smat.setLobbyData(steamID, "gamemode", world.state.rules.mode().name() + "");
             updateBans(null);
         }
     }

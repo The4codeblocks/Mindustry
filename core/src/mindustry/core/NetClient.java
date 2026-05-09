@@ -375,7 +375,7 @@ public class NetClient implements ApplicationListener{
 
     @Remote(variants = Variant.both)
     public static void setRules(Rules rules){
-        state.rules = rules;
+        world.state.rules = rules;
     }
 
     @Remote(variants = Variant.both)
@@ -384,7 +384,7 @@ public class NetClient implements ApplicationListener{
             //readField searches for the specified value, so create a fake parent for it.
             tmpJsonMap.child = null;
             tmpJsonMap.addChild(rule, new JsonReader().parse(jsonData));
-            JsonIO.json.readField(state.rules, rule, tmpJsonMap);
+            JsonIO.json.readField(world.state.rules, rule, tmpJsonMap);
         }catch(Throwable error){
             Log.err("Failed to read rule", error);
         }
@@ -393,17 +393,17 @@ public class NetClient implements ApplicationListener{
     //NOTE: avoid using this, runs into packet/buffer size limitations
     @Remote(variants = Variant.both)
     public static void setObjectives(MapObjectives executor){
-        state.rules.objectives = executor;
+        world.state.rules.objectives = executor;
     }
 
     @Remote(variants = Variant.both, called = Loc.server)
     public static void clearObjectives(){
-        state.rules.objectives.clear();
+        world.state.rules.objectives.clear();
     }
 
     @Remote(variants = Variant.both, called = Loc.server)
     public static void completeObjective(int index){
-        var obj = state.rules.objectives.get(index);
+        var obj = world.state.rules.objectives.get(index);
         if(obj != null){
             obj.done();
         }

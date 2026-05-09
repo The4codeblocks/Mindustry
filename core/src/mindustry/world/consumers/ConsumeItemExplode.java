@@ -33,7 +33,7 @@ public class ConsumeItemExplode extends ConsumeItemFilter{
         var item = getConsumed(build);
 
         if(item != null){
-            if(Vars.state.rules.reactorExplosions && Mathf.chance(build.delta() * baseChance * Mathf.clamp(item.explosiveness - threshold))){
+            if(Vars.world.state.rules.reactorExplosions && Mathf.chance(build.delta() * baseChance * Mathf.clamp(item.explosiveness - threshold))){
                 build.damage(damage);
                 explodeEffect.at(build.x + Mathf.range(build.block.size * tilesize / 2f), build.y + Mathf.range(build.block.size * tilesize / 2f));
                 Events.fire(Trigger.blastGenerator);

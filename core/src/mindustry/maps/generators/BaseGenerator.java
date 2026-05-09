@@ -154,15 +154,15 @@ public class BaseGenerator{
 
         //clear path for ground units
         for(Tile tile : cores){
-            Astar.pathfind(tile, spawn, t -> t.team() == state.rules.waveTeam && !t.within(tile, coreDst) ? 100000 : t.floor().hasSurface() ? 1 : 10, t -> !t.block().isStatic()).each(t -> {
+            Astar.pathfind(tile, spawn, t -> t.team() == world.state.rules.waveTeam && !t.within(tile, coreDst) ? 100000 : t.floor().hasSurface() ? 1 : 10, t -> !t.block().isStatic()).each(t -> {
                 if(!t.within(tile, coreDst)){
-                    if(t.team() == state.rules.waveTeam){
+                    if(t.team() == world.state.rules.waveTeam){
                         t.setBlock(Blocks.air);
                     }
 
                     for(Point2 p : Geometry.d8){
                         Tile other = t.nearby(p);
-                        if(other != null && other.team() == state.rules.waveTeam){
+                        if(other != null && other.team() == world.state.rules.waveTeam){
                             other.setBlock(Blocks.air);
                         }
                     }
@@ -175,7 +175,7 @@ public class BaseGenerator{
         if(tiles == null) return;
 
         for(Tile tile : tiles){
-            if(tile.isCenter() && tile.team() == state.rules.waveTeam){
+            if(tile.isCenter() && tile.team() == world.state.rules.waveTeam){
                 if(tile.block() instanceof PowerNode){
                     tile.build.configureAny(new Point2[0]);
                     tile.build.placed();
@@ -281,7 +281,7 @@ public class BaseGenerator{
     }
 
     static boolean isTaken(Block block, int x, int y){
-        if(state.teams.anyEnemyCoresWithin(state.rules.waveTeam, x * tilesize + block.offset, y * tilesize + block.offset, state.rules.enemyCoreBuildRadius + tilesize)) return true;
+        if(state.teams.anyEnemyCoresWithin(world.state.rules.waveTeam, x * tilesize + block.offset, y * tilesize + block.offset, world.state.rules.enemyCoreBuildRadius + tilesize)) return true;
 
         int offsetx = -(block.size - 1) / 2;
         int offsety = -(block.size - 1) / 2;

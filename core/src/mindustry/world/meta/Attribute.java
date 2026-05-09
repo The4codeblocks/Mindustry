@@ -29,8 +29,8 @@ public class Attribute{
 
     /** @return the environmental value for this attribute. */
     public float env(){
-        if(Vars.state == null) return 0;
-        return Vars.state.envAttrs.get(this);
+        if(Vars.world.state == null) return 0;
+        return Vars.world.state.envAttrs.get(this);
     }
 
     Attribute(int id, String name){

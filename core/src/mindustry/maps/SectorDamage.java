@@ -23,13 +23,13 @@ public class SectorDamage{
 
         //phase one: find all spawnpoints
         for(Tile tile : tiles){
-            if((tile.block() instanceof CoreBlock && tile.team() == state.rules.waveTeam) || tile.overlay() == Blocks.spawn){
+            if((tile.block() instanceof CoreBlock && tile.team() == world.state.rules.waveTeam) || tile.overlay() == Blocks.spawn){
                 frontier.add(tile);
                 values[tile.x][tile.y] = fraction * 24;
             }
         }
 
-        Building core = state.rules.defaultTeam.core();
+        Building core = world.state.rules.defaultTeam.core();
         if(core != null && !frontier.isEmpty()){
             for(Tile spawner : frontier){
                 //find path from spawn to core
@@ -47,7 +47,7 @@ public class SectorDamage{
                             if(wx >= 0 && wy >= 0 && wx < world.width() && wy < world.height() && Mathf.within(dx, dy, radius)){
                                 Tile other = world.rawTile(wx, wy);
                                 if(!(other.block() instanceof CoreBlock)){
-                                    s += other.team() == state.rules.defaultTeam ? other.build.health / (other.block().size * other.block().size) : 0f;
+                                    s += other.team() == world.state.rules.defaultTeam ? other.build.health / (other.block().size * other.block().size) : 0f;
                                 }
                             }
                         }
@@ -68,7 +68,7 @@ public class SectorDamage{
                                 Tile other = world.rawTile(wx, wy);
 
                                 //just remove all the buildings in the way - as long as they're not cores
-                                if(other.build != null && other.team() == state.rules.defaultTeam && !(other.block() instanceof CoreBlock)){
+                                if(other.build != null && other.team() == world.state.rules.defaultTeam && !(other.block() instanceof CoreBlock)){
                                     if(rubble && !other.floor().solid && !other.floor().isLiquid && Mathf.chance(0.4)){
                                         Effect.rubble(other.build.x, other.build.y, other.block().size);
                                     }
@@ -98,7 +98,7 @@ public class SectorDamage{
 
         //kill every core if damage is maximum
         if(fraction >= 1){
-            for(Building c : state.rules.defaultTeam.cores().copy()){
+            for(Building c : world.state.rules.defaultTeam.cores().copy()){
                 c.tile.remove();
             }
         }
@@ -122,7 +122,7 @@ public class SectorDamage{
                         float resultDamage = currDamage;
 
                         //damage the tile if it's the player team (derelict blocks get ignored)
-                        if(other.build != null && other.team() == state.rules.defaultTeam){
+                        if(other.build != null && other.team() == world.state.rules.defaultTeam){
                             resultDamage -= other.build.health();
 
                             other.build.health -= currDamage;

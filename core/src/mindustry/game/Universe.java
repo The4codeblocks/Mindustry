@@ -91,8 +91,8 @@ public class Universe{
             float alpha = Mathf.clamp(Mathf.map(light, planet.lightSrcFrom, planet.lightSrcTo, planet.lightDstFrom, planet.lightDstTo));
 
             //assign and map so darkness is not 100% dark
-            state.rules.ambientLight.a = 1f - alpha;
-            state.rules.lighting = !Mathf.equal(alpha, 1f);
+            world.state.rules.ambientLight.a = 1f - alpha;
+            world.state.rules.lighting = !Mathf.equal(alpha, 1f);
         }
     }
 
@@ -127,7 +127,7 @@ public class Universe{
     }
 
     public Schematic getLastLoadout(){
-        if(lastLoadout == null) lastLoadout = state.rules.sector == null || state.rules.sector.planet.generator == null ? Loadouts.basicShard : state.rules.sector.planet.generator.defaultLoadout;
+        if(lastLoadout == null) lastLoadout = world.state.rules.sector == null || world.state.rules.sector.planet.generator == null ? Loadouts.basicShard : world.state.rules.sector.planet.generator.defaultLoadout;
         return lastLoadout;
     }
 
@@ -238,13 +238,13 @@ public class Universe{
 
                                 //assign invasion-related things
                                 if(sector.isBeingPlayed()){
-                                    state.rules.winWave = waveMax;
-                                    state.rules.waves = true;
-                                    state.rules.attackMode = false;
-                                    planet.campaignRules.apply(planet, state.rules); //enabling waves may force changes in campaign rules
+                                    world.state.rules.winWave = waveMax;
+                                    world.state.rules.waves = true;
+                                    world.state.rules.attackMode = false;
+                                    planet.campaignRules.apply(planet, world.state.rules); //enabling waves may force changes in campaign rules
                                     //update rules in multiplayer
                                     if(net.server()){
-                                        Call.setRules(state.rules);
+                                        Call.setRules(world.state.rules);
                                     }
                                 }else{
                                     sector.info.winWave = waveMax;

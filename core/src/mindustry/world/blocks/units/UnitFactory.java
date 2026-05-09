@@ -104,7 +104,7 @@ public class UnitFactory extends UnitBlock{
             }
         }
 
-        consumeBuilder.each(c -> c.multiplier = b -> state.rules.unitCost(b.team));
+        consumeBuilder.each(c -> c.multiplier = b -> world.state.rules.unitCost(b.team));
     }
 
     @Override
@@ -261,7 +261,7 @@ public class UnitFactory extends UnitBlock{
         @Override
         public double sense(LAccess sensor){
             if(sensor == LAccess.progress) return Mathf.clamp(fraction());
-            if(sensor == LAccess.itemCapacity) return Mathf.round(itemCapacity * state.rules.unitCost(team));
+            if(sensor == LAccess.itemCapacity) return Mathf.round(itemCapacity * world.state.rules.unitCost(team));
             return super.sense(sensor);
         }
 
@@ -391,8 +391,8 @@ public class UnitFactory extends UnitBlock{
             }
 
             if(efficiency > 0 && currentPlan != -1){
-                time += edelta() * speedScl * Vars.state.rules.unitBuildSpeed(team);
-                progress += edelta() * Vars.state.rules.unitBuildSpeed(team);
+                time += edelta() * speedScl * Vars.world.state.rules.unitBuildSpeed(team);
+                progress += edelta() * Vars.world.state.rules.unitBuildSpeed(team);
                 speedScl = Mathf.lerpDelta(speedScl, 1f, 0.05f);
             }else{
                 speedScl = Mathf.lerpDelta(speedScl, 0f, 0.05f);
@@ -448,7 +448,7 @@ public class UnitFactory extends UnitBlock{
 
         @Override
         public int getMaximumAccepted(Item item){
-            return Mathf.round(capacities[item.id] * state.rules.unitCost(team));
+            return Mathf.round(capacities[item.id] * world.state.rules.unitCost(team));
         }
 
         @Override

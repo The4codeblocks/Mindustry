@@ -174,7 +174,7 @@ public class LExecutor{
 
         @Override
         public void run(LExecutor exec){
-            if(!exec.privileged && !state.rules.logicUnitControl) return;
+            if(!exec.privileged && !world.state.rules.logicUnitControl) return;
 
             if(exec.binds == null || exec.binds.length != content.units().size){
                 exec.binds = new int[content.units().size];
@@ -227,7 +227,7 @@ public class LExecutor{
 
         @Override
         public void run(LExecutor exec){
-            if(!exec.privileged && !state.rules.logicUnitControl) return;
+            if(!exec.privileged && !world.state.rules.logicUnitControl) return;
 
             Object unitObj = exec.unit.obj();
             LogicAI ai = UnitControlI.checkLogicAI(exec, unitObj);
@@ -339,7 +339,7 @@ public class LExecutor{
 
         @Override
         public void run(LExecutor exec){
-            if(!exec.privileged && !state.rules.logicUnitControl) return;
+            if(!exec.privileged && !world.state.rules.logicUnitControl) return;
 
             Object unitObj = exec.unit.obj();
             LogicAI ai = checkLogicAI(exec, unitObj);
@@ -440,7 +440,7 @@ public class LExecutor{
                         }
                     }
                     case build -> {
-                        if((state.rules.logicUnitBuild || exec.privileged) && unit.canBuild() && p3.obj() instanceof Block block && block.canBeBuilt() && (block.unlockedNow() || unit.team.isAI())){
+                        if((world.state.rules.logicUnitBuild || exec.privileged) && unit.canBuild() && p3.obj() instanceof Block block && block.canBeBuilt() && (block.unlockedNow() || unit.team.isAI())){
                             int x = World.toTile(x1 - block.offset/tilesize), y = World.toTile(y1 - block.offset/tilesize);
                             int rot = Mathf.mod(p4.numi(), 4);
 
@@ -465,7 +465,7 @@ public class LExecutor{
                         }
                     }
                     case deconstruct -> {
-                        if((state.rules.logicUnitDeconstruct || exec.privileged) && unit.canBuild()){
+                        if((world.state.rules.logicUnitDeconstruct || exec.privileged) && unit.canBuild()){
                             //reset state of last request when necessary
                             if(ai.plan.x != World.toTile(x1) || ai.plan.y != World.toTile(y1) || !ai.plan.breaking || unit.plans.isEmpty()){
                                 ai.plan.progress = 0;
@@ -1757,43 +1757,43 @@ public class LExecutor{
         @Override
         public void run(LExecutor exec){
             switch(rule){
-                case waveTimer -> state.rules.waveTimer = value.bool();
+                case waveTimer -> world.state.rules.waveTimer = value.bool();
                 case wave -> state.wave = Math.max(value.numi(), 1);
                 case currentWaveTime -> state.wavetime = Math.max(value.numf() * 60f, 0f);
-                case waves -> state.rules.waves = value.bool();
-                case waveSending -> state.rules.waveSending = value.bool();
-                case attackMode -> state.rules.attackMode = value.bool();
-                case waveSpacing -> state.rules.waveSpacing = value.numf() * 60f;
-                case enemyCoreBuildRadius -> state.rules.enemyCoreBuildRadius = value.numf() * 8f;
-                case dropZoneRadius -> state.rules.dropZoneRadius = value.numf() * 8f;
-                case unitCap -> state.rules.unitCap = Math.max(value.numi(), 0);
-                case lighting -> state.rules.lighting = value.bool();
-                case canGameOver -> state.rules.canGameOver = value.bool();
-                case pauseDisabled -> state.rules.pauseDisabled = value.bool();
+                case waves -> world.state.rules.waves = value.bool();
+                case waveSending -> world.state.rules.waveSending = value.bool();
+                case attackMode -> world.state.rules.attackMode = value.bool();
+                case waveSpacing -> world.state.rules.waveSpacing = value.numf() * 60f;
+                case enemyCoreBuildRadius -> world.state.rules.enemyCoreBuildRadius = value.numf() * 8f;
+                case dropZoneRadius -> world.state.rules.dropZoneRadius = value.numf() * 8f;
+                case unitCap -> world.state.rules.unitCap = Math.max(value.numi(), 0);
+                case lighting -> world.state.rules.lighting = value.bool();
+                case canGameOver -> world.state.rules.canGameOver = value.bool();
+                case pauseDisabled -> world.state.rules.pauseDisabled = value.bool();
                 case mapArea -> {
                     int x = p1.numi(), y = p2.numi(), w = p3.numi(), h = p4.numi();
                     if(!checkMapArea(x, y, w, h, false)){
                         Call.setMapArea(x, y, w, h);
                     }
                 }
-                case ambientLight -> state.rules.ambientLight.fromDouble(value.num());
-                case solarMultiplier -> state.rules.solarMultiplier = Math.max(value.numf(), 0f);
-                case dragMultiplier -> state.rules.dragMultiplier = Math.max(value.numf(), 0f);
+                case ambientLight -> world.state.rules.ambientLight.fromDouble(value.num());
+                case solarMultiplier -> world.state.rules.solarMultiplier = Math.max(value.numf(), 0f);
+                case dragMultiplier -> world.state.rules.dragMultiplier = Math.max(value.numf(), 0f);
                 case ban -> {
                     Object cont = value.obj();
                     if(cont instanceof Block b){
                         // Rebuild PlacementFragment if anything has changed
-                        if(state.rules.bannedBlocks.add(b) && !headless) ui.hudfrag.blockfrag.rebuild();
+                        if(world.state.rules.bannedBlocks.add(b) && !headless) ui.hudfrag.blockfrag.rebuild();
                     }else if(cont instanceof UnitType u){
-                        state.rules.bannedUnits.add(u);
+                        world.state.rules.bannedUnits.add(u);
                     }
                 }
                 case unban -> {
                     Object cont = value.obj();
                     if(cont instanceof Block b){
-                        if(state.rules.bannedBlocks.remove(b) && !headless) ui.hudfrag.blockfrag.rebuild();
+                        if(world.state.rules.bannedBlocks.remove(b) && !headless) ui.hudfrag.blockfrag.rebuild();
                     }else if(cont instanceof UnitType u){
-                        state.rules.bannedUnits.remove(u);
+                        world.state.rules.bannedUnits.remove(u);
                     }
                 }
                 case unitHealth, unitBuildSpeed, unitMineSpeed, unitCost, unitDamage, blockHealth, blockDamage, buildSpeed, rtsMinSquad, rtsMinWeight -> {
@@ -1826,14 +1826,14 @@ public class LExecutor{
         h = Math.min(world.height(), h);
         boolean full = x == 0 && y == 0 && w == world.width() && h == world.height();
 
-        if(state.rules.limitMapArea){
-            if(state.rules.limitX == x && state.rules.limitY == y && state.rules.limitWidth == w && state.rules.limitHeight == h){
+        if(world.state.rules.limitMapArea){
+            if(world.state.rules.limitX == x && world.state.rules.limitY == y && world.state.rules.limitWidth == w && world.state.rules.limitHeight == h){
                 return true;
             }else if(full){
                 //disable the rule, covers the whole map
                 if(set){
-                    int prevX = state.rules.limitX, prevY = state.rules.limitY, prevW = state.rules.limitWidth, prevH = state.rules.limitHeight;
-                    state.rules.limitMapArea = false;
+                    int prevX = world.state.rules.limitX, prevY = world.state.rules.limitY, prevW = world.state.rules.limitWidth, prevH = world.state.rules.limitHeight;
+                    world.state.rules.limitMapArea = false;
                     if(!headless){
                         renderer.updateAllDarkness();
                     }
@@ -1846,19 +1846,19 @@ public class LExecutor{
         }
 
         if(set){
-            int prevX = state.rules.limitX, prevY = state.rules.limitY, prevW = state.rules.limitWidth, prevH = state.rules.limitHeight;
-            if(!state.rules.limitMapArea){
+            int prevX = world.state.rules.limitX, prevY = world.state.rules.limitY, prevW = world.state.rules.limitWidth, prevH = world.state.rules.limitHeight;
+            if(!world.state.rules.limitMapArea){
                 //it was never on in the first place, so the old bounds don't apply
                 prevW = 0;
                 prevH = 0;
                 prevX = -1;
                 prevY = -1;
             }
-            state.rules.limitMapArea = true;
-            state.rules.limitX = x;
-            state.rules.limitY = y;
-            state.rules.limitWidth = w;
-            state.rules.limitHeight = h;
+            world.state.rules.limitMapArea = true;
+            world.state.rules.limitX = x;
+            world.state.rules.limitY = y;
+            world.state.rules.limitWidth = w;
+            world.state.rules.limitHeight = h;
             world.checkMapArea(prevX, prevY, prevW, prevH);
 
             if(!headless){
@@ -1925,7 +1925,7 @@ public class LExecutor{
                 case announce -> ui.announce(text, duration.numf());
                 case toast -> ui.showInfoToast(text, duration.numf());
                 //TODO desync?
-                case mission -> state.rules.mission = text;
+                case mission -> world.state.rules.mission = text;
             }
 
             exec.textBuffer.setLength(0);
@@ -2100,7 +2100,7 @@ public class LExecutor{
         @Override
         public void run(LExecutor exec){
             if(flag.obj() instanceof String str){
-                result.setbool(state.rules.objectiveFlags.contains(str));
+                result.setbool(world.state.rules.objectiveFlags.contains(str));
             }else{
                 result.setobj(null);
             }
@@ -2110,9 +2110,9 @@ public class LExecutor{
     @Remote(called = Loc.server)
     public static void setFlag(String flag, boolean add){
         if(add){
-            state.rules.objectiveFlags.add(flag);
+            world.state.rules.objectiveFlags.add(flag);
         }else{
-            state.rules.objectiveFlags.remove(flag);
+            world.state.rules.objectiveFlags.remove(flag);
         }
     }
 
@@ -2130,7 +2130,7 @@ public class LExecutor{
         @Override
         public void run(LExecutor exec){
             //don't invoke unless the flag state actually changes
-            if(flag.obj() instanceof String str && state.rules.objectiveFlags.contains(str) != value.bool()){
+            if(flag.obj() instanceof String str && world.state.rules.objectiveFlags.contains(str) != value.bool()){
                 Call.setFlag(str, value.bool());
             }
         }
@@ -2163,7 +2163,7 @@ public class LExecutor{
                 spawnY = World.unconv(y.numf());
             int packed = Point2.pack(x.numi(), y.numi());
 
-            for(SpawnGroup group : state.rules.spawns){
+            for(SpawnGroup group : world.state.rules.spawns){
                 if(group.type == null || (group.spawn != -1 && group.spawn != packed)) continue;
 
                 int spawned = group.getSpawned(state.wave - 1);

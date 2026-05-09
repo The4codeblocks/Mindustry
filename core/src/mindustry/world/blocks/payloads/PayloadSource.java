@@ -87,11 +87,11 @@ public class PayloadSource extends PayloadBlock{
     }
 
     public boolean canProduce(Block b){
-        return b.isVisible() && b.size < size && !(b instanceof CoreBlock) && !state.rules.isBanned(b) && b.environmentBuildable();
+        return b.isVisible() && b.size < size && !(b instanceof CoreBlock) && !world.state.rules.isBanned(b) && b.environmentBuildable();
     }
 
     public boolean canProduce(UnitType t){
-        return !t.isHidden() && !t.isBanned() && t.supportsEnv(state.rules.env);
+        return !t.isHidden() && !t.isBanned() && t.supportsEnv(world.state.rules.env);
     }
 
     public class PayloadSourceBuild extends PayloadBlockBuild<Payload>{

@@ -25,8 +25,8 @@ public class FlyingAI extends AIController{
             }
         }
 
-        if(target == null && state.rules.waves && unit.team == state.rules.defaultTeam){
-            moveTo(getClosestSpawner(), state.rules.dropZoneRadius + 130f);
+        if(target == null && world.state.rules.waves && unit.team == world.state.rules.defaultTeam){
+            moveTo(getClosestSpawner(), world.state.rules.dropZoneRadius + 130f);
         }
     }
 
@@ -46,9 +46,9 @@ public class FlyingAI extends AIController{
             return core;
         }
 
-        if(state.rules.randomWaveAI){
+        if(world.state.rules.randomWaveAI){
             //when there are no waves, it's just random based on the unit
-            rand.setSeed(unit.type.id + (state.rules.waves ? state.wave : unit.id));
+            rand.setSeed(unit.type.id + (world.state.rules.waves ? state.wave : unit.id));
             //try a few random flags first
             for(int attempt = 0; attempt < 5; attempt++){
                 Teamc result = targetFlagActive(x, y, randomTargets[rand.random(randomTargets.length - 1)], true);

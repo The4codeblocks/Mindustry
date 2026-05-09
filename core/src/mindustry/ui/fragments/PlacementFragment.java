@@ -150,7 +150,7 @@ public class PlacementFragment{
                 }
             }
 
-            if(tryBlock == null && state.rules.editor){
+            if(tryBlock == null && world.state.rules.editor){
                 tryBlock =
                     tile.block() != Blocks.air ? tile.block() :
                     tile.overlay() != Blocks.air ? tile.overlay() :
@@ -161,7 +161,7 @@ public class PlacementFragment{
                 tryConfig = tryBlock.getConfig(tile);
             }
 
-            if(tryBlock != null && ((tryBlock.isVisible() && unlocked(tryBlock)) || state.rules.editor)){
+            if(tryBlock != null && ((tryBlock.isVisible() && unlocked(tryBlock)) || world.state.rules.editor)){
                 input.block = tryBlock;
                 tryBlock.lastConfig = tryConfig;
                 if(tryBlock.isVisible()){
@@ -312,7 +312,7 @@ public class PlacementFragment{
 
                         button.update(() -> { //color unplacable things gray
                             Building core = player.core();
-                            Color color = (state.rules.infiniteResources || (core != null && (core.items.has(block.requirements, state.rules.buildCostMultiplier) || state.rules.infiniteResources))) && player.isBuilder() ? Color.white : Color.gray;
+                            Color color = (world.state.rules.infiniteResources || (core != null && (core.items.has(block.requirements, world.state.rules.buildCostMultiplier) || world.state.rules.infiniteResources))) && player.isBuilder() ? Color.white : Color.gray;
                             button.forEach(elem -> elem.setColor(color));
                             button.setChecked(control.input.block == block);
 
@@ -406,8 +406,8 @@ public class PlacementFragment{
                                         line.add(stack.item.localizedName).maxWidth(140f).fillX().color(Color.lightGray).padLeft(2).left().get().setEllipsis(true);
                                         line.labelWrap(() -> {
                                             Building core = player.core();
-                                            int stackamount = Math.round(stack.amount * state.rules.buildCostMultiplier);
-                                            if(core == null || state.rules.infiniteResources) return "*/" + stackamount;
+                                            int stackamount = Math.round(stack.amount * world.state.rules.buildCostMultiplier);
+                                            if(core == null || world.state.rules.infiniteResources) return "*/" + stackamount;
 
                                             int amount = core.items.get(stack.item);
                                             String color = (amount < stackamount / 2f ? "[scarlet]" : amount < stackamount ? "[accent]" : "[white]");
@@ -419,11 +419,11 @@ public class PlacementFragment{
                                 }
                             }).growX().left().margin(3);
 
-                            if((!displayBlock.isPlaceable() || !player.isBuilder()) && !state.rules.editor){
+                            if((!displayBlock.isPlaceable() || !player.isBuilder()) && !world.state.rules.editor){
                                 topTable.row();
                                 topTable.table(b -> {
                                     b.image(Icon.cancel).padRight(2).color(Color.scarlet);
-                                    b.add(!player.isBuilder() ? "@unit.nobuild" : !displayBlock.supportsEnv(state.rules.env) ? "@unsupported.environment" : "@banned").width(190f).wrap();
+                                    b.add(!player.isBuilder() ? "@unit.nobuild" : !displayBlock.supportsEnv(world.state.rules.env) ? "@unsupported.environment" : "@banned").width(190f).wrap();
                                     b.left();
                                 }).padTop(2).left();
                             }
@@ -761,7 +761,7 @@ public class PlacementFragment{
 
     boolean unlocked(Block block){
         return block.unlockedNowHost() && block.placeablePlayer && block.environmentBuildable() &&
-            block.supportsEnv(state.rules.env);
+            block.supportsEnv(world.state.rules.env);
     }
 
     boolean hasInfoBox(){

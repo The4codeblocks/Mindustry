@@ -89,7 +89,7 @@ public class SerpuloPlanetGenerator extends PlanetGenerator{
     }
 
     public boolean allowNumberedLaunch(Sector s){
-        return s.hasBase() && !s.isAttacked() && (s.info.bestCoreType.size >= 4 || s.isBeingPlayed() && state.rules.defaultTeam.cores().contains(b -> b.block.size >= 4));
+        return s.hasBase() && !s.isAttacked() && (s.info.bestCoreType.size >= 4 || s.isBeingPlayed() && world.state.rules.defaultTeam.cores().contains(b -> b.block.size >= 4));
     }
 
     @Override
@@ -723,22 +723,22 @@ public class SerpuloPlanetGenerator extends PlanetGenerator{
         }
 
         if(sector.hasEnemyBase()){
-            basegen.generate(tiles, enemies.map(r -> tiles.getn(r.x, r.y)), tiles.get(spawn.x, spawn.y), state.rules.waveTeam, sector, difficulty);
+            basegen.generate(tiles, enemies.map(r -> tiles.getn(r.x, r.y)), tiles.get(spawn.x, spawn.y), world.state.rules.waveTeam, sector, difficulty);
 
-            state.rules.attackMode = sector.info.attack = true;
+            world.state.rules.attackMode = sector.info.attack = true;
         }else{
-            state.rules.winWave = sector.info.winWave = 10 + 5 * (int)Math.max(difficulty * 10, 1);
+            world.state.rules.winWave = sector.info.winWave = 10 + 5 * (int)Math.max(difficulty * 10, 1);
         }
 
         float waveTimeDec = 0.4f;
 
-        state.rules.waveSpacing = Mathf.lerp(60 * 65 * 2, 60f * 60f * 1f, Math.max(difficulty - waveTimeDec, 0f));
-        state.rules.waves = true;
-        state.rules.env = sector.planet.defaultEnv;
-        state.rules.enemyCoreBuildRadius = 600f;
+        world.state.rules.waveSpacing = Mathf.lerp(60 * 65 * 2, 60f * 60f * 1f, Math.max(difficulty - waveTimeDec, 0f));
+        world.state.rules.waves = true;
+        world.state.rules.env = sector.planet.defaultEnv;
+        world.state.rules.enemyCoreBuildRadius = 600f;
 
         //spawn air only when spawn is blocked
-        state.rules.spawns = Waves.generate(difficulty, new Rand(sector.id), state.rules.attackMode, state.rules.attackMode && spawner.countGroundSpawns() == 0, naval);
+        world.state.rules.spawns = Waves.generate(difficulty, new Rand(sector.id), world.state.rules.attackMode, world.state.rules.attackMode && spawner.countGroundSpawns() == 0, naval);
     }
 
     @Override
@@ -748,7 +748,7 @@ public class SerpuloPlanetGenerator extends PlanetGenerator{
 
             //spawn air enemies
             if(spawner.countGroundSpawns() == 0){
-                state.rules.spawns = Waves.generate(sector.threat, new Rand(sector.id), state.rules.attackMode, true, false);
+                world.state.rules.spawns = Waves.generate(sector.threat, new Rand(sector.id), world.state.rules.attackMode, true, false);
             }
         }
     }

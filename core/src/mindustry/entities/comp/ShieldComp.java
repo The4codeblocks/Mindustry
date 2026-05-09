@@ -27,7 +27,7 @@ abstract class ShieldComp implements Healthc, Posc{
     @Override
     public void damage(float amount){
         //apply armor and scaling effects
-        rawDamage(Damage.applyArmor(amount, armorOverride >= 0f ? armorOverride : armor) / healthMultiplier / Vars.state.rules.unitHealth(team));
+        rawDamage(Damage.applyArmor(amount, armorOverride >= 0f ? armorOverride : armor) / healthMultiplier / Vars.world.state.rules.unitHealth(team));
     }
 
     @Replace
@@ -35,7 +35,7 @@ abstract class ShieldComp implements Healthc, Posc{
     public void damagePierce(float amount, boolean withEffect){
         float pre = hitTime;
 
-        rawDamage(amount / healthMultiplier / Vars.state.rules.unitHealth(team));
+        rawDamage(amount / healthMultiplier / Vars.world.state.rules.unitHealth(team));
 
         if(!withEffect){
             hitTime = pre;
@@ -47,7 +47,7 @@ abstract class ShieldComp implements Healthc, Posc{
     public void damageArmorMult(float amount, float armorMult, boolean withEffect){
         float pre = hitTime;
 
-        rawDamage(Damage.applyArmor(amount, armorOverride >= 0f ? armorOverride * armorMult : armor * armorMult) / healthMultiplier / Vars.state.rules.unitHealth(team));
+        rawDamage(Damage.applyArmor(amount, armorOverride >= 0f ? armorOverride * armorMult : armor * armorMult) / healthMultiplier / Vars.world.state.rules.unitHealth(team));
 
         if(!withEffect){
             hitTime = pre;

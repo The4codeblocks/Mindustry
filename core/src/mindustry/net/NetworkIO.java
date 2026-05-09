@@ -27,17 +27,17 @@ public class NetworkIO{
         try(DataOutputStream stream = new DataOutputStream(os)){
             //write all researched content to rules if hosting
             if(state.isCampaign()){
-                state.rules.researched.clear();
+                world.state.rules.researched.clear();
                 for(ContentType type : ContentType.all){
                     for(Content c : content.getBy(type)){
                         if(c instanceof UnlockableContent u && u.unlocked() && u.techNode != null){
-                            state.rules.researched.add(u);
+                            world.state.rules.researched.add(u);
                         }
                     }
                 }
             }
 
-            stream.writeUTF(JsonIO.write(state.rules));
+            stream.writeUTF(JsonIO.write(world.state.rules));
             stream.writeUTF(JsonIO.write(state.mapLocales));
             SaveIO.getSaveWriter().writeStringMap(stream, state.map.tags);
 
@@ -65,7 +65,7 @@ public class NetworkIO{
 
         try(DataInputStream stream = new DataInputStream(is)){
             Time.clear();
-            state.rules = JsonIO.read(Rules.class, stream.readUTF());
+            world.state.rules = JsonIO.read(Rules.class, stream.readUTF());
             state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
             state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
 
@@ -112,11 +112,11 @@ public class NetworkIO{
         buffer.putInt(Version.build);
         writeString(buffer, Version.type);
 
-        buffer.put((byte)state.rules.mode().ordinal());
+        buffer.put((byte)world.state.rules.mode().ordinal());
         buffer.putInt(netServer.admins.getPlayerLimit());
 
         writeString(buffer, description, 100);
-        writeString(buffer, state.rules.modeName == null ? "" : state.rules.modeName, 50);
+        writeString(buffer, world.state.rules.modeName == null ? "" : world.state.rules.modeName, 50);
         buffer.putShort((short)Core.settings.getInt("port", port));
         return buffer;
     }

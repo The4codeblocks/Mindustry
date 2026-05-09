@@ -506,19 +506,19 @@ public class DesktopLauncher extends ClientLauncher{
         if(!useDiscord && !steam) return;
 
         //common elements they each share
-        boolean inGame = state.isGame();
+        boolean inGame = world.state.isGame();
         String gameMapWithWave = "Unknown Map";
         String gameMode = "";
         String gamePlayersSuffix = "";
         String uiState = "";
 
         if(inGame){
-            gameMapWithWave = Strings.capitalize(Strings.stripColors(state.map.name()));
+            gameMapWithWave = Strings.capitalize(Strings.stripColors(world.state.map.name()));
 
-            if(state.rules.waves){
-                gameMapWithWave += " | Wave " + state.wave;
+            if(world.state.rules.waves){
+                gameMapWithWave += " | Wave " + world.state.wave;
             }
-            gameMode = state.rules.pvp ? "PvP" : state.rules.attackMode ? "Attack" : state.rules.infiniteResources ? "Sandbox" : "Survival";
+            gameMode = world.state.rules.pvp ? "PvP" : world.state.rules.attackMode ? "Attack" : world.state.rules.infiniteResources ? "Sandbox" : "Survival";
             if(net.active() && Groups.player.size() > 1){
                 gamePlayersSuffix = " | " + Groups.player.size() + " Players";
             }
@@ -538,8 +538,8 @@ public class DesktopLauncher extends ClientLauncher{
             if(inGame){
                 presence.state = gameMode + gamePlayersSuffix;
                 presence.details = gameMapWithWave;
-                if(state.rules.waves){
-                    presence.largeImageText = "Wave " + state.wave;
+                if(world.state.rules.waves){
+                    presence.largeImageText = "Wave " + world.state.wave;
                 }
             }else{
                 presence.state = uiState;

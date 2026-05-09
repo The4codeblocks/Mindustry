@@ -95,7 +95,7 @@ public class ShockwaveTower extends Block{
                         hitEffect.at(target.x, target.y, waveColor);
                     }
 
-                    if(team == state.rules.defaultTeam){
+                    if(team == world.state.rules.defaultTeam){
                         Events.fire(Trigger.shockwaveTowerUse);
                     }
                 }

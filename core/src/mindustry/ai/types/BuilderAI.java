@@ -128,7 +128,7 @@ public class BuilderAI extends AIController{
                     //move toward the plan
                     moveTo(req.tile(), range, 20f);
                     moving = !unit.within(req.tile(), range);
-                }else if(!unit.within(req, unit.type.buildRange - tilesize) && !state.rules.infiniteResources){
+                }else if(!unit.within(req, unit.type.buildRange - tilesize) && !world.state.rules.infiniteResources){
                     //discard the plan, it's too far away to reach while holding position. try the next one
                     unit.plans.removeFirst();
                     lastPlan = null;
@@ -194,7 +194,7 @@ public class BuilderAI extends AIController{
                     //essentially build turret behavior (find first plan in range)
                     for(int i = 0; i < blocks.size; i++){
                         var block = blocks.get(i);
-                        if(state.rules.infiniteResources || unit.within(block.x * tilesize, block.y * tilesize, unit.type.buildRange)){
+                        if(world.state.rules.infiniteResources || unit.within(block.x * tilesize, block.y * tilesize, unit.type.buildRange)){
                             var btype = block.block;
 
                             if(Build.validPlace(btype, unit.team(), block.x, block.y, block.rotation)){
@@ -250,7 +250,7 @@ public class BuilderAI extends AIController{
         if(unit.team.isAI() && unit.team.rules().prebuildAi){
             return true;
         }
-        return state.rules.waves && unit.team == state.rules.waveTeam && !unit.team.rules().rtsAi;
+        return world.state.rules.waves && unit.team == world.state.rules.waveTeam && !unit.team.rules().rtsAi;
     }
 
     @Override

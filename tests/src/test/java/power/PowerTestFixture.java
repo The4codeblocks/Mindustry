@@ -33,7 +33,7 @@ public class PowerTestFixture{
         if(make){
             Vars.content = new ContentLoader();
         }
-        Vars.state = new GameState();
+        Vars.world.state = new GameState();
         Vars.tree = new FileTree();
         if(make){
             content.createBaseContent();

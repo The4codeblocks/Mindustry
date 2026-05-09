@@ -86,7 +86,7 @@ public class ShieldArcAbility extends Ability{
                 paramField.pushEffect.at(unit.x, unit.y,paramUnit.team.color);
 
                 // consider missile hp and gamerule to damage the shield
-                paramField.data -= unit.health() * paramField.missileUnitMultiplier * Vars.state.rules.unitDamage(unit.team);
+                paramField.data -= unit.health() * paramField.missileUnitMultiplier * Vars.world.state.rules.unitDamage(unit.team);
                 paramField.alpha = 1f;
 
             }else if(paramField.pushUnits && !(!unit.isFlying() && paramUnit.isFlying())){

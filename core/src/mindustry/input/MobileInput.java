@@ -98,7 +98,7 @@ public class MobileInput extends InputHandler implements GestureListener{
         }else{
             Building tile = world.buildWorld(x, y);
 
-            if((tile != null && (player.team() != tile.team && (tile.team != Team.derelict || state.rules.coreCapture)) && player.unit().type.canAttack) || (tile != null && player.unit().type.canHeal && tile.team == player.team() && tile.damaged())){
+            if((tile != null && (player.team() != tile.team && (tile.team != Team.derelict || world.state.rules.coreCapture)) && player.unit().type.canAttack) || (tile != null && player.unit().type.canHeal && tile.team == player.team() && tile.damaged())){
                 player.unit().mineTile = null;
                 target = tile;
             }
@@ -715,10 +715,10 @@ public class MobileInput extends InputHandler implements GestureListener{
                 payloadTarget = null;
 
                 //control a unit/block detected on first tap of double-tap
-                if(unitTapped != null && state.rules.possessionAllowed && unitTapped.isAI() && unitTapped.team == player.team() && !unitTapped.dead && unitTapped.playerControllable()){
+                if(unitTapped != null && world.state.rules.possessionAllowed && unitTapped.isAI() && unitTapped.team == player.team() && !unitTapped.dead && unitTapped.playerControllable()){
                     Call.unitControl(player, unitTapped);
                     recentRespawnTimer = 1f;
-                }else if(buildingTapped != null && state.rules.possessionAllowed){
+                }else if(buildingTapped != null && world.state.rules.possessionAllowed){
                     Call.buildingControlSelect(player, buildingTapped);
                     recentRespawnTimer = 1f;
                 }else if(!checkConfigTap() && !tryBeginMine(cursor)){

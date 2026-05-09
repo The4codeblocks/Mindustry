@@ -612,7 +612,7 @@ public class UnitType extends UnlockableContent implements Senseable{
     }
 
     public Unit spawn(float x, float y){
-        return spawn(state.rules.defaultTeam, x, y);
+        return spawn(world.state.rules.defaultTeam, x, y);
     }
 
     public Unit spawn(Team team, Position pos){
@@ -620,7 +620,7 @@ public class UnitType extends UnlockableContent implements Senseable{
     }
 
     public Unit spawn(Position pos){
-        return spawn(state.rules.defaultTeam, pos);
+        return spawn(world.state.rules.defaultTeam, pos);
     }
 
     public Unit spawn(Position pos, Team team){
@@ -756,7 +756,7 @@ public class UnitType extends UnlockableContent implements Senseable{
 
     @Override
     public boolean isBanned(){
-        return state.rules.isBanned(this);
+        return world.state.rules.isBanned(this);
     }
 
     @Override

@@ -164,29 +164,29 @@ public class SectorInfo{
     /** Write contents of meta into main storage. */
     public void write(){
         //enable attack mode when there's a core.
-        if(state.rules.waveTeam.core() != null){
+        if(world.state.rules.waveTeam.core() != null){
             attack = true;
-            if(!state.rules.sector.planet.allowWaves){
+            if(!world.state.rules.sector.planet.allowWaves){
                 winWave = 0;
             }
         }
 
         //if there are infinite waves and no win wave, add a win wave.
-        if(winWave <= 0 && !attack && state.rules.sector.planet.allowWaves){
+        if(winWave <= 0 && !attack && world.state.rules.sector.planet.allowWaves){
             winWave = 30;
         }
 
-        if(state.rules.sector != null && state.rules.sector.preset != null && state.rules.sector.preset.captureWave > 0 && !state.rules.sector.planet.allowWaves){
-            winWave = state.rules.sector.preset.captureWave;
+        if(world.state.rules.sector != null && world.state.rules.sector.preset != null && world.state.rules.sector.preset.captureWave > 0 && !world.state.rules.sector.planet.allowWaves){
+            winWave = world.state.rules.sector.preset.captureWave;
         }
 
         state.wave = wave;
-        state.rules.waves = waves;
-        state.rules.waveSpacing = waveSpacing;
-        state.rules.winWave = winWave;
-        state.rules.attackMode = attack;
+        world.state.rules.waves = waves;
+        world.state.rules.waveSpacing = waveSpacing;
+        world.state.rules.winWave = winWave;
+        world.state.rules.attackMode = attack;
 
-        CoreBuild entity = state.rules.defaultTeam.core();
+        CoreBuild entity = world.state.rules.defaultTeam.core();
         if(entity != null){
             entity.items.clear();
             entity.items.add(items);
@@ -200,7 +200,7 @@ public class SectorInfo{
         //update core items
         items.clear();
 
-        CoreBuild entity = state.rules.defaultTeam.core();
+        CoreBuild entity = world.state.rules.defaultTeam.core();
 
         if(entity != null){
             ItemModule items = entity.items;
@@ -214,13 +214,13 @@ public class SectorInfo{
             }
         }
 
-        waveSpacing = state.rules.waveSpacing;
+        waveSpacing = world.state.rules.waveSpacing;
         wave = state.wave;
-        winWave = state.rules.winWave;
-        waves = state.rules.waves;
-        attack = state.rules.attackMode;
+        winWave = world.state.rules.winWave;
+        waves = world.state.rules.waves;
+        attack = world.state.rules.attackMode;
         hasCore = entity != null;
-        bestCoreType = !hasCore ? Blocks.air : state.rules.defaultTeam.cores().max(e -> e.block.size).block;
+        bestCoreType = !hasCore ? Blocks.air : world.state.rules.defaultTeam.cores().max(e -> e.block.size).block;
         storageCapacity = entity != null ? entity.storageCapacity : 0;
         hasSpawns = spawner.countSpawns() > 0;
         lastPresetName = sector.preset == null ? null : sector.preset.name;
@@ -228,20 +228,20 @@ public class SectorInfo{
         lastHeight = world.height();
 
         lightCoverage = 0f;
-        for(var build : state.rules.defaultTeam.data().buildings){
+        for(var build : world.state.rules.defaultTeam.data().buildings){
             if(build.block.emitLight){
                 lightCoverage += build.block.lightRadius * build.efficiency;
             }
         }
 
-        lightCoverage += state.rules.defaultTeam.data().units.sumf(u -> u.type.lightRadius/2f);
+        lightCoverage += world.state.rules.defaultTeam.data().units.sumf(u -> u.type.lightRadius/2f);
 
         //cap production at raw production.
         production.each((item, stat) -> {
             stat.mean = Math.min(stat.mean, rawProduction.get(item, ExportStat::new).mean);
         });
 
-        var pads = indexer.getFlagged(state.rules.defaultTeam, BlockFlag.launchPad);
+        var pads = indexer.getFlagged(world.state.rules.defaultTeam, BlockFlag.launchPad);
 
         //disable export when launch pads are disabled, or there aren't any active ones
         if(pads.size == 0 || !pads.contains(t -> t.efficiency > 0)){

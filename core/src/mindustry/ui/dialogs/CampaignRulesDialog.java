@@ -23,9 +23,9 @@ public class CampaignRulesDialog extends BaseDialog{
             if(planet != null){
                 planet.saveRules();
 
-                if(Vars.state.isGame() && Vars.state.isCampaign() && Vars.state.getPlanet() == planet){
-                    planet.campaignRules.apply(planet, Vars.state.rules);
-                    Call.setRules(Vars.state.rules);
+                if(Vars.world.state.isGame() && Vars.world.state.isCampaign() && Vars.world.state.getPlanet() == planet){
+                    planet.campaignRules.apply(planet, Vars.world.state.rules);
+                    Call.setRules(Vars.world.state.rules);
                 }
             }
         });

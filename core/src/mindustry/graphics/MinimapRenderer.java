@@ -200,7 +200,7 @@ public class MinimapRenderer{
 
         Draw.reset();
 
-        if(state.rules.fog){
+        if(world.state.rules.fog){
             if(fullView){
                 float z = zoom;
                 //max zoom out fixes everything, somehow?
@@ -220,10 +220,10 @@ public class MinimapRenderer{
             float wf = world.width() * tilesize;
             float hf = world.height() * tilesize;
 
-            Draw.color(state.rules.dynamicColor, Float.isNaN(state.rules.dynamicColor.a) ? 0.5f : Math.max(0.5f, state.rules.dynamicColor.a));
+            Draw.color(world.state.rules.dynamicColor, Float.isNaN(world.state.rules.dynamicColor.a) ? 0.5f : Math.max(0.5f, world.state.rules.dynamicColor.a));
             Draw.rect(Tmp.tr1, wf / 2, hf / 2, wf, hf);
 
-            if(state.rules.staticFog){
+            if(world.state.rules.staticFog){
                 staticTex.setFilter(TextureFilter.nearest);
 
                 Tmp.tr1.texture = staticTex;
@@ -277,7 +277,7 @@ public class MinimapRenderer{
         Draw.reset();
 
         //TODO autoscale markers
-        state.rules.objectives.eachRunning(obj -> {
+        world.state.rules.objectives.eachRunning(obj -> {
             for(var marker : obj.markers){
                 if(marker.minimap){
                     marker.draw(1);
@@ -295,15 +295,15 @@ public class MinimapRenderer{
     }
 
     public void drawSpawns(){
-        if(!state.rules.showSpawns || !state.hasSpawns() || !state.rules.waves) return;
+        if(!world.state.rules.showSpawns || !state.hasSpawns() || !world.state.rules.waves) return;
 
         TextureRegion icon = Icon.units.getRegion();
 
         Lines.stroke(Scl.scl(3f));
 
-        Draw.color(state.rules.waveTeam.color, Tmp.c2.set(state.rules.waveTeam.color).value(1.2f), Mathf.absin(Time.time, 16f, 1f));
+        Draw.color(world.state.rules.waveTeam.color, Tmp.c2.set(world.state.rules.waveTeam.color).value(1.2f), Mathf.absin(Time.time, 16f, 1f));
 
-        float rad = state.rules.dropZoneRadius;
+        float rad = world.state.rules.dropZoneRadius;
         float curve = Mathf.curve(Time.time % 240f, 120f, 240f);
 
         for(Tile tile : spawner.getSpawns()){
@@ -379,7 +379,7 @@ public class MinimapRenderer{
 
     private Block realBlock(Tile tile){
         //TODO doesn't work properly until player goes and looks at block
-        return tile.build == null ? tile.block() : state.rules.fog && !tile.build.wasVisible ? Blocks.air : tile.block();
+        return tile.build == null ? tile.block() : world.state.rules.fog && !tile.build.wasVisible ? Blocks.air : tile.block();
     }
 
     private int colorFor(Tile tile){

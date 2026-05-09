@@ -52,11 +52,11 @@ public class PayloadRouter extends PayloadConveyor{
     }
 
     public boolean canSort(Block b){
-        return b.isVisible() && b.size <= size && !(b instanceof CoreBlock) && !state.rules.isBanned(b) && b.environmentBuildable();
+        return b.isVisible() && b.size <= size && !(b instanceof CoreBlock) && !world.state.rules.isBanned(b) && b.environmentBuildable();
     }
 
     public boolean canSort(UnitType t){
-        return !t.isHidden() && !t.isBanned() && t.supportsEnv(state.rules.env);
+        return !t.isHidden() && !t.isBanned() && t.supportsEnv(world.state.rules.env);
     }
 
     public class PayloadRouterBuild extends PayloadConveyorBuild{

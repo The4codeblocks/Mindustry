@@ -107,7 +107,7 @@ public class OverlayRenderer{
                 }
             }
 
-            if(Core.settings.getBool("indicators") && !state.rules.fog){
+            if(Core.settings.getBool("indicators") && !world.state.rules.fog){
                 Groups.unit.each(unit -> {
                     if(!unit.isLocal() && unit.team != player.team() && !rect.setSize(Core.camera.width * 0.9f, Core.camera.height * 0.9f)
                     .setCenter(Core.camera.position.x, Core.camera.position.y).contains(unit.x, unit.y)){
@@ -125,7 +125,7 @@ public class OverlayRenderer{
 
         Sized select = input.selectedUnit();
         if(select == null) select = input.selectedControlBuild();
-        if(!Core.input.keyDown(Binding.control) || !state.rules.possessionAllowed) select = null;
+        if(!Core.input.keyDown(Binding.control) || !world.state.rules.possessionAllowed) select = null;
 
         unitFade = Mathf.lerpDelta(unitFade, Mathf.num(select != null), 0.1f);
 
@@ -167,7 +167,7 @@ public class OverlayRenderer{
         Lines.stroke(buildFade * 2f);
 
         if(buildFade > 0.005f){
-            if(state.rules.polygonCoreProtection){
+            if(world.state.rules.polygonCoreProtection){
                 updateCoreEdges();
                 Draw.color(Pal.accent);
 
@@ -186,7 +186,7 @@ public class OverlayRenderer{
             }else{
                 state.teams.eachEnemyCore(player.team(), core -> {
                     //it must be clear that there is a core here.
-                    float br = state.rules.buildRadius(core.team);
+                    float br = world.state.rules.buildRadius(core.team);
                     if(/*core.wasVisible && */br > 0f && Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, br * 2f))){
                         Draw.color(Color.darkGray);
                         Lines.circle(core.x, core.y - 2,br);
@@ -202,9 +202,9 @@ public class OverlayRenderer{
 
         if(state.hasSpawns()){
             for(Tile tile : spawner.getSpawns()){
-                if(tile.within(player.x, player.y, state.rules.dropZoneRadius + spawnerMargin)){
-                    Draw.alpha(Mathf.clamp(1f - (player.dst(tile) - state.rules.dropZoneRadius) / spawnerMargin));
-                    Lines.dashCircle(tile.worldx(), tile.worldy(), state.rules.dropZoneRadius);
+                if(tile.within(player.x, player.y, world.state.rules.dropZoneRadius + spawnerMargin)){
+                    Draw.alpha(Mathf.clamp(1f - (player.dst(tile) - world.state.rules.dropZoneRadius) / spawnerMargin));
+                    Lines.dashCircle(tile.worldx(), tile.worldy(), world.state.rules.dropZoneRadius);
                 }
             }
         }

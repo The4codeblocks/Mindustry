@@ -37,7 +37,7 @@ public class DefenderAI extends AIController{
         if(core != null) return core;
 
         //for enemies, target the enemy core.
-        if(state.rules.waves && unit.team == state.rules.waveTeam){
+        if(world.state.rules.waves && unit.team == world.state.rules.waveTeam){
             return unit.closestEnemyCore();
         }
 

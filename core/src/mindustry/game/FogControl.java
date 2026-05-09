@@ -52,7 +52,7 @@ public final class FogControl implements CustomChunk{
             wh = world.height();
 
             //all old buildings have static light scheduled around them
-            if(state.rules.fog && state.rules.staticFog){
+            if(world.state.rules.fog && world.state.rules.staticFog){
                 pushStaticBlocks(true);
                 //force draw all static stuff immediately
                 updateStatic();
@@ -62,13 +62,13 @@ public final class FogControl implements CustomChunk{
         });
 
         Events.on(TileChangeEvent.class, event -> {
-            if(state.rules.fog && event.tile.build != null && event.tile.isCenter() && !event.tile.build.team.isOnlyAI() && event.tile.block().flags.contains(BlockFlag.hasFogRadius)){
+            if(world.state.rules.fog && event.tile.build != null && event.tile.isCenter() && !event.tile.build.team.isOnlyAI() && event.tile.block().flags.contains(BlockFlag.hasFogRadius)){
                 var data = data(event.tile.team());
                 if(data != null){
                     data.dynamicUpdated = true;
                 }
 
-                if(state.rules.staticFog){
+                if(world.state.rules.staticFog){
                     synchronized(staticEvents){
                         //TODO event per team?
                         pushEvent(FogEvent.get(event.tile.x, event.tile.y, Mathf.round(event.tile.build.fogRadius()), event.tile.build.team.id), false);
@@ -79,7 +79,7 @@ public final class FogControl implements CustomChunk{
 
         //on tile removed, dynamic fog goes away
         Events.on(TilePreChangeEvent.class, e -> {
-            if(state.rules.fog && e.tile.build != null && !e.tile.build.team.isOnlyAI() && e.tile.block().flags.contains(BlockFlag.hasFogRadius)){
+            if(world.state.rules.fog && e.tile.build != null && !e.tile.build.team.isOnlyAI() && e.tile.block().flags.contains(BlockFlag.hasFogRadius)){
                 var data = data(e.tile.team());
                 if(data != null){
                     data.dynamicUpdated = true;
@@ -89,7 +89,7 @@ public final class FogControl implements CustomChunk{
 
         //unit dead -> fog updates
         Events.on(UnitDestroyEvent.class, e -> {
-            if(state.rules.fog && fog[e.unit.team.id] != null){
+            if(world.state.rules.fog && fog[e.unit.team.id] != null){
                 fog[e.unit.team.id].dynamicUpdated = true;
             }
         });
@@ -102,7 +102,7 @@ public final class FogControl implements CustomChunk{
     }
 
     public boolean isDiscovered(Team team, int x, int y){
-        if(!state.rules.staticFog || !state.rules.fog || team == null || team.isAI()) return true;
+        if(!world.state.rules.staticFog || !world.state.rules.fog || team == null || team.isAI()) return true;
 
         var data = getDiscovered(team);
         if(data == null) return false;
@@ -115,7 +115,7 @@ public final class FogControl implements CustomChunk{
     }
 
     public boolean isVisibleTile(Team team, int x, int y){
-        if(!state.rules.fog|| team == null || team.isAI()) return true;
+        if(!world.state.rules.fog|| team == null || team.isAI()) return true;
 
         var data = data(team);
         if(data == null) return false;
@@ -166,7 +166,7 @@ public final class FogControl implements CustomChunk{
 
     /** @param skipRender whether the event is passed to the fog renderer */
     void pushEvent(long event, boolean skipRender){
-        if(!state.rules.staticFog) return;
+        if(!world.state.rules.staticFog) return;
 
         staticEvents.add(event);
         if(!skipRender && !headless && FogEvent.team(event) == Vars.player.team().id){
@@ -175,10 +175,10 @@ public final class FogControl implements CustomChunk{
     }
 
     public void forceUpdate(Team team, Building build){
-        if(state.rules.fog && fog[team.id] != null){
+        if(world.state.rules.fog && fog[team.id] != null){
             fog[team.id].dynamicUpdated = true;
 
-            if(state.rules.staticFog){
+            if(world.state.rules.staticFog){
                 synchronized(staticEvents){
                     pushEvent(FogEvent.get(build.tile.x, build.tile.y, Mathf.round(build.fogRadius()), build.team.id), false);
                 }
@@ -192,7 +192,7 @@ public final class FogControl implements CustomChunk{
         }
 
         //force update static
-        if(state.rules.staticFog && !loadedStatic){
+        if(world.state.rules.staticFog && !loadedStatic){
             pushStaticBlocks(false);
             updateStatic();
             loadedStatic = true;
@@ -216,7 +216,7 @@ public final class FogControl implements CustomChunk{
         dynamicEventQueue.clear();
 
         //update fog visibility manually
-        if(state.rules.fog && !headless && Groups.build.size() > 0){
+        if(world.state.rules.fog && !headless && Groups.build.size() > 0){
 
             int size = Groups.build.size();
             int chunkSize = 5; //fraction of entity list to iterate each frame
@@ -308,7 +308,7 @@ public final class FogControl implements CustomChunk{
         }
 
         //wake up, it's time to draw some circles
-        if(state.rules.staticFog && staticEvents.size > 0 && staticFogThread != null){
+        if(world.state.rules.staticFog && staticEvents.size > 0 && staticFogThread != null){
             synchronized(notifyStatic){
                 notifyStatic.notify();
             }
@@ -508,7 +508,7 @@ public final class FogControl implements CustomChunk{
 
     @Override
     public boolean shouldWrite(){
-        return state.rules.fog && state.rules.staticFog && fog != null;
+        return world.state.rules.fog && world.state.rules.staticFog && fog != null;
     }
 
     static void circle(Bits arr, int x, int y, int radius){

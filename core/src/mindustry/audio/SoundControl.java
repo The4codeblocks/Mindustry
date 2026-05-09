@@ -47,7 +47,7 @@ public class SoundControl{
 
         //only run music 10 seconds after a wave spawns
         Events.on(WaveEvent.class, e -> Time.run(Mathf.random(8f, 15f) * 60f, () -> {
-            boolean boss = state.rules.spawns.contains(group -> group.getSpawned(state.wave - 2) > 0 && group.effect == StatusEffects.boss);
+            boolean boss = world.state.rules.spawns.contains(group -> group.getSpawned(state.wave - 2) > 0 && group.effect == StatusEffects.boss);
 
             if(boss){
                 playOnce(bossMusic.random(lastRandomPlayed));
@@ -168,7 +168,7 @@ public class SoundControl{
             }else{
                 play(Musics.menu);
             }
-        }else if(state.rules.editor){
+        }else if(world.state.rules.editor){
             silenced = false;
             play(Musics.editor);
         }else{

@@ -45,7 +45,7 @@ public class WaveInfoDialog extends BaseDialog{
             checkedSpawns = false;
             setup();
         });
-        hidden(() -> state.rules.spawns = groups);
+        hidden(() -> world.state.rules.spawns = groups);
 
         addCloseButton();
 
@@ -98,7 +98,7 @@ public class WaveInfoDialog extends BaseDialog{
     }
 
     void setup(){
-        groups = JsonIO.copy(state.rules.spawns.isEmpty() ? waves.get() : state.rules.spawns);
+        groups = JsonIO.copy(world.state.rules.spawns.isEmpty() ? waves.get() : world.state.rules.spawns);
         if(groups == null) groups = new Seq<>();
 
         cont.clear();

@@ -168,7 +168,7 @@ public class LaunchPad extends Block{
 
             table.row();
             table.label(() -> {
-                Sector dest = state.rules.sector == null ? null : state.rules.sector.info.destination;
+                Sector dest = world.state.rules.sector == null ? null : world.state.rules.sector.info.destination;
 
                 return Core.bundle.format("launch.destination",
                     dest == null || !dest.hasBase() ? Core.bundle.get("sectors.nonelaunch") :
@@ -189,10 +189,10 @@ public class LaunchPad extends Block{
             }
 
             table.button(Icon.upOpen, Styles.cleari, () -> {
-                ui.planet.showSelect(state.rules.sector, other -> {
-                    if(state.isCampaign() && other.planet == state.rules.sector.planet){
-                        var prev = state.rules.sector.info.destination;
-                        state.rules.sector.info.destination = other;
+                ui.planet.showSelect(world.state.rules.sector, other -> {
+                    if(state.isCampaign() && other.planet == world.state.rules.sector.planet){
+                        var prev = world.state.rules.sector.info.destination;
+                        world.state.rules.sector.info.destination = other;
                         if(prev != null){
                             prev.info.refreshImportRates(state.getPlanet());
                         }
@@ -290,17 +290,17 @@ public class LaunchPad extends Block{
         public void remove(){
             if(!state.isCampaign() || net.client()) return;
 
-            Sector destsec = state.rules.sector.info.destination;
+            Sector destsec = world.state.rules.sector.info.destination;
 
             //actually launch the items upon removal
-            if(team() == state.rules.defaultTeam && destsec != null && destsec != state.rules.sector){
+            if(team() == world.state.rules.defaultTeam && destsec != null && destsec != world.state.rules.sector){
                 ItemSeq dest = new ItemSeq();
 
                 for(ItemStack stack : stacks){
                     dest.add(stack);
 
                     //update export statistics
-                    state.rules.sector.info.handleItemExport(stack);
+                    world.state.rules.sector.info.handleItemExport(stack);
                     Events.fire(new LaunchItemEvent(stack));
                 }
 

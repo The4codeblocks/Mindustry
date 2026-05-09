@@ -265,7 +265,7 @@ public abstract class UnlockableContent extends MappableContent{
     /** @return in multiplayer, whether this is unlocked for the host player, otherwise, whether it is unlocked for the local player (same as unlocked()) */
     public boolean unlockedHost(){
         return net != null && net.client() ?
-            alwaysUnlocked || state.rules.researched.contains(this) :
+            alwaysUnlocked || world.state.rules.researched.contains(this) :
             unlocked || alwaysUnlocked;
     }
 
@@ -276,7 +276,7 @@ public abstract class UnlockableContent extends MappableContent{
 
     public boolean unlocked(){
         return net != null && net.client() ?
-            alwaysUnlocked || unlocked || state.rules.researched.contains(this) :
+            alwaysUnlocked || unlocked || world.state.rules.researched.contains(this) :
             unlocked || alwaysUnlocked;
     }
 

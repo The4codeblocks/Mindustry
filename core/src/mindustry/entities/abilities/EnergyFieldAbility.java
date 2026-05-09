@@ -136,7 +136,7 @@ public class EnergyFieldAbility extends Ability{
 
             if(hitBuildings && targetGround){
                 Units.nearbyBuildings(rx, ry, range, b -> {
-                    if((b.team != Team.derelict || state.rules.coreCapture) && ((b.team != unit.team && b.block.targetable) || b.damaged()) && !b.block.privileged){
+                    if((b.team != Team.derelict || world.state.rules.coreCapture) && ((b.team != unit.team && b.block.targetable) || b.damaged()) && !b.block.privileged){
                         all.add(b);
                     }
                 });
@@ -144,7 +144,7 @@ public class EnergyFieldAbility extends Ability{
 
             all.sort(h -> h.dst2(rx, ry));
             int len = Math.min(all.size, maxTargets);
-            float scaledDamage = damage * state.rules.unitDamage(unit.team) * unit.damageMultiplier;
+            float scaledDamage = damage * world.state.rules.unitDamage(unit.team) * unit.damageMultiplier;
 
             for(int i = 0; i < len; i++){
                 Healthc other = all.get(i);

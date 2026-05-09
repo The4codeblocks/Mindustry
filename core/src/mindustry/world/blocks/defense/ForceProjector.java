@@ -243,7 +243,7 @@ public class ForceProjector extends Block{
                 buildup = shieldHealth;
                 shieldBreakEffect.at(x, y, realRadius(), team.color);
                 breakSound.at(x, y);
-                if(team != state.rules.defaultTeam){
+                if(team != world.state.rules.defaultTeam){
                     Events.fire(Trigger.forceProjectorBreak);
                 }
             }

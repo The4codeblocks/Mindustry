@@ -24,7 +24,7 @@ public class PowerTests extends PowerTestFixture{
 
     @BeforeAll
     static void init(){
-        Vars.state = new GameState();
+        Vars.world.state = new GameState();
     }
 
     @Nested

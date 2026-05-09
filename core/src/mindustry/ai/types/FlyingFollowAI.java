@@ -55,7 +55,7 @@ public class FlyingFollowAI extends FlyingAI{
     @Override
     public boolean useFallback(){
         //only AI teams use this controller
-        return Vars.state.rules.pvp || Vars.state.rules.waveTeam != unit.team;
+        return Vars.world.state.rules.pvp || Vars.world.state.rules.waveTeam != unit.team;
     }
 
 }

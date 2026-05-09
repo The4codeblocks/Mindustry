@@ -227,7 +227,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
     @Override
     @Replace
     public boolean inFogTo(Team viewer){
-        if(this.team == viewer || !state.rules.fog) return false;
+        if(this.team == viewer || !world.state.rules.fog) return false;
 
         if(hitSize <= 16f){
             return !fogControl.isVisible(viewer, x, y);
@@ -252,7 +252,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
     @Replace
     public float clipSize(){
         if(isBuilding()){
-            return state.rules.infiniteResources ? Float.MAX_VALUE : Math.max(type.clipSize, type.region.width) + type.buildRange + tilesize*4f;
+            return world.state.rules.infiniteResources ? Float.MAX_VALUE : Math.max(type.clipSize, type.region.width) + type.buildRange + tilesize*4f;
         }
         if(mining()){
             return type.clipSize + type.mineRange;
@@ -588,7 +588,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
         team.data().updateCount(type, 1);
 
         //check if over unit cap
-        if(type.useUnitCap && count() > cap() && !spawnedByCore && !dead && !state.rules.editor){
+        if(type.useUnitCap && count() > cap() && !spawnedByCore && !dead && !world.state.rules.editor){
             Call.unitCapDeath(self());
             team.data().updateCount(type, -1);
         }
@@ -654,11 +654,11 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
             float bot = 0f, left = 0f, top = world.unitHeight(), right = world.unitWidth();
 
             //TODO hidden map rules only apply to player teams? should they?
-            if(state.rules.limitMapArea && !team.isAI()){
-                bot = state.rules.limitY * tilesize;
-                left = state.rules.limitX * tilesize;
-                top = state.rules.limitHeight * tilesize + bot;
-                right = state.rules.limitWidth * tilesize + left;
+            if(world.state.rules.limitMapArea && !team.isAI()){
+                bot = world.state.rules.limitY * tilesize;
+                left = world.state.rules.limitX * tilesize;
+                top = world.state.rules.limitHeight * tilesize + bot;
+                right = world.state.rules.limitWidth * tilesize + left;
             }
 
             if(!net.client() || isLocal()){
@@ -743,7 +743,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
         }
 
         //check if environment is unsupported
-        if(!type.supportsEnv(state.rules.env) && !dead){
+        if(!type.supportsEnv(world.state.rules.env) && !dead){
             Call.unitEnvDeath(self());
             team.data().updateCount(type, -1);
         }
@@ -762,11 +762,11 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
             trail.update(cx, cy);
         }
 
-        drag = type.drag * (isGrounded() ? (floorOn().dragMultiplier) : 1f) * dragMultiplier * state.rules.dragMultiplier;
+        drag = type.drag * (isGrounded() ? (floorOn().dragMultiplier) : 1f) * dragMultiplier * world.state.rules.dragMultiplier;
 
         //apply knockback based on spawns
-        if(team != state.rules.waveTeam && state.hasSpawns() && (!net.client() || isLocal()) && hittable()){
-            float relativeSize = state.rules.dropZoneRadius + hitSize/2f + 1f;
+        if(team != world.state.rules.waveTeam && state.hasSpawns() && (!net.client() || isLocal()) && hittable()){
+            float relativeSize = world.state.rules.dropZoneRadius + hitSize/2f + 1f;
             for(Tile spawn : spawner.getSpawns()){
                 if(within(spawn.worldx(), spawn.worldy(), relativeSize)){
                     velAddNet(Tmp.v1.set(this).sub(spawn.worldx(), spawn.worldy()).setLength(0.1f + 1f - dst(spawn) / relativeSize).scl(0.45f * Time.delta));
@@ -864,7 +864,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
         float power = item().charge * Mathf.pow(stack().amount, 1.11f) * 160f;
 
         if(!spawnedByCore){
-            Damage.dynamicExplosion(x, y, flammability, explosiveness, power, (bounds() + type.legLength/1.7f) / 2f, state.rules.damageExplosions && state.rules.unitCrashDamage(team) > 0, item().flammability > 1, team, type.deathExplosionEffect, 0f);
+            Damage.dynamicExplosion(x, y, flammability, explosiveness, power, (bounds() + type.legLength/1.7f) / 2f, world.state.rules.damageExplosions && world.state.rules.unitCrashDamage(team) > 0, item().flammability > 1, team, type.deathExplosionEffect, 0f);
         }else{
             type.deathExplosionEffect.at(x, y, bounds() / 2f / 8f);
         }
@@ -896,9 +896,9 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
         }
 
         //if this unit crash landed (was flying), damage stuff in a radius
-        if(type.flying && !spawnedByCore && type.createWreck && state.rules.unitCrashDamage(team) > 0){
+        if(type.flying && !spawnedByCore && type.createWreck && world.state.rules.unitCrashDamage(team) > 0){
             var shields = indexer.getEnemy(team, BlockFlag.shield);
-            float crashDamage = Mathf.pow(hitSize, 0.75f) * type.crashDamageMultiplier * 2.5f * state.rules.unitCrashDamage(team);
+            float crashDamage = Mathf.pow(hitSize, 0.75f) * type.crashDamageMultiplier * 2.5f * world.state.rules.unitCrashDamage(team);
             if(shields.isEmpty() || !shields.contains(b -> b instanceof ExplosionShield s && s.absorbExplosion(x, y, crashDamage))){
                 Damage.damage(team, x, y, Mathf.pow(hitSize, 0.94f) * 1.25f, crashDamage, true, false, true);
             }

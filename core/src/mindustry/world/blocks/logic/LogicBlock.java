@@ -108,7 +108,7 @@ public class LogicBlock extends Block{
     }
 
     public boolean accessible(){
-        return !privileged || state.rules.editor || state.playtestingMap != null || state.rules.allowEditWorldProcessors;
+        return !privileged || world.state.rules.editor || state.playtestingMap != null || world.state.rules.allowEditWorldProcessors;
     }
 
     @Override
@@ -522,7 +522,7 @@ public class LogicBlock extends Block{
                 ipt = instructionsPerTick;
             }
 
-            if(state.rules.disableWorldProcessors && privileged) return;
+            if(world.state.rules.disableWorldProcessors && privileged) return;
 
             if(enabled && executor.initialized()){
                 if(accumulator > maxInstructionScale * ipt) accumulator = maxInstructionScale * ipt;
@@ -677,11 +677,11 @@ public class LogicBlock extends Block{
 
         public void showEditDialog(boolean forceEditor){
             ui.logic.show(code, executor, privileged, code -> {
-                boolean prev = state.rules.editor;
+                boolean prev = world.state.rules.editor;
                 //this is a hack to allow configuration to work correctly in the editor for privileged processors
-                if(forceEditor) state.rules.editor = true;
+                if(forceEditor) world.state.rules.editor = true;
                 configure(compress(code, relativeConnections()));
-                state.rules.editor = prev;
+                world.state.rules.editor = prev;
             });
         }
 

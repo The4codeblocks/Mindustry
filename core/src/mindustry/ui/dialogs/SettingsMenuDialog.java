@@ -274,7 +274,7 @@ public class SettingsMenuDialog extends BaseDialog{
                 try{
                     importData(file);
                     control.saves.resetSave();
-                    state = new GameState();
+                    world.state = new GameState();
                     Core.app.exit();
                 }catch(IllegalArgumentException e){
                     ui.showErrorMessage("@data.invalid");

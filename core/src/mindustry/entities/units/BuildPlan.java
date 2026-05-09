@@ -75,7 +75,7 @@ public class BuildPlan implements Position, QuadTreeObject{
     }
 
     public boolean isDerelictRepair(){
-        if(breaking || !state.rules.derelictRepair) return false;
+        if(breaking || !world.state.rules.derelictRepair) return false;
         Tile tile = tile();
         return tile != null && tile.team() == Team.derelict && tile.block() == block && tile.build != null;
     }

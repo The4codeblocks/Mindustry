@@ -291,12 +291,12 @@ public class ConstructBlock extends Block{
                 setConstruct(previous, current);
             }
 
-            boolean infinite = team.rules().infiniteResources || state.rules.infiniteResources;
+            boolean infinite = team.rules().infiniteResources || world.state.rules.infiniteResources;
 
             float maxProgress = core == null || team.rules().infiniteResources ? amount : checkRequired(core.items, amount, false);
 
             for(int i = 0; i < current.requirements.length; i++){
-                int reqamount = Math.round(state.rules.buildCostMultiplier * current.requirements[i].amount);
+                int reqamount = Math.round(world.state.rules.buildCostMultiplier * current.requirements[i].amount);
                 accumulator[i] += Math.min(reqamount * maxProgress, reqamount - totalAccumulator[i]); //add min amount progressed to the accumulator
                 totalAccumulator[i] = Math.min(totalAccumulator[i] + reqamount * maxProgress, reqamount);
             }
@@ -305,7 +305,7 @@ public class ConstructBlock extends Block{
 
             progress = Mathf.clamp(progress + maxProgress);
 
-            if(progress >= 1f || state.rules.infiniteResources){
+            if(progress >= 1f || world.state.rules.infiniteResources){
                 boolean canFinish = true;
 
                 //look at leftover resources to consume, get them from the core if necessary, delay building if not
@@ -343,7 +343,7 @@ public class ConstructBlock extends Block{
 
             wasConstructing = false;
             activeDeconstruct = true;
-            float deconstructMultiplier = state.rules.deconstructRefundMultiplier;
+            float deconstructMultiplier = world.state.rules.deconstructRefundMultiplier;
 
             if(builder.isPlayer()){
                 lastBuilder = builder;
@@ -358,7 +358,7 @@ public class ConstructBlock extends Block{
             float clampedAmount = Math.min(amount, progress);
 
             for(int i = 0; i < requirements.length; i++){
-                int reqamount = Math.round(state.rules.buildCostMultiplier * requirements[i].amount);
+                int reqamount = Math.round(world.state.rules.buildCostMultiplier * requirements[i].amount);
                 accumulator[i] += Math.min(clampedAmount * deconstructMultiplier * reqamount, deconstructMultiplier * reqamount - totalAccumulator[i]); //add scaled amount progressed to the accumulator
                 totalAccumulator[i] = Math.min(totalAccumulator[i] + reqamount * clampedAmount * deconstructMultiplier, reqamount);
 
@@ -379,11 +379,11 @@ public class ConstructBlock extends Block{
 
             progress = Mathf.clamp(progress - amount);
 
-            if(progress <= current.deconstructThreshold || state.rules.infiniteResources){
+            if(progress <= current.deconstructThreshold || world.state.rules.infiniteResources){
                 //add any leftover items that weren't obtained due to rounding errors
-                if(core != null && !state.rules.infiniteResources){
+                if(core != null && !world.state.rules.infiniteResources){
                     for(int i = 0; i < itemsLeft.length; i++){
-                        int target = Mathf.round(requirements[i].amount * state.rules.buildCostMultiplier * state.rules.deconstructRefundMultiplier);
+                        int target = Mathf.round(requirements[i].amount * world.state.rules.buildCostMultiplier * world.state.rules.deconstructRefundMultiplier);
                         int remaining = target - itemsLeft[i];
 
                         if(requirements[i].item.unlockedNowHost()){
@@ -400,7 +400,7 @@ public class ConstructBlock extends Block{
 
         private float checkRequired(ItemModule inventory, float amount, boolean remove){
             float maxProgress = amount;
-            boolean infinite = team.rules().infiniteResources || state.rules.infiniteResources;
+            boolean infinite = team.rules().infiniteResources || world.state.rules.infiniteResources;
 
             for(int i = 0; i < current.requirements.length; i++){
                 //there is no need to remove items that have already been fully taken out
@@ -408,7 +408,7 @@ public class ConstructBlock extends Block{
                     continue;
                 }
 
-                int sclamount = Math.round(state.rules.buildCostMultiplier * current.requirements[i].amount);
+                int sclamount = Math.round(world.state.rules.buildCostMultiplier * current.requirements[i].amount);
                 int required = (int)(accumulator[i]); //calculate items that are required now
 
                 if(inventory.get(current.requirements[i].item) == 0 && sclamount != 0){
@@ -448,14 +448,14 @@ public class ConstructBlock extends Block{
             this.wasConstructing = true;
             this.current = block;
             this.previous = previous;
-            this.buildCost = block.buildTime * state.rules.buildCostMultiplier;
+            this.buildCost = block.buildTime * world.state.rules.buildCostMultiplier;
             this.itemsLeft = new int[block.requirements.length];
             this.accumulator = new float[block.requirements.length];
             this.totalAccumulator = new float[block.requirements.length];
 
             ItemStack[] requirements = current.requirements;
             for(int i = 0; i < requirements.length; i++){
-                this.itemsLeft[i] = Mathf.round(requirements[i].amount * state.rules.buildCostMultiplier);
+                this.itemsLeft[i] = Mathf.round(requirements[i].amount * world.state.rules.buildCostMultiplier);
             }
             pathfinder.updateTile(tile);
         }
@@ -468,7 +468,7 @@ public class ConstructBlock extends Block{
             this.previous = previous;
             this.progress = 1f;
             this.current = previous;
-            this.buildCost = previous.buildTime * state.rules.buildCostMultiplier;
+            this.buildCost = previous.buildTime * world.state.rules.buildCostMultiplier;
             this.itemsLeft = new int[previous.requirements.length];
             this.accumulator = new float[previous.requirements.length];
             this.totalAccumulator = new float[previous.requirements.length];
@@ -526,7 +526,7 @@ public class ConstructBlock extends Block{
             if(previous == null) previous = Blocks.air;
             if(current == null) current = Blocks.air;
 
-            buildCost = current.buildTime * state.rules.buildCostMultiplier;
+            buildCost = current.buildTime * world.state.rules.buildCostMultiplier;
         }
     }
 }

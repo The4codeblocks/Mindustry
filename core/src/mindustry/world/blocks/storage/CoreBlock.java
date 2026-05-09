@@ -193,7 +193,7 @@ public class CoreBlock extends StorageBlock{
         }
 
         //must have all requirements
-        if(core == null || (!state.rules.infiniteResources && !core.items.has(requirements, state.rules.buildCostMultiplier))) return false;
+        if(core == null || (!world.state.rules.infiniteResources && !core.items.has(requirements, world.state.rules.buildCostMultiplier))) return false;
 
         return tile.block() instanceof CoreBlock && size > tile.block().size && (!requiresCoreZone || tempTiles.allMatch(o -> o.floor().allowCorePlacement));
     }
@@ -226,8 +226,8 @@ public class CoreBlock extends StorageBlock{
         if(tile.build instanceof CoreBuild){
             //right before placing, create a "destination" item array which is all the previous items minus core requirements
             ItemModule items = tile.build.items.copy();
-            if(!state.rules.infiniteResources){
-                items.remove(ItemStack.mult(requirements, state.rules.buildCostMultiplier));
+            if(!world.state.rules.infiniteResources){
+                items.remove(ItemStack.mult(requirements, world.state.rules.buildCostMultiplier));
             }
 
             nextItems = items;
@@ -244,7 +244,7 @@ public class CoreBlock extends StorageBlock{
                 isFirstTier ?
                     //TODO better message
                     "bar.corefloor" :
-                    (player.team().core() != null && player.team().core().items.has(requirements, state.rules.buildCostMultiplier)) || state.rules.infiniteResources ?
+                    (player.team().core() != null && player.team().core().items.has(requirements, world.state.rules.buildCostMultiplier)) || world.state.rules.infiniteResources ?
                     "bar.corereq" :
                     "bar.noresources"
             ), x, y, valid);
@@ -263,7 +263,7 @@ public class CoreBlock extends StorageBlock{
 
         @Override
         public boolean isCommandable(){
-            return team != state.rules.defaultTeam && state.rules.editor;
+            return team != world.state.rules.defaultTeam && world.state.rules.editor;
         }
 
         @Override
@@ -278,7 +278,7 @@ public class CoreBlock extends StorageBlock{
 
         @Override
         public boolean canUnload(){
-            return block.unloadable && state.rules.allowCoreUnloaders;
+            return block.unloadable && world.state.rules.allowCoreUnloaders;
         }
 
         @Override
@@ -356,10 +356,10 @@ public class CoreBlock extends StorageBlock{
                         Effect.shake(5f, 5f, this);
                         thrusterTime = 1f;
 
-                        if(state.isCampaign() && Vars.showSectorLandInfo && (state.rules.sector.preset == null || state.rules.sector.preset.showSectorLandInfo)){
-                            ui.announce("[accent]" + state.rules.sector.name() + "\n" +
-                                (state.rules.sector.info.resources.any() ? "[lightgray]" + Core.bundle.get("sectors.resources") + "[white] " +
-                                    state.rules.sector.info.resources.toString(" ", UnlockableContent::emoji) : ""), 5);
+                        if(state.isCampaign() && Vars.showSectorLandInfo && (world.state.rules.sector.preset == null || world.state.rules.sector.preset.showSectorLandInfo)){
+                            ui.announce("[accent]" + world.state.rules.sector.name() + "\n" +
+                                (world.state.rules.sector.info.resources.any() ? "[lightgray]" + Core.bundle.get("sectors.resources") + "[white] " +
+                                    world.state.rules.sector.info.resources.toString(" ", UnlockableContent::emoji) : ""), 5);
                         }
                     });
                 }
@@ -402,7 +402,7 @@ public class CoreBlock extends StorageBlock{
             }
 
             //draw clouds
-            if(state.rules.cloudColor.a > 0.0001f){
+            if(world.state.rules.cloudColor.a > 0.0001f){
                 float scaling = cloudScaling;
                 float sscl = Math.max(1f + Mathf.clamp(fin + cfinOffset) * cfinScl, 0f) * cameraScl;
 
@@ -416,7 +416,7 @@ public class CoreBlock extends StorageBlock{
                 Tmp.tr1.scroll(10f * cloudSeed, 10f * cloudSeed);
 
                 Draw.alpha(Mathf.sample(cloudAlphas, fin + calphaFinOffset) * cloudAlpha);
-                Draw.mixcol(state.rules.cloudColor, state.rules.cloudColor.a);
+                Draw.mixcol(world.state.rules.cloudColor, world.state.rules.cloudColor.a);
                 Draw.rect(Tmp.tr1, Core.camera.position.x, Core.camera.position.y, Core.camera.width, Core.camera.height);
                 Draw.reset();
             }
@@ -582,7 +582,7 @@ public class CoreBlock extends StorageBlock{
 
         public void requestSpawn(Player player){
             //do not try to respawn in unsupported environments at all
-            if(!unitType.supportsEnv(state.rules.env) || !allowSpawn) return;
+            if(!unitType.supportsEnv(world.state.rules.env) || !allowSpawn) return;
 
             Call.playerSpawn(tile, player);
         }
@@ -625,9 +625,9 @@ public class CoreBlock extends StorageBlock{
 
         @Override
         public void onDestroyed(){
-            if(state.rules.coreCapture){
+            if(world.state.rules.coreCapture){
                 //just create an explosion, no fire. this prevents immediate recapture
-                Damage.dynamicExplosion(x, y, 0, 0, 0, tilesize * block.size / 2f, state.rules.damageExplosions);
+                Damage.dynamicExplosion(x, y, 0, 0, 0, tilesize * block.size / 2f, world.state.rules.damageExplosions);
                 Fx.commandSend.at(x, y, 140f);
 
                 //make sure the sound still plays
@@ -642,7 +642,7 @@ public class CoreBlock extends StorageBlock{
             Fx.coreExplosion.at(x, y, team.color);
 
             //add a spawn to the map for future reference - waves should be disabled, so it shouldn't matter
-            if(state.isCampaign() && team == state.rules.waveTeam && team.cores().size <= 1 && spawner.getSpawns().size == 0 && state.rules.sector.planet.enemyCoreSpawnReplace){
+            if(state.isCampaign() && team == world.state.rules.waveTeam && team.cores().size <= 1 && spawner.getSpawns().size == 0 && world.state.rules.sector.planet.enemyCoreSpawnReplace){
                 //do not recache
                 tile.setOverlayQuiet(Blocks.spawn);
 
@@ -656,7 +656,7 @@ public class CoreBlock extends StorageBlock{
 
         @Override
         public void playDestroySound(){
-            if(team.data().cores.size <= 1 && player != null && player.team() == team && state.rules.canGameOver){
+            if(team.data().cores.size <= 1 && player != null && player.team() == team && world.state.rules.canGameOver){
                 //play at full volume when doing a game over
                 block.destroySound.play(block.destroySoundVolume * Core.audio.sfxVolume, Mathf.random(block.destroyPitchMin, block.destroyPitchMax), 0f);
             }else{
@@ -667,7 +667,7 @@ public class CoreBlock extends StorageBlock{
         @Override
         public void afterDestroyed(){
             super.afterDestroyed();
-            if(state.rules.coreCapture){
+            if(world.state.rules.coreCapture){
                 if(!net.client()){
                     tile.setBlock(block, lastDamage);
 
@@ -691,12 +691,12 @@ public class CoreBlock extends StorageBlock{
 
         @Override
         public boolean acceptItem(Building source, Item item){
-            return state.rules.coreIncinerates || items.get(item) < getMaximumAccepted(item);
+            return world.state.rules.coreIncinerates || items.get(item) < getMaximumAccepted(item);
         }
 
         @Override
         public int getMaximumAccepted(Item item){
-            return state.rules.coreIncinerates ? Integer.MAX_VALUE/2 : storageCapacity;
+            return world.state.rules.coreIncinerates ? Integer.MAX_VALUE/2 : storageCapacity;
         }
 
         @Override
@@ -741,9 +741,9 @@ public class CoreBlock extends StorageBlock{
             int realAmount = incinerate ? 0 : Math.min(amount, storageCapacity - items.get(item));
             super.handleStack(item, realAmount, source);
 
-            if(team == state.rules.defaultTeam && state.isCampaign()){
+            if(team == world.state.rules.defaultTeam && state.isCampaign()){
                 if(!incinerate){
-                    state.rules.sector.info.handleCoreItem(item, amount);
+                    world.state.rules.sector.info.handleCoreItem(item, amount);
                 }
 
                 if(realAmount == 0 && wasVisible){
@@ -756,8 +756,8 @@ public class CoreBlock extends StorageBlock{
         public int removeStack(Item item, int amount){
             int result = super.removeStack(item, amount);
 
-            if(team == state.rules.defaultTeam && state.isCampaign()){
-                state.rules.sector.info.handleCoreItem(item, -result);
+            if(team == world.state.rules.defaultTeam && state.isCampaign()){
+                world.state.rules.sector.info.handleCoreItem(item, -result);
             }
 
             return result;
@@ -828,9 +828,9 @@ public class CoreBlock extends StorageBlock{
 
         @Override
         public void itemTaken(Item item){
-            if(state.isCampaign() && team == state.rules.defaultTeam){
+            if(state.isCampaign() && team == world.state.rules.defaultTeam){
                 //update item taken amount
-                state.rules.sector.info.handleCoreItem(item, -1);
+                world.state.rules.sector.info.handleCoreItem(item, -1);
             }
         }
 
@@ -838,13 +838,13 @@ public class CoreBlock extends StorageBlock{
         public void handleItem(Building source, Item item){
             boolean incinerate = incinerateNonBuildable && !item.buildable;
 
-            if(team == state.rules.defaultTeam){
+            if(team == world.state.rules.defaultTeam){
                 state.stats.coreItemCount.increment(item);
             }
 
             if(net.server() || !net.active()){
-                if(team == state.rules.defaultTeam && state.isCampaign() && !incinerate){
-                    state.rules.sector.info.handleCoreItem(item, 1);
+                if(team == world.state.rules.defaultTeam && state.isCampaign() && !incinerate){
+                    world.state.rules.sector.info.handleCoreItem(item, 1);
                 }
 
                 if(items.get(item) >= storageCapacity || incinerate){
@@ -856,7 +856,7 @@ public class CoreBlock extends StorageBlock{
                 }else{
                     super.handleItem(source, item);
                 }
-            }else if(((state.rules.coreIncinerates && items.get(item) >= storageCapacity) || incinerate) && !noEffect){
+            }else if(((world.state.rules.coreIncinerates && items.get(item) >= storageCapacity) || incinerate) && !noEffect){
                 //create item incineration effect at random intervals
                 incinerateEffect(this, source);
                 noEffect = false;

@@ -1442,9 +1442,9 @@ public class ControlPathfinder implements Runnable{
     }
 
     private static int cost(int team, PathCost cost, int tilePos){
-        if(state.rules.limitMapArea && !Team.get(team).isAI()){
+        if(world.state.rules.limitMapArea && !Team.get(team).isAI()){
             int x = tilePos % wwidth, y = tilePos / wwidth;
-            if(x < state.rules.limitX || y < state.rules.limitY || x > state.rules.limitX + state.rules.limitWidth || y > state.rules.limitY + state.rules.limitHeight){
+            if(x < world.state.rules.limitX || y < world.state.rules.limitY || x > world.state.rules.limitX + world.state.rules.limitWidth || y > world.state.rules.limitY + world.state.rules.limitHeight){
                 return impassable;
             }
         }

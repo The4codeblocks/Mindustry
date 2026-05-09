@@ -147,7 +147,7 @@ public class Control implements ApplicationListener, Loadable{
 
         //autohost for pvp maps
         Events.on(WorldLoadEvent.class, event -> app.post(() -> {
-            if(state.rules.pvp && !net.active() && !state.rules.pauseDisabled){
+            if(world.state.rules.pvp && !net.active() && !world.state.rules.pauseDisabled){
                 try{
                     net.host(port);
                     player.admin = true;
@@ -203,7 +203,7 @@ public class Control implements ApplicationListener, Loadable{
             player.set(core);
 
             float coreDelay = 0f;
-            if(!settings.getBool("skipcoreanimation") && !state.rules.pvp){
+            if(!settings.getBool("skipcoreanimation") && !world.state.rules.pvp){
                 coreDelay = core.launchDuration();
                 //delay player respawn so animation can play.
                 player.deathTimer = Player.deathDelay - core.launchDuration();
@@ -222,35 +222,35 @@ public class Control implements ApplicationListener, Loadable{
             }
 
             if(state.isCampaign()){
-                if(state.rules.sector.info.importRateCache != null){
-                    state.rules.sector.info.refreshImportRates(state.rules.sector.planet);
+                if(world.state.rules.sector.info.importRateCache != null){
+                    world.state.rules.sector.info.refreshImportRates(world.state.rules.sector.planet);
                 }
 
                 //don't run when hosting, that doesn't really work.
-                if(state.rules.sector.planet.prebuildBase){
+                if(world.state.rules.sector.planet.prebuildBase){
                     toBePlaced.clear();
                     float unitsPerTick = 2f;
-                    float buildRadius = state.rules.enemyCoreBuildRadius * 1.5f;
+                    float buildRadius = world.state.rules.enemyCoreBuildRadius * 1.5f;
 
                     //TODO if the save is unloaded or map is hosted, these blocks do not get built.
                     boolean anyBuilds = false;
                     float maxDelay = 0f;
 
-                    for(var build : state.rules.defaultTeam.data().buildings){
+                    for(var build : world.state.rules.defaultTeam.data().buildings){
                         //some blocks need to be configured later once everything is built
                         if(build.block.delayLandingConfig){
                             toBePlacedConfigs.add(new Object[]{build, build.config()});
                         }
                     }
 
-                    for(var build : state.rules.defaultTeam.data().buildings.copy()){
+                    for(var build : world.state.rules.defaultTeam.data().buildings.copy()){
                         if(!(build instanceof CoreBuild) && !build.block.privileged){
                             var ccore = build.closestCore();
 
                             if(ccore != null){
                                 anyBuilds = true;
 
-                                if(!net.active() && !state.rules.pauseDisabled){
+                                if(!net.active() && !world.state.rules.pauseDisabled){
                                     build.pickedUp();
                                     build.tile.remove();
 
@@ -276,7 +276,7 @@ public class Control implements ApplicationListener, Loadable{
 
                     if(anyBuilds){
                         Time.run(maxDelay + 1f, this::configurePlaced);
-                        for(var ccore : state.rules.defaultTeam.data().cores){
+                        for(var ccore : world.state.rules.defaultTeam.data().cores){
                             Time.run(coreDelay, () -> {
                                 Fx.coreBuildShockwave.at(ccore.x, ccore.y, buildRadius);
                             });
@@ -401,10 +401,10 @@ public class Control implements ApplicationListener, Loadable{
         ui.loadAnd(() -> {
             logic.reset();
             world.loadMap(map, rules);
-            state.rules = rules;
+            world.state.rules = rules;
             if(playtest) state.playtestingMap = map;
-            state.rules.sector = null;
-            state.rules.editor = false;
+            world.state.rules.sector = null;
+            world.state.rules.editor = false;
             logic.play();
             if(settings.getBool("savecreate") && !world.isInvalidMap() && !playtest){
                 control.saves.addSave(map.name() + " " + new SimpleDateFormat("MMM dd h:mm", Locale.getDefault()).format(new Date()));
@@ -455,11 +455,11 @@ public class Control implements ApplicationListener, Loadable{
                     //pass in a sector context to make absolutely sure the correct sector is written; it may differ from what's in the meta due to remapping.
                     slot.load(world.makeSectorContext(sector));
                     slot.setAutosave(true);
-                    state.rules.sector = sector;
-                    state.rules.cloudColor = sector.planet.landCloudColor;
+                    world.state.rules.sector = sector;
+                    world.state.rules.cloudColor = sector.planet.landCloudColor;
 
                     //if there is no base, simulate a new game and place the right loadout at the spawn position
-                    if(state.rules.defaultTeam.cores().isEmpty() || hadNoCore){
+                    if(world.state.rules.defaultTeam.cores().isEmpty() || hadNoCore){
 
                         //don't carry over the spawn position and plans if the sector preset name or map size changed
                         if(clearSave || sector.info.spawnPosition == 0 || !sector.info.sectorDataMatches(sector)){
@@ -473,14 +473,14 @@ public class Control implements ApplicationListener, Loadable{
                                 playNewSector(origin, sector, reloader);
                                 return;
                             }
-                            spawn.setBlock(sector.planet.defaultCore, state.rules.defaultTeam);
+                            spawn.setBlock(sector.planet.defaultCore, world.state.rules.defaultTeam);
 
                             //apply damage to simulate the sector being lost
                             SectorDamage.apply(1f);
 
                             //save the plans and buildings from the previous save; they will be used to re-populate the sector
-                            var previousPlans = state.rules.defaultTeam.data().plans.toArray(BlockPlan.class);
-                            var previousBuildings = state.rules.defaultTeam.data().buildings.<Building>toArray(Building.class);
+                            var previousPlans = world.state.rules.defaultTeam.data().plans.toArray(BlockPlan.class);
+                            var previousBuildings = world.state.rules.defaultTeam.data().buildings.<Building>toArray(Building.class);
                             var previousDerelicts = Team.derelict.data().buildings.<Building>toArray(Building.class);
 
                             logic.reset();
@@ -489,7 +489,7 @@ public class Control implements ApplicationListener, Loadable{
                             playNewSector(origin, sector, reloader, new WorldParams(){{
                                 corePositionOverride = spawnPos;
                             }}, () -> {
-                                var teamData = state.rules.defaultTeam.data();
+                                var teamData = world.state.rules.defaultTeam.data();
 
                                 //all the derelicts from the new save have to be removed.
                                 for(var generatedDerelict : Team.derelict.data().buildings.<Building>toArray(Building.class)){
@@ -515,9 +515,9 @@ public class Control implements ApplicationListener, Loadable{
                                 //copy over all buildings from the previous save, retaining config and health, and making them derelict
                                 for(var build : previousBuildings){
                                     Tile tile = world.tile(build.tileX(), build.tileY());
-                                    if(tile != null && tile.build == null && Build.validPlace(build.block, state.rules.defaultTeam, build.tileX(), build.tileY(), build.rotation, false, false)){
+                                    if(tile != null && tile.build == null && Build.validPlace(build.block, world.state.rules.defaultTeam, build.tileX(), build.tileY(), build.rotation, false, false)){
                                         build.addPlan(false, true);
-                                        tile.setBlock(build.block, state.rules.defaultTeam, build.rotation, () -> build);
+                                        tile.setBlock(build.block, world.state.rules.defaultTeam, build.rotation, () -> build);
                                         build.changeTeam(Team.derelict);
                                         build.dropped(); //TODO: call pickedUp too? this may screw up power networks in a major way as they refer to potentially deleted entities
                                     }
@@ -532,7 +532,7 @@ public class Control implements ApplicationListener, Loadable{
                                 //carry over all previous plans that don't already have the corresponding block at their position
                                 for(var plan : previousPlans){
                                     var build = world.build(plan.x, plan.y);
-                                    if(!(build != null && build.block == plan.block && build.tileX() == plan.x && build.tileY() == plan.y && build.team != state.rules.waveTeam)){
+                                    if(!(build != null && build.block == plan.block && build.tileX() == plan.x && build.tileY() == plan.y && build.team != world.state.rules.waveTeam)){
                                         teamData.plans.add(plan);
                                     }
                                 }
@@ -569,7 +569,7 @@ public class Control implements ApplicationListener, Loadable{
     public void playNewSector(@Nullable Sector origin, Sector sector, WorldReloader reloader, WorldParams params, @Nullable Runnable beforePlay){
         reloader.begin();
         world.loadSector(sector, params);
-        state.rules.sector = sector;
+        world.state.rules.sector = sector;
         sector.info.origin = origin;
         sector.info.destination = origin;
         sector.info.attempts ++;
@@ -612,7 +612,7 @@ public class Control implements ApplicationListener, Loadable{
 
     @Override
     public void pause(){
-        if(settings.getBool("backgroundpause", true) && !net.active() && !state.rules.pauseDisabled){
+        if(settings.getBool("backgroundpause", true) && !net.active() && !world.state.rules.pauseDisabled){
             backgroundPaused = true;
             wasPaused = state.is(State.paused);
             if(state.is(State.playing)) state.set(State.paused);
@@ -621,7 +621,7 @@ public class Control implements ApplicationListener, Loadable{
 
     @Override
     public void resume(){
-        if(state.is(State.paused) && !wasPaused && settings.getBool("backgroundpause", true) && !net.active() && !state.rules.pauseDisabled){
+        if(state.is(State.paused) && !wasPaused && settings.getBool("backgroundpause", true) && !net.active() && !world.state.rules.pauseDisabled){
             state.set(State.playing);
         }
         backgroundPaused = false;
@@ -708,12 +708,12 @@ public class Control implements ApplicationListener, Loadable{
             }
 
             //unlock core items
-            var core = state.rules.defaultTeam.core();
+            var core = world.state.rules.defaultTeam.core();
             if(!net.client() && core != null && state.isCampaign()){
                 core.items.each((i, a) -> i.unlock());
             }
 
-            if(backgroundPaused && settings.getBool("backgroundpause") && !net.active() && !state.rules.pauseDisabled){
+            if(backgroundPaused && settings.getBool("backgroundpause") && !net.active() && !world.state.rules.pauseDisabled){
                 state.set(State.paused);
             }
 
@@ -723,7 +723,7 @@ public class Control implements ApplicationListener, Loadable{
             }
 
             if(!net.client() && Core.input.keyTap(Binding.pause) && !(state.isCampaign() && state.afterGameOver) && !renderer.isCutscene() && !scene.hasDialog() && !scene.hasKeyboard() && !ui.restart.isShown() && (state.is(State.paused) || state.is(State.playing))){
-                if(state.rules.pauseDisabled){
+                if(world.state.rules.pauseDisabled){
                     ui.hudfrag.showPauseDisabled();
                 }else{
                     state.set(state.isPaused() ? State.playing : State.paused);
@@ -739,7 +739,7 @@ public class Control implements ApplicationListener, Loadable{
                     ui.chatfrag.hide();
                 }else if(!ui.paused.isShown() && !scene.hasDialog()){
                     ui.paused.show();
-                    if(!net.active() && !state.rules.pauseDisabled){
+                    if(!net.active() && !world.state.rules.pauseDisabled){
                         state.set(State.paused);
                     }
                 }

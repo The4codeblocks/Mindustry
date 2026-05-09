@@ -60,7 +60,7 @@ public class PointDefenseWeapon extends Weapon{
         if(!(mount.target instanceof Bullet target)) return;
 
         // not sure whether it should multiply by the damageMultiplier of the unit
-        float bulletDamage = bullet.damage * unit.damageMultiplier() * state.rules.unitDamage(unit.team);
+        float bulletDamage = bullet.damage * unit.damageMultiplier() * world.state.rules.unitDamage(unit.team);
         if(target.damage() > bulletDamage){
             target.damage(target.damage() - bulletDamage);
         }else{

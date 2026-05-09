@@ -54,7 +54,7 @@ public class ParticleRenderer{
     }
 
     public void updateAndRender(){
-        if(!Vars.state.isPaused()){
+        if(!Vars.world.state.isPaused()){
             update();
         }
 

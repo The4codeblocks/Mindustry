@@ -184,7 +184,7 @@ public class LightRenderer{
     }
 
     public boolean enabled(){
-        return state.rules.lighting && state.rules.ambientLight.a > 0.0001f && renderer.drawLight;
+        return world.state.rules.lighting && world.state.rules.ambientLight.a > 0.0001f && renderer.drawLight;
     }
 
     public void draw(){
@@ -219,7 +219,7 @@ public class LightRenderer{
         Gl.blendEquationSeparate(Gl.funcAdd, Gl.funcAdd);
 
         Draw.color();
-        Shaders.light.ambient.set(state.rules.ambientLight);
+        Shaders.light.ambient.set(world.state.rules.ambientLight);
         buffer.blit(Shaders.light);
 
         lights.clear();

@@ -74,7 +74,7 @@ public class PlayerListFragment{
     }
 
     public void rebuild(){
-        boolean allowTeamSwitch = !state.isCampaign() && (state.rules.pvp || state.rules.infiniteResources);
+        boolean allowTeamSwitch = !state.isCampaign() && (world.state.rules.pvp || world.state.rules.infiniteResources);
 
         content.clear();
 
@@ -113,7 +113,7 @@ public class PlayerListFragment{
                 }
             };
 
-            boolean clickable = !(state.rules.fog && state.rules.pvp && user.team() != player.team());
+            boolean clickable = !(world.state.rules.fog && world.state.rules.pvp && user.team() != player.team());
 
             if(clickable){
                 iconTable.addListener(listener);

@@ -56,7 +56,7 @@ public class WaveSpawner{
 
     /** @return true if the player is near a ground spawn point. */
     public boolean playerNear(){
-        return state.hasSpawns() && !player.dead() && spawns.contains(g -> Mathf.dst(g.x * tilesize, g.y * tilesize, player.x, player.y) < state.rules.dropZoneRadius && player.team() != state.rules.waveTeam);
+        return state.hasSpawns() && !player.dead() && spawns.contains(g -> Mathf.dst(g.x * tilesize, g.y * tilesize, player.x, player.y) < world.state.rules.dropZoneRadius && player.team() != world.state.rules.waveTeam);
     }
 
     public void spawnEnemies(){
@@ -68,7 +68,7 @@ public class WaveSpawner{
             }
         });
 
-        for(SpawnGroup group : state.rules.spawns){
+        for(SpawnGroup group : world.state.rules.spawns){
             if(group.type == null) continue;
 
             int spawned = group.getSpawned(state.wave - 1);
@@ -109,13 +109,13 @@ public class WaveSpawner{
     }
 
     public void spawnUnit(SpawnGroup group, float x, float y){
-        group.createUnit(group.team == null ? state.rules.waveTeam : group.team, x, y,
+        group.createUnit(group.team == null ? world.state.rules.waveTeam : group.team, x, y,
             Angles.angle(x, y, world.width()/2f * tilesize, world.height()/2f * tilesize), state.wave - 1, this::spawnEffect);
     }
 
     public void doShockwave(float x, float y){
-        Fx.spawnShockwave.at(x, y, state.rules.dropZoneRadius);
-        Damage.damage(state.rules.waveTeam, x, y, state.rules.dropZoneRadius, 99999999f, true);
+        Fx.spawnShockwave.at(x, y, world.state.rules.dropZoneRadius);
+        Damage.damage(world.state.rules.waveTeam, x, y, world.state.rules.dropZoneRadius, 99999999f, true);
     }
 
     public void eachGroundSpawn(Intc2 cons){
@@ -131,9 +131,9 @@ public class WaveSpawner{
             }
         }
 
-        if(state.rules.wavesSpawnAtCores && state.rules.attackMode && state.teams.isActive(state.rules.waveTeam) && !state.teams.playerCores().isEmpty()){
+        if(world.state.rules.wavesSpawnAtCores && world.state.rules.attackMode && state.teams.isActive(world.state.rules.waveTeam) && !state.teams.playerCores().isEmpty()){
             Building firstCore = state.teams.playerCores().first();
-            for(CoreBuild core : state.rules.waveTeam.cores()){
+            for(CoreBuild core : world.state.rules.waveTeam.cores()){
                 if(filterPos != -1 && filterPos != core.pos()) continue;
 
                 if(core.commandPos != null){
@@ -178,7 +178,7 @@ public class WaveSpawner{
         for(Tile tile : spawns){
             if(filterPos != -1 && filterPos != tile.pos()) continue;
 
-            if(!state.rules.airUseSpawns){
+            if(!world.state.rules.airUseSpawns){
                 float angle = Angles.angle(world.width() / 2f, world.height() / 2f, tile.x, tile.y);
                 float trns = Math.max(world.width(), world.height()) * Mathf.sqrt2 * tilesize;
                 float spawnX = Mathf.clamp(world.width() * tilesize / 2f + Angles.trnsx(angle, trns), -margin, world.width() * tilesize + margin);
@@ -189,8 +189,8 @@ public class WaveSpawner{
             }
         }
 
-        if(state.rules.wavesSpawnAtCores && state.rules.attackMode && state.teams.isActive(state.rules.waveTeam)){
-            for(Building core : state.rules.waveTeam.data().cores){
+        if(world.state.rules.wavesSpawnAtCores && world.state.rules.attackMode && state.teams.isActive(world.state.rules.waveTeam)){
+            for(Building core : world.state.rules.waveTeam.data().cores){
                 if(filterPos != -1 && filterPos != core.pos()) continue;
 
                 cons.get(core.x, core.y);

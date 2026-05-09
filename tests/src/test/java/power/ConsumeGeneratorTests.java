@@ -27,8 +27,8 @@ public class ConsumeGeneratorTests extends PowerTestFixture{
     private final float maximumLiquidUsage = 1f;
 
     public void createGenerator(InputType inputType){
-        Vars.state = new GameState();
-        Vars.state.rules = new Rules();
+        Vars.world.state = new GameState();
+        Vars.world.state.rules = new Rules();
         ConsumeGenerator generator = new ConsumeGenerator("fakegen" + System.nanoTime()){{
             powerProduction = 0.1f;
             itemDuration = fakeItemDuration;

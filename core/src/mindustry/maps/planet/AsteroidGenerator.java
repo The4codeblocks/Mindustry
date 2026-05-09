@@ -48,7 +48,7 @@ public class AsteroidGenerator extends BlankPlanetGenerator{
 
     @Override
     public void generate(){
-        seed = state.rules.sector.planet.id;
+        seed = world.state.rules.sector.planet.id;
         int sx = width/2, sy = height/2;
         rand = new Rand(seed);
 
@@ -137,22 +137,22 @@ public class AsteroidGenerator extends BlankPlanetGenerator{
 
         Schematics.placeLaunchLoadout(sx, sy);
 
-        state.rules.planetBackground = new PlanetParams(){{
+        world.state.rules.planetBackground = new PlanetParams(){{
             planet = sector.planet;
             zoom = 1f;
             camPos = new Vec3(1.2388899f, 1.6047299f, 2.4758825f);
         }};
 
-        state.rules.dragMultiplier = 0.7f; //yes, space actually has 0 drag but true 0% drag is very annoying
-        state.rules.borderDarkness = false;
-        state.rules.waves = true;
+        world.state.rules.dragMultiplier = 0.7f; //yes, space actually has 0 drag but true 0% drag is very annoying
+        world.state.rules.borderDarkness = false;
+        world.state.rules.waves = true;
 
         //TODO ???
-        //state.rules.hiddenBuildItems.addAll(Items.plastanium, Items.surgeAlloy);
+        //world.state.rules.hiddenBuildItems.addAll(Items.plastanium, Items.surgeAlloy);
         //TODO maybe make this on by default everywhere
-        state.rules.showSpawns = true;
+        world.state.rules.showSpawns = true;
         //TODO better wavegen, do it by hand even
-        state.rules.spawns = Waves.generate(0.5f, rand, false, true, false);
+        world.state.rules.spawns = Waves.generate(0.5f, rand, false, true, false);
     }
 
     @Override

@@ -276,8 +276,8 @@ public class DesktopInput extends InputHandler{
                 Core.camera.position.add(Tmp.v1.setZero().add(Core.input.axis(Binding.moveX), Core.input.axis(Binding.moveY)).nor().scl(camSpeed));
             }else if((!player.dead() || spectating != null) && !panning){
                 //TODO do not pan
-                Team corePanTeam = state.won ? state.rules.waveTeam : player.team();
-                Position coreTarget = state.gameOver && !state.rules.pvp && corePanTeam.data().lastCore != null ? corePanTeam.data().lastCore : null;
+                Team corePanTeam = state.won ? world.state.rules.waveTeam : player.team();
+                Position coreTarget = state.gameOver && !world.state.rules.pvp && corePanTeam.data().lastCore != null ? corePanTeam.data().lastCore : null;
                 Position panTarget = coreTarget != null ? coreTarget : spectating != null ? spectating : player;
 
                 Core.camera.position.lerpDelta(panTarget, Core.settings.getBool("smoothcamera") ? 0.08f : 1f);
@@ -414,7 +414,7 @@ public class DesktopInput extends InputHandler{
             }
         }
 
-        if(!scene.hasMouse() && !locked && state.rules.possessionAllowed){
+        if(!scene.hasMouse() && !locked && world.state.rules.possessionAllowed){
             if(Core.input.keyDown(Binding.control) && Core.input.keyTap(Binding.select)){
                 Unit on = selectedUnit();
                 var build = selectedControlBuild();

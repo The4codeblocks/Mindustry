@@ -242,8 +242,8 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
         }
 
         //view current planet by default
-        if(Vars.state.rules.sector != null){
-            state.planet = Vars.state.rules.sector.planet;
+        if(Vars.world.state.rules.sector != null){
+            state.planet = Vars.world.state.rules.sector.planet;
             settings.put("lastplanet", state.planet.name);
         }
 
@@ -260,7 +260,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
         zoom = 1f;
         state.zoom = 1f;
         state.uiAlpha = 0f;
-        launchSector = Vars.state.gameOver ? null : Vars.state.getSector();
+        launchSector = Vars.world.state.gameOver ? null : Vars.world.state.getSector();
         presetShow = 0f;
         showed = false;
         listener = s -> {};
@@ -478,7 +478,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
             }
         }
 
-        Sector current = Vars.state.getSector() != null && Vars.state.getSector().isBeingPlayed() && Vars.state.getSector().planet == state.planet ? Vars.state.getSector() : null;
+        Sector current = Vars.world.state.getSector() != null && Vars.world.state.getSector().isBeingPlayed() && Vars.world.state.getSector().planet == state.planet ? Vars.world.state.getSector() : null;
 
         if(current != null){
             planets.fill(current, hoverColor.write(Tmp.c1).mulA(state.uiAlpha), -0.001f);
@@ -1382,7 +1382,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
         boolean shouldHide = true;
 
         //save before launch.
-        if(control.saves.getCurrent() != null && Vars.state.isGame() && mode != select){
+        if(control.saves.getCurrent() != null && Vars.world.state.isGame() && mode != select){
             try{
                 control.saves.getCurrent().save();
             }catch(Throwable e){

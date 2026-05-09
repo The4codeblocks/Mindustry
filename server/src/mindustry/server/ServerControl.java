@@ -78,22 +78,22 @@ public class ServerControl implements ApplicationListener{
     private Seq<String> contentPatches = new Seq<>();
 
     public Cons<GameOverEvent> gameOverListener = event -> {
-        if(state.rules.waves){
-            info("Game over! Reached wave @ with @ players online on map @.", state.wave, Groups.player.size(), Strings.capitalize(state.map.plainName()));
+        if(world.state.rules.waves){
+            info("Game over! Reached wave @ with @ players online on map @.", world.state.wave, Groups.player.size(), Strings.capitalize(world.state.map.plainName()));
         }else{
-            info("Game over! Team @ is victorious with @ players online on map @.", event.winner.name, Groups.player.size(), Strings.capitalize(state.map.plainName()));
+            info("Game over! Team @ is victorious with @ players online on map @.", event.winner.name, Groups.player.size(), Strings.capitalize(world.state.map.plainName()));
         }
 
         //set the next map to be played
-        Map map = maps.getNextMap(lastMode, state.map);
+        Map map = maps.getNextMap(lastMode, world.state.map);
         if(map != null){
-            Call.infoMessage((state.rules.pvp
+            Call.infoMessage((world.state.rules.pvp
                     ? "[accent]The " + event.winner.coloredName() + " team is victorious![]\n" : "[scarlet]Game over![]\n")
                     + "\nNext selected map: [accent]" + map.name() + "[white]"
                     + (map.hasTag("author") ? " by[accent] " + map.author() + "[white]" : "") + "." +
                     "\nNew game begins in " + Config.roundExtraTime.num() + " seconds.");
 
-            state.gameOver = true;
+            world.state.gameOver = true;
             Call.updateGameOver(event.winner);
 
             info("Selected next map to be @.", map.plainName());
@@ -101,7 +101,7 @@ public class ServerControl implements ApplicationListener{
             play(() -> world.loadMap(map, map.applyRules(lastMode)));
         }else{
             netServer.kickAll(KickReason.gameover);
-            state.set(State.menu);
+            world.state.set(State.menu);
             net.closeServer();
         }
     };
@@ -165,7 +165,7 @@ public class ServerControl implements ApplicationListener{
                     try{
                         SaveIO.load(fi);
                         info("Auto-save loaded.");
-                        state.set(State.playing);
+                        world.state.set(State.playing);
                         netServer.openServer();
                     }catch(Throwable e){
                         err(e);
@@ -226,12 +226,12 @@ public class ServerControl implements ApplicationListener{
 
         //autosave periodically
         Events.run(Trigger.update, () -> {
-            if(state.isPlaying() && Config.autosave.bool()){
+            if(world.state.isPlaying() && Config.autosave.bool()){
                 if(autosaveCount.get(Config.autosaveSpacing.num() * 60)){
                     int max = Config.autosaveAmount.num();
 
                     //use map file name to make sure it can be saved
-                    String mapName = (state.map.file == null ? "unknown" : state.map.file.nameWithoutExtension()).replace(" ", "_");
+                    String mapName = (world.state.map.file == null ? "unknown" : world.state.map.file.nameWithoutExtension()).replace(" ", "_");
                     String date = autosaveDate.format(LocalDateTime.now());
 
                     Seq<Fi> autosaves = saveDirectory.findAll(f -> f.name().startsWith("auto_"));
@@ -257,17 +257,17 @@ public class ServerControl implements ApplicationListener{
                 }
             }
 
-            if(state.isGame()){ //run this only if the server's actually hosting
+            if(world.state.isGame()){ //run this only if the server's actually hosting
                 if(Config.autoPause.bool()){
                     if(Groups.player.isEmpty()){
                         autoPaused = true;
-                        state.set(State.paused);
+                        world.state.set(State.paused);
                     }else if(autoPaused){
                         autoPaused = false;
-                        state.set(State.playing);
+                        world.state.set(State.playing);
                     }
-                }else if(autoPaused && Vars.state.isPaused()){ //unpause when the config is disabled
-                    state.set(State.playing);
+                }else if(autoPaused && Vars.world.state.isPaused()){ //unpause when the config is disabled
+                    world.state.set(State.playing);
                     autoPaused = false;
                 }
             }
@@ -285,7 +285,7 @@ public class ServerControl implements ApplicationListener{
         Events.on(PlayEvent.class, e -> {
             try{
                 JsonValue value = JsonIO.json.fromJson(null, Core.settings.getString("globalrules"));
-                JsonIO.json.readFields(state.rules, value);
+                JsonIO.json.readFields(world.state.rules, value);
             }catch(Throwable t){
                 err("Error applying custom rules, proceeding without them.", t);
             }
@@ -380,12 +380,12 @@ public class ServerControl implements ApplicationListener{
         handler.register("stop", "Stop hosting the server.", arg -> {
             net.closeServer();
             cancelPlayTask();
-            state.set(State.menu);
+            world.state.set(State.menu);
             info("Stopped server.");
         });
 
         handler.register("host", "[mapname] [mode]", "Open the server. Will default to survival and a random map if not specified.", arg -> {
-            if(state.isGame()){
+            if(world.state.isGame()){
                 err("Already hosting. Type 'stop' to stop hosting first.");
                 return;
             }
@@ -412,7 +412,7 @@ public class ServerControl implements ApplicationListener{
                     return;
                 }
             }else{
-                result = maps.getShuffleMode().next(preset, state.map);
+                result = maps.getShuffleMode().next(preset, world.state.map);
                 if(result != null){
                     info("Randomized next map to be @.", result.plainName());
                 }
@@ -426,7 +426,7 @@ public class ServerControl implements ApplicationListener{
                 Core.settings.put("lastServerMode", lastMode.name());
                 try{
                     world.loadMap(result, result.applyRules(lastMode));
-                    state.rules = result.applyRules(preset);
+                    world.state.rules = result.applyRules(preset);
                     logic.play();
 
                     info("Map loaded.");
@@ -488,16 +488,16 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("status", "Display server status.", arg -> {
-            if(state.isMenu()){
+            if(world.state.isMenu()){
                 info("Status: &rserver closed");
             }else{
                 info("Status:");
-                info("  Playing on map &fi@ / Wave @", Strings.capitalize(state.map.plainName()), state.wave);
+                info("  Playing on map &fi@ / Wave @", Strings.capitalize(world.state.map.plainName()), world.state.wave);
 
-                if(state.rules.waves){
-                    info("  @ seconds until next wave.", (int)(state.wavetime / 60));
+                if(world.state.rules.waves){
+                    info("  @ seconds until next wave.", (int)(world.state.wavetime / 60));
                 }
-                info("  @ units / @ enemies", Groups.unit.size(), state.enemies);
+                info("  @ units / @ enemies", Groups.unit.size(), world.state.enemies);
 
                 info("  @ FPS, @ MB used.", Core.graphics.getFramesPerSecond(), Core.app.getJavaHeap() / 1024 / 1024);
 
@@ -543,7 +543,7 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("say", "<message...>", "Send a message to all players.", arg -> {
-            if(!state.isGame()){
+            if(!world.state.isGame()){
                 err("Not hosting. Host a game first.");
                 return;
             }
@@ -554,13 +554,13 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("pause", "<on/off>", "Pause or unpause the game.", arg -> {
-            if(state.isMenu()){
+            if(world.state.isMenu()){
                 err("Cannot pause without a game running.");
                 return;
             }
             boolean pause = arg[0].equals("on");
             autoPaused = false;
-            state.set(pause ? State.paused : State.playing);
+            world.state.set(pause ? State.paused : State.playing);
             info(pause ? "Game paused." : "Game unpaused.");
         });
 
@@ -600,7 +600,7 @@ public class ServerControl implements ApplicationListener{
                         JsonValue parent = new JsonValue(ValueType.object);
                         parent.addChild(value);
 
-                        JsonIO.json.readField(state.rules, value.name, parent);
+                        JsonIO.json.readField(world.state.rules, value.name, parent);
                         if(base.has(value.name)){
                             base.remove(value.name);
                         }
@@ -612,12 +612,12 @@ public class ServerControl implements ApplicationListener{
                 }
 
                 Core.settings.put("globalrules", base.toString());
-                Call.setRules(state.rules);
+                Call.setRules(world.state.rules);
             }
         });
 
         handler.register("fillitems", "[team]", "Fill the core with items.", arg -> {
-            if(!state.isGame()){
+            if(!world.state.isGame()){
                 err("Not playing. Host first.");
                 return;
             }
@@ -629,13 +629,13 @@ public class ServerControl implements ApplicationListener{
                 return;
             }
 
-            if(state.teams.cores(team).isEmpty()){
+            if(world.state.teams.cores(team).isEmpty()){
                 err("That team has no cores.");
                 return;
             }
 
             for(Item item : content.items()){
-                state.teams.cores(team).first().items.set(item, state.teams.cores(team).first().storageCapacity);
+                world.state.teams.cores(team).first().items.set(item, world.state.teams.cores(team).first().storageCapacity);
             }
 
             info("Core filled.");
@@ -836,7 +836,7 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("kick", "<username...>", "Kick a person by name.", arg -> {
-            if(!state.isGame()){
+            if(!world.state.isGame()){
                 err("Not hosting a game yet. Calm down.");
                 return;
             }
@@ -929,7 +929,7 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("admin", "<add/remove> <username/ID...>", "Make an online user admin", arg -> {
-            if(!state.isGame()){
+            if(!world.state.isGame()){
                 err("Open the server first.");
                 return;
             }
@@ -988,7 +988,7 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("runwave", "Trigger the next wave.", arg -> {
-            if(!state.isGame()){
+            if(!world.state.isGame()){
                 err("Not hosting. Host a game first.");
             }else{
                 logic.runWave();
@@ -997,7 +997,7 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("loadautosave", "Loads the last auto-save.", arg -> {
-            if(state.isGame()){
+            if(world.state.isGame()){
                 err("Already hosting. Type 'stop' to stop hosting first.");
                 return;
             }
@@ -1017,9 +1017,9 @@ public class ServerControl implements ApplicationListener{
             Core.app.post(() -> {
                 try{
                     SaveIO.load(newestSave);
-                    state.rules.sector = null;
+                    world.state.rules.sector = null;
                     info("Save loaded.");
-                    state.set(State.playing);
+                    world.state.set(State.playing);
                     netServer.openServer();
                 }catch(Throwable t){
                     err("Failed to load save. Outdated or corrupt file.");
@@ -1028,7 +1028,7 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("load", "<slot>", "Load a save from a slot.", arg -> {
-            if(state.isGame()){
+            if(world.state.isGame()){
                 err("Already hosting. Type 'stop' to stop hosting first.");
                 return;
             }
@@ -1043,9 +1043,9 @@ public class ServerControl implements ApplicationListener{
             Core.app.post(() -> {
                 try{
                     SaveIO.load(file);
-                    state.rules.sector = null;
+                    world.state.rules.sector = null;
                     info("Save loaded.");
-                    state.set(State.playing);
+                    world.state.set(State.playing);
                     netServer.openServer();
                 }catch(Throwable t){
                     err("Failed to load save. Outdated or corrupt file.");
@@ -1054,7 +1054,7 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("save", "<slot>", "Save game state to a slot.", arg -> {
-            if(!state.isGame()){
+            if(!world.state.isGame()){
                 err("Not hosting. Host a game first.");
                 return;
             }
@@ -1077,14 +1077,14 @@ public class ServerControl implements ApplicationListener{
         });
 
         handler.register("gameover", "Force a game over.", arg -> {
-            if(state.isMenu()){
+            if(world.state.isMenu()){
                 err("Not playing a map.");
                 return;
             }
 
             info("Core destroyed.");
             inGameOverWait = false;
-            Events.fire(new GameOverEvent(state.rules.waveTeam));
+            Events.fire(new GameOverEvent(world.state.rules.waveTeam));
         });
 
         handler.register("info", "<IP/UUID/name...>", "Find player info(s). Can optionally check for all names or IPs a player has had.", arg -> {
@@ -1231,7 +1231,7 @@ public class ServerControl implements ApplicationListener{
 
                 run.run();
 
-                state.rules = state.map.applyRules(lastMode);
+                world.state.rules = world.state.map.applyRules(lastMode);
                 logic.play();
 
                 reloader.end();

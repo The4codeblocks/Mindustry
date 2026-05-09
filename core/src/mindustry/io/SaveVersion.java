@@ -115,8 +115,8 @@ public abstract class SaveVersion extends SaveFileReader{
     public void writeMeta(DataOutput stream, StringMap tags) throws IOException{
         //prepare campaign data for writing
         if(state.isCampaign()){
-            state.rules.sector.info.prepare(state.rules.sector);
-            state.rules.sector.saveInfo();
+            world.state.rules.sector.info.prepare(world.state.rules.sector);
+            world.state.rules.sector.saveInfo();
         }
 
         //flush tech node progress
@@ -136,8 +136,8 @@ public abstract class SaveVersion extends SaveFileReader{
             "tick", state.tick,
             "wavetime", state.wavetime,
             "stats", JsonIO.write(state.stats),
-            "rules", JsonIO.write(state.rules),
-            "sectorPreset", state.rules.sector != null && state.rules.sector.preset != null ? state.rules.sector.preset.name : "", //empty string is a placeholder for null (null is possible but may be finicky)
+            "rules", JsonIO.write(world.state.rules),
+            "sectorPreset", world.state.rules.sector != null && world.state.rules.sector.preset != null ? world.state.rules.sector.preset.name : "", //empty string is a placeholder for null (null is possible but may be finicky)
             "locales", JsonIO.write(state.mapLocales),
             "mods", JsonIO.write(mods.getModStrings().toArray(String.class)),
             "controlGroups", headless || control == null ? "null" : JsonIO.write(control.input.controlGroups),
@@ -145,8 +145,8 @@ public abstract class SaveVersion extends SaveFileReader{
             "height", world.height(),
             "viewpos", Tmp.v1.set(player == null ? Vec2.ZERO : player).toString(),
             "controlledType", headless || control.input.controlledType == null ? "null" : control.input.controlledType.name,
-            "nocores", state.rules.defaultTeam.cores().isEmpty(),
-            "playerteam", player == null ? state.rules.defaultTeam.id : player.team().id
+            "nocores", world.state.rules.defaultTeam.cores().isEmpty(),
+            "playerteam", player == null ? world.state.rules.defaultTeam.id : player.team().id
         )));
     }
 
@@ -154,23 +154,23 @@ public abstract class SaveVersion extends SaveFileReader{
         StringMap map = readStringMap(stream);
 
         state.wave = map.getInt("wave");
-        state.wavetime = map.getFloat("wavetime", state.rules.waveSpacing);
+        state.wavetime = map.getFloat("wavetime", world.state.rules.waveSpacing);
         state.tick = map.getFloat("tick");
         state.stats = JsonIO.read(GameStats.class, map.get("stats", "{}"));
-        state.rules = JsonIO.read(Rules.class, map.get("rules", "{}"));
+        world.state.rules = JsonIO.read(Rules.class, map.get("rules", "{}"));
         state.mapLocales = JsonIO.read(MapLocales.class, map.get("locales", "{}"));
-        if(state.rules.spawns.isEmpty()) state.rules.spawns = waves.get();
+        if(world.state.rules.spawns.isEmpty()) world.state.rules.spawns = waves.get();
 
         if(context.getSector() != null){
-            state.rules.sector = context.getSector();
-            if(state.rules.sector != null){
-                state.rules.sector.planet.applyRules(state.rules);
+            world.state.rules.sector = context.getSector();
+            if(world.state.rules.sector != null){
+                world.state.rules.sector.planet.applyRules(world.state.rules);
             }
         }
 
         //replace the default serpulo env with erekir
-        if(state.rules.planet == Planets.serpulo && state.rules.hasEnv(Env.scorching)){
-            state.rules.planet = Planets.erekir;
+        if(world.state.rules.planet == Planets.serpulo && world.state.rules.hasEnv(Env.scorching)){
+            world.state.rules.planet = Planets.erekir;
         }
 
         if(!headless){
@@ -179,7 +179,7 @@ public abstract class SaveVersion extends SaveFileReader{
             player.set(Tmp.v1);
 
             control.input.controlledType = content.getByName(ContentType.unit, map.get("controlledType", "<none>"));
-            Team team = Team.get(map.getInt("playerteam", state.rules.defaultTeam.id));
+            Team team = Team.get(map.getInt("playerteam", world.state.rules.defaultTeam.id));
             if(!net.client() && team != Team.derelict){
                 player.team(team);
             }

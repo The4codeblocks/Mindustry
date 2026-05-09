@@ -252,7 +252,7 @@ public class Accelerator extends Block{
 
             if(!canLaunch()) return;
 
-            ui.planet.showPlanetLaunch(state.rules.sector, launchCandidates == null ? state.rules.sector.planet.launchCandidates : launchCandidates, sector -> {
+            ui.planet.showPlanetLaunch(world.state.rules.sector, launchCandidates == null ? world.state.rules.sector.planet.launchCandidates : launchCandidates, sector -> {
                 if(canLaunch()){
                     consume();
                     ItemSeq resources = new ItemSeq();
@@ -465,7 +465,7 @@ public class Accelerator extends Block{
             }
 
             //draw clouds
-            if(state.rules.cloudColor.a > 0.0001f){
+            if(world.state.rules.cloudColor.a > 0.0001f){
                 float scaling = CoreBlock.cloudScaling;
                 float sscl = Math.max(1f + Mathf.clamp(fin + CoreBlock.cfinOffset) * CoreBlock.cfinScl, 0f) * cameraScl;
 
@@ -479,7 +479,7 @@ public class Accelerator extends Block{
                 Tmp.tr1.scroll(10f * cloudSeed, 10f * cloudSeed);
 
                 Draw.alpha(Mathf.sample(CoreBlock.cloudAlphas, fin + CoreBlock.calphaFinOffset) * CoreBlock.cloudAlpha);
-                Draw.mixcol(state.rules.cloudColor, state.rules.cloudColor.a);
+                Draw.mixcol(world.state.rules.cloudColor, world.state.rules.cloudColor.a);
                 Draw.rect(Tmp.tr1, Core.camera.position.x, Core.camera.position.y, Core.camera.width, Core.camera.height);
                 Draw.reset();
             }

@@ -43,8 +43,8 @@ public class DatabaseDialog extends BaseDialog{
             sortContents();
             if(state.isCampaign() && allTabs.contains(state.getPlanet())){
                 tab = state.getPlanet();
-            }else if(state.isGame() && state.rules.planet != null && allTabs.contains(state.rules.planet)){
-                tab = state.rules.planet;
+            }else if(state.isGame() && world.state.rules.planet != null && allTabs.contains(world.state.rules.planet)){
+                tab = world.state.rules.planet;
             }
 
             rebuild();
@@ -239,6 +239,6 @@ public class DatabaseDialog extends BaseDialog{
     }
 
     boolean unlocked(UnlockableContent content){
-        return (!Vars.state.isCampaign() && !Vars.state.isMenu()) || content.unlocked();
+        return (!Vars.world.state.isCampaign() && !Vars.world.state.isMenu()) || content.unlocked();
     }
 }

@@ -63,7 +63,7 @@ public class HudFragment{
         Table blockSelection = new Table();
         var pane = new ScrollPane(blockSelection, Styles.smallPane);
         pane.setFadeScrollBars(false);
-        Planet[] last = {state.rules.planet};
+        Planet[] last = {world.state.rules.planet};
         pane.update(() -> {
             if(pane.hasScroll()){
                 Element result = Core.scene.getHoverElement();
@@ -72,8 +72,8 @@ public class HudFragment{
                 }
             }
 
-            if(state.rules.planet != last[0]){
-                last[0] = state.rules.planet;
+            if(world.state.rules.planet != last[0]){
+                last[0] = world.state.rules.planet;
                 rebuildBlockSelection(blockSelection, "");
             }
         });
@@ -166,7 +166,7 @@ public class HudFragment{
 
             if(!Core.atlas.isFound(region)
             || (!block.inEditor && !(block instanceof RemoveWall) && !(block instanceof RemoveOre))
-            || !block.isOnPlanet(state.rules.planet)
+            || !block.isOnPlanet(world.state.rules.planet)
             || block.buildVisibility == BuildVisibility.debugOnly
             || (!searchText.isEmpty() && !(block == Blocks.removeOre || block == Blocks.removeWall) && !block.localizedName.toLowerCase().contains(searchText.trim().replaceAll(" +", " ").toLowerCase()))
             ) continue;
@@ -238,10 +238,10 @@ public class HudFragment{
         //warn about guardian/boss waves
         Events.on(WaveEvent.class, e -> {
             int max = 10;
-            int winWave = state.rules.winWave > 0 ? state.rules.winWave : Integer.MAX_VALUE;
+            int winWave = world.state.rules.winWave > 0 ? world.state.rules.winWave : Integer.MAX_VALUE;
             outer:
             for(int i = state.wave - 1; i <= Math.min(state.wave + max, winWave - 2); i++){
-                for(SpawnGroup group : state.rules.spawns){
+                for(SpawnGroup group : world.state.rules.spawns){
                     if(group.effect == StatusEffects.boss && group.getSpawned(i) > 0){
                         int diff = (i + 2) - state.wave;
 
@@ -404,7 +404,7 @@ public class HudFragment{
                     select.button(Icon.pause, style, () -> {
                         if(net.active()){
                             ui.listfrag.toggle();
-                        }else if(!state.rules.pauseDisabled){
+                        }else if(!world.state.rules.pauseDisabled){
                             state.set(state.isPaused() ? State.playing : State.paused);
                         }
                     }).name("pause").update(i -> {
@@ -412,7 +412,7 @@ public class HudFragment{
                             i.setDisabled(false);
                             i.getStyle().imageUp = Icon.players;
                         }else{
-                            i.setDisabled(state.rules.pauseDisabled || (state.isCampaign() && state.afterGameOver));
+                            i.setDisabled(world.state.rules.pauseDisabled || (state.isCampaign() && state.afterGameOver));
                             i.getStyle().imageUp = state.isPaused() ? Icon.play : Icon.pause;
                         }
                     });
@@ -644,7 +644,7 @@ public class HudFragment{
                 }
                 return max == 0f ? 0f : val / max;
             }).blink(Color.white).outline(new Color(0, 0, 0, 0.6f), 7f)).grow())
-            .fillX().width(320f).height(60f).name("boss").visible(() -> state.rules.waves && state.boss() != null && !(mobile && Core.graphics.isPortrait())).padTop(7).row();
+            .fillX().width(320f).height(60f).name("boss").visible(() -> world.state.rules.waves && state.boss() != null && !(mobile && Core.graphics.isPortrait())).padTop(7).row();
 
             t.table(Styles.black3, p -> p.margin(4).label(() -> hudText).style(Styles.outlineLabel)).touchable(Touchable.disabled).with(p -> hudLabel = p)
                 .with(p -> p.visible(() -> (p.color.a = Mathf.lerpDelta(p.color.a, Mathf.num(showHudText), 0.2f)) >= 0.001f));
@@ -678,9 +678,9 @@ public class HudFragment{
                         c.clearChildren();
 
                         for(Item item : content.items()){
-                            if(state.rules.sector != null && state.rules.sector.info.getExport(item) >= 1){
+                            if(world.state.rules.sector != null && world.state.rules.sector.info.getExport(item) >= 1){
                                 c.image(item.uiIcon);
-                                c.label(() -> (int)state.rules.sector.info.getExport(item) + " /s").color(Color.lightGray);
+                                c.label(() -> (int)world.state.rules.sector.info.getExport(item) + " /s").color(Color.lightGray);
                                 c.row();
                             }
                         }
@@ -689,7 +689,7 @@ public class HudFragment{
                     c.update(() -> {
                         boolean wrong = false;
                         for(Item item : content.items()){
-                            boolean has = state.rules.sector != null && state.rules.sector.info.getExport(item) >= 1;
+                            boolean has = world.state.rules.sector != null && world.state.rules.sector.info.getExport(item) >= 1;
                             if(used.get(item.id) != has){
                                 used.set(item.id, has);
                                 wrong = true;
@@ -699,7 +699,7 @@ public class HudFragment{
                             rebuild.run();
                         }
                     });
-                }).visible(() -> state.isCampaign() && content.items().contains(i -> state.rules.sector != null && state.rules.sector.info.getExport(i) > 0));
+                }).visible(() -> state.isCampaign() && content.items().contains(i -> world.state.rules.sector != null && world.state.rules.sector.info.getExport(i) > 0));
             });
 
         blockfrag.build(parent);
@@ -1040,15 +1040,15 @@ public class HudFragment{
             builder.setLength(0);
 
             //mission overrides everything
-            if(state.rules.mission != null && state.rules.mission.length() > 0){
-                builder.append(state.rules.mission);
+            if(world.state.rules.mission != null && world.state.rules.mission.length() > 0){
+                builder.append(world.state.rules.mission);
                 return builder;
             }
 
             //objectives override mission?
-            if(state.rules.objectives.any()){
+            if(world.state.rules.objectives.any()){
                 boolean first = true;
-                for(var obj : state.rules.objectives){
+                for(var obj : world.state.rules.objectives){
                     if(!obj.qualified() || obj.hidden) continue;
 
                     String text = obj.text();
@@ -1066,7 +1066,7 @@ public class HudFragment{
                 }
             }
 
-            if(!state.rules.waves && state.rules.attackMode){
+            if(!world.state.rules.waves && world.state.rules.attackMode){
                 int sum = Math.max(state.teams.present.sum(t -> t.team != player.team() ? t.cores.size : 0), 1);
                 builder.append(sum > 1 ? enemycsf.get(sum) : enemycf.get(sum));
                 return builder;
@@ -1077,16 +1077,16 @@ public class HudFragment{
                 return builder;
             }
 
-            if(!state.rules.waves && state.isCampaign()){
+            if(!world.state.rules.waves && state.isCampaign()){
                 builder.append("[lightgray]").append(Core.bundle.get("sector.curcapture"));
             }
 
-            if(!state.rules.waves){
+            if(!world.state.rules.waves){
                 return builder;
             }
 
-            if(state.rules.winWave > 1 && state.rules.winWave >= state.wave){
-                builder.append(wavefc.get(state.wave, state.rules.winWave));
+            if(world.state.rules.winWave > 1 && world.state.rules.winWave >= state.wave){
+                builder.append(wavefc.get(state.wave, world.state.rules.winWave));
             }else{
                 builder.append(wavef.get(state.wave));
             }
@@ -1101,7 +1101,7 @@ public class HudFragment{
                 builder.append("\n");
             }
 
-            if(state.rules.waveTimer){
+            if(world.state.rules.waveTimer){
                 builder.append((logic.isWaitingWave() ? Core.bundle.get("wave.waveInProgress") : (waitingf.get((int)(state.wavetime/60)))));
             }else if(state.enemies == 0){
                 builder.append(Core.bundle.get("waiting"));
@@ -1115,11 +1115,11 @@ public class HudFragment{
         //TODO nobody reads details anyway.
         /*
         table.clicked(() -> {
-            if(state.rules.objectives.any()){
+            if(world.state.rules.objectives.any()){
                 StringBuilder text = new StringBuilder();
 
                 boolean first = true;
-                for(var obj : state.rules.objectives){
+                for(var obj : world.state.rules.objectives){
                     if(!obj.qualified()) continue;
 
                     String details = obj.details();
@@ -1188,7 +1188,7 @@ public class HudFragment{
     }
 
     private boolean canSkipWave(){
-        return state.rules.waves && state.rules.waveSending && ((net.server() || player.admin) || !net.active()) && state.enemies == 0 && !spawner.isSpawning();
+        return world.state.rules.waves && world.state.rules.waveSending && ((net.server() || player.admin) || !net.active()) && state.enemies == 0 && !spawner.isSpawning();
     }
 
 }

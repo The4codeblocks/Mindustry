@@ -61,7 +61,7 @@ public class Teams{
         for(TeamData data : active){
             if(team != data.team && data.team.rules().protectCores){
                 for(CoreBuild tile : data.cores){
-                    if(tile.within(x, y, state.rules.buildRadius(tile.team) + tilesize)){
+                    if(tile.within(x, y, world.state.rules.buildRadius(tile.team) + tilesize)){
                         return true;
                     }
                 }
@@ -108,7 +108,7 @@ public class Teams{
     }
 
     public Seq<CoreBuild> playerCores(){
-        return get(state.rules.defaultTeam).cores;
+        return get(world.state.rules.defaultTeam).cores;
     }
 
     /** Do not modify! */
@@ -218,7 +218,7 @@ public class Teams{
             data.units.add(unit);
             data.presentFlag = true;
 
-            if(unit.team == state.rules.waveTeam && unit.isBoss()){
+            if(unit.team == world.state.rules.waveTeam && unit.isBoss()){
                 bosses.add(unit);
             }
 
@@ -250,8 +250,8 @@ public class Teams{
     }
 
     private void updateEnemies(){
-        if(state.rules.waves && !active.contains(get(state.rules.waveTeam))){
-            active.add(get(state.rules.waveTeam));
+        if(world.state.rules.waves && !active.contains(get(world.state.rules.waveTeam))){
+            active.add(get(world.state.rules.waveTeam));
         }
 
         for(TeamData data : active){
@@ -444,7 +444,7 @@ public class Teams{
         }
 
         public boolean active(){
-            return (team == state.rules.waveTeam && state.rules.waves) || cores.size > 0 || buildings.size > 0 || (team == Team.neoplastic && units.size > 0);
+            return (team == world.state.rules.waveTeam && world.state.rules.waves) || cores.size > 0 || buildings.size > 0 || (team == Team.neoplastic && units.size > 0);
         }
 
         public boolean hasCore(){

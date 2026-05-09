@@ -1128,8 +1128,8 @@ public class LStatements{
             table.button(b -> {
                 b.label(() -> type.name());
                 b.clicked(() -> showSelect(b, Structs.filter(LUnitControl.class, LUnitControl.all, t ->
-                    t == LUnitControl.build ? state.rules.logicUnitBuild :
-                    t == LUnitControl.deconstruct ? state.rules.logicUnitDeconstruct :
+                    t == LUnitControl.build ? world.state.rules.logicUnitBuild :
+                    t == LUnitControl.deconstruct ? world.state.rules.logicUnitDeconstruct :
                     true
                 ), type, t -> {
                     type = t;
@@ -2178,7 +2178,7 @@ public class LStatements{
 
         @Override
         public LInstruction build(LAssembler builder){
-            if(!state.rules.allowLogicData) return null;
+            if(!world.state.rules.allowLogicData) return null;
             return new ClientDataI(builder.var(channel), builder.var(value), builder.var(reliable));
         }
 

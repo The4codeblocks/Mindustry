@@ -71,7 +71,7 @@ public class BlockRenderer{
 
         //sometimes darkness gets disabled.
         Events.run(Trigger.newGame, () -> {
-            if(hadMapLimit && !state.rules.limitMapArea){
+            if(hadMapLimit && !world.state.rules.limitMapArea){
                 updateDarkness();
                 renderer.minimap.updateAll();
             }
@@ -121,7 +121,7 @@ public class BlockRenderer{
         shadowEvents.clear();
         updateFloors.clear();
         lastCamY = lastCamX = -99; //invalidate camera position so blocks get updated
-        hadMapLimit = state.rules.limitMapArea;
+        hadMapLimit = world.state.rules.limitMapArea;
 
         shadows.getTexture().setFilter(TextureFilter.linear, TextureFilter.linear);
         shadows.resize(world.width(), world.height());
@@ -141,7 +141,7 @@ public class BlockRenderer{
                 updateFloors.add(new UpdateRenderState(tile, tile.overlay()));
             }
 
-            if(tile.build != null && (tile.team() == player.team() || !state.rules.fog || (tile.build.visibleFlags & (1L << player.team().id)) != 0)){
+            if(tile.build != null && (tile.team() == player.team() || !world.state.rules.fog || (tile.build.visibleFlags & (1L << player.team().id)) != 0)){
                 tile.build.wasVisible = true;
             }
 
@@ -181,19 +181,19 @@ public class BlockRenderer{
         dark.getTexture().setFilter(TextureFilter.linear);
         dark.resize(world.width(), world.height());
         //fill darkness with black when map area is limited
-        dark.begin(state.rules.limitMapArea ? Color.black : Color.white);
+        dark.begin(world.state.rules.limitMapArea ? Color.black : Color.white);
 
         Draw.proj().setOrtho(0, 0, dark.getWidth(), dark.getHeight());
 
         //clear out initial starting area
-        if(state.rules.limitMapArea){
+        if(world.state.rules.limitMapArea){
             Draw.color(Color.white);
-            Fill.crect(state.rules.limitX, state.rules.limitY, state.rules.limitWidth, state.rules.limitHeight);
+            Fill.crect(world.state.rules.limitX, world.state.rules.limitY, world.state.rules.limitWidth, world.state.rules.limitHeight);
         }
 
         for(Tile tile : world.tiles){
             //skip lighting outside rect
-            if(state.rules.limitMapArea && !Rect.contains(state.rules.limitX, state.rules.limitY, state.rules.limitWidth - 1, state.rules.limitHeight - 1, tile.x, tile.y)){
+            if(world.state.rules.limitMapArea && !Rect.contains(world.state.rules.limitX, world.state.rules.limitY, world.state.rules.limitWidth - 1, world.state.rules.limitHeight - 1, tile.x, tile.y)){
                 continue;
             }
 
@@ -351,7 +351,7 @@ public class BlockRenderer{
             for(Tile tile : shadowEvents){
                 if(tile == null) continue;
                 //draw white/shadow color depending on blend
-                Draw.color((!tile.block().displayShadow(tile) || (state.rules.fog && tile.build != null && !tile.build.wasVisible) || (ignoreBuildings && !tile.block().isStatic()) || (ignoreTerrain && tile.block().isStatic())) ? Color.white : blendShadowColor);
+                Draw.color((!tile.block().displayShadow(tile) || (world.state.rules.fog && tile.build != null && !tile.build.wasVisible) || (ignoreBuildings && !tile.block().isStatic()) || (ignoreTerrain && tile.block().isStatic())) ? Color.white : blendShadowColor);
                 Fill.rect(tile.x + 0.5f, tile.y + 0.5f, 1, 1);
             }
 

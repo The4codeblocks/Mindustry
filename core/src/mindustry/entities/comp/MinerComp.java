@@ -65,7 +65,7 @@ abstract class MinerComp implements Itemsc, Posc, Teamc, Rotc, Drawc{
     }
 
     public boolean canMine(){
-        return type.mineSpeed * state.rules.unitMineSpeed(team()) > 0 && type.mineTier >= 0;
+        return type.mineSpeed * world.state.rules.unitMineSpeed(team()) > 0 && type.mineTier >= 0;
     }
 
     @Override
@@ -89,7 +89,7 @@ abstract class MinerComp implements Itemsc, Posc, Teamc, Rotc, Drawc{
             mineTile = null;
             mineTimer = 0f;
         }else if(mining() && item != null){
-            mineTimer += Time.delta * type.mineSpeed * state.rules.unitMineSpeed(team());
+            mineTimer += Time.delta * type.mineSpeed * world.state.rules.unitMineSpeed(team());
 
             if(Mathf.chance(0.06 * Time.delta)){
                 Fx.pulverizeSmall.at(mineTile.worldx() + Mathf.range(tilesize / 2f), mineTile.worldy() + Mathf.range(tilesize / 2f), 0f, item.color);
@@ -98,7 +98,7 @@ abstract class MinerComp implements Itemsc, Posc, Teamc, Rotc, Drawc{
             if(mineTimer >= 50f + (type.mineHardnessScaling ? item.hardness*15f : 15f)){
                 mineTimer = 0;
 
-                if(state.rules.sector != null && team() == state.rules.defaultTeam) state.rules.sector.info.handleProduction(item, 1);
+                if(world.state.rules.sector != null && team() == world.state.rules.defaultTeam) world.state.rules.sector.info.handleProduction(item, 1);
 
                 if(core != null && within(core, mineTransferRange) && core.acceptStack(item, 1, this) == 1 && offloadImmediately()){
                     //add item to inventory before it is transferred
