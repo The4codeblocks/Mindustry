@@ -33,7 +33,7 @@ public class PlayerListFragment{
             cont.name = "playerlist";
             cont.visible(() -> visible);
             cont.update(() -> {
-                if(!(net.active() && state.isGame())){
+                if(!(net.active() && world.state.isGame())){
                     visible = false;
                     return;
                 }
@@ -74,7 +74,7 @@ public class PlayerListFragment{
     }
 
     public void rebuild(){
-        boolean allowTeamSwitch = !state.isCampaign() && (world.state.rules.pvp || world.state.rules.infiniteResources);
+        boolean allowTeamSwitch = !world.state.isCampaign() && (world.state.rules.pvp || world.state.rules.infiniteResources);
 
         content.clear();
 

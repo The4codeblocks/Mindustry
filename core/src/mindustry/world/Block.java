@@ -1076,7 +1076,7 @@ public class Block extends UnlockableContent implements Senseable{
     }
 
     public boolean environmentBuildable(){
-        return isOnPlanet(state.getPlanet());
+        return isOnPlanet(world.state.getPlanet());
     }
 
     public boolean isStatic(){

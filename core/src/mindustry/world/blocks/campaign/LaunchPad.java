@@ -85,7 +85,7 @@ public class LaunchPad extends Block{
 
         @Override
         public Cursor getCursor(){
-            return !state.isCampaign() || net.client() ? SystemCursor.arrow : super.getCursor();
+            return !world.state.isCampaign() || net.client() ? SystemCursor.arrow : super.getCursor();
         }
 
         @Override
@@ -164,7 +164,7 @@ public class LaunchPad extends Block{
         public void display(Table table){
             super.display(table);
 
-            if(!state.isCampaign() || net.client() || team != player.team()) return;
+            if(!world.state.isCampaign() || net.client() || team != player.team()) return;
 
             table.row();
             table.label(() -> {
@@ -178,23 +178,23 @@ public class LaunchPad extends Block{
 
         @Override
         public boolean shouldShowConfigure(Player player){
-            return state.isCampaign();
+            return world.state.isCampaign();
         }
 
         @Override
         public void buildConfiguration(Table table){
-            if(!state.isCampaign() || net.client()){
+            if(!world.state.isCampaign() || net.client()){
                 deselect();
                 return;
             }
 
             table.button(Icon.upOpen, Styles.cleari, () -> {
                 ui.planet.showSelect(world.state.rules.sector, other -> {
-                    if(state.isCampaign() && other.planet == world.state.rules.sector.planet){
+                    if(world.state.isCampaign() && other.planet == world.state.rules.sector.planet){
                         var prev = world.state.rules.sector.info.destination;
                         world.state.rules.sector.info.destination = other;
                         if(prev != null){
-                            prev.info.refreshImportRates(state.getPlanet());
+                            prev.info.refreshImportRates(world.state.getPlanet());
                         }
                     }
                 });
@@ -288,7 +288,7 @@ public class LaunchPad extends Block{
 
         @Override
         public void remove(){
-            if(!state.isCampaign() || net.client()) return;
+            if(!world.state.isCampaign() || net.client()) return;
 
             Sector destsec = world.state.rules.sector.info.destination;
 
@@ -304,7 +304,7 @@ public class LaunchPad extends Block{
                     Events.fire(new LaunchItemEvent(stack));
                 }
 
-                if(state.getPlanet().campaignRules.legacyLaunchPads){
+                if(world.state.getPlanet().campaignRules.legacyLaunchPads){
                     destsec.addItems(dest);
                 }
             }

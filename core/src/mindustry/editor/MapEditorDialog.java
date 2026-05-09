@@ -219,7 +219,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
                         });
 
                         for(int i = 0; i < steps; i++){
-                            for(TeamData data : state.teams.getActive()){
+                            for(TeamData data : world.state.teams.getActive()){
                                 if(data.team.rules().fillItems && data.cores.size > 0){
                                     var core = data.cores.first();
                                     content.items().each(it -> {
@@ -314,7 +314,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
     }
 
     public void resumeEditing(){
-        state.set(State.menu);
+        world.state.set(State.menu);
         shownWithMap = true;
         show();
         world.state.rules = (lastSavedRules == null ? new Rules() : lastSavedRules);
@@ -329,18 +329,18 @@ public class MapEditorDialog extends Dialog implements Disposable{
             lastSavedRules = world.state.rules;
             hide();
             //only reset the player; logic.reset() will clear entities, which we do not want
-            state.teams = new Teams();
+            world.state.teams = new Teams();
             player.reset();
             world.state.rules = Gamemode.editor.apply(lastSavedRules.copy());
             world.state.rules.limitMapArea = false;
             world.state.rules.sector = null;
             world.state.rules.fog = false;
-            state.map = new Map(StringMap.of(
+            world.state.map = new Map(StringMap.of(
                 "name", "Editor Playtesting",
                 "width", editor.width(),
                 "height", editor.height()
             ));
-            state.set(State.playing);
+            world.state.set(State.playing);
             world.endMapLoad();
             player.clearUnit();
 
@@ -399,7 +399,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
         world.state.rules.allowEditRules = false;
         world.state.rules.objectiveFlags.clear();
         world.state.rules.objectives.each(MapObjective::reset);
-        state.stats = new GameStats();
+        world.state.stats = new GameStats();
         String name = editor.tags.get("name", "").trim();
         editor.tags.put("rules", JsonIO.write(world.state.rules));
         editor.tags.remove("width");

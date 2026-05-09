@@ -84,7 +84,7 @@ public class BlockIndexer{
 
             //so WorldLoadEvent gets called twice sometimes... ugh
             for(Team team : Team.all){
-                var data = state.teams.get(team);
+                var data = world.state.teams.get(team);
                 if(data != null){
                     if(data.buildingTree != null) data.buildingTree.clear();
                     if(data.turretTree != null) data.turretTree.clear();
@@ -118,7 +118,7 @@ public class BlockIndexer{
             updatePresentOres();
 
             for(Team team : Team.all){
-                var data = state.teams.get(team);
+                var data = world.state.teams.get(team);
 
                 if(team.rules().prebuildAi && data.hasCore()){
                     PrebuildAI.sortPlans(data.plans);
@@ -388,7 +388,7 @@ public class BlockIndexer{
     /** Get all enemy blocks with a flag. */
     public Seq<Building> getEnemy(Team team, BlockFlag type){
         breturnArray.clear();
-        Seq<TeamData> data = state.teams.present;
+        Seq<TeamData> data = world.state.teams.present;
         //when team data is not initialized, scan through every team. this is terrible
         if(data.isEmpty()){
             for(Team enemy : Team.all){

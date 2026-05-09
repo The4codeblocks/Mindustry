@@ -388,8 +388,8 @@ public class Shaders{
             super("shockwave", "screenspace");
 
             Events.run(Trigger.update, () -> {
-                if(state.isPaused()) return;
-                if(state.isMenu()){
+                if(world.state.isPaused()) return;
+                if(world.state.isMenu()){
                     data.size = 0;
                     return;
                 }

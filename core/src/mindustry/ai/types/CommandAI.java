@@ -215,7 +215,7 @@ public class CommandAI extends AIController{
             if(command == UnitCommand.loadBlocksCommand && (targetPos == null || unit.within(targetPos, 1f))){
                 Building build = world.buildWorld(unit.x, unit.y);
 
-                if(build != null && state.teams.canInteract(unit.team, build.team)){
+                if(build != null && world.state.teams.canInteract(unit.team, build.team)){
                     //pick up block's payload
                     Payload current = build.getPayload();
                     if(current != null && pay.canPickupPayload(current)){

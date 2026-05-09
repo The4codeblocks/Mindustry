@@ -82,7 +82,7 @@ public class StorageBlock extends Block{
         public int removeStack(Item item, int amount){
             int result = super.removeStack(item, amount);
 
-            if(linkedCore != null && team == world.state.rules.defaultTeam && state.isCampaign()){
+            if(linkedCore != null && team == world.state.rules.defaultTeam && world.state.isCampaign()){
                 world.state.rules.sector.info.handleCoreItem(item, -result);
             }
 

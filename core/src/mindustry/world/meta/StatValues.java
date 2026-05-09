@@ -334,7 +334,7 @@ public class StatValues{
                 c.clearChildren();
                 c.left();
 
-                if(state.isGame()){
+                if(world.state.isGame()){
                     var blocks = Vars.content.blocks()
                     .select(block -> (!checkFloors || block instanceof Floor) && indexer.isBlockPresent(block) && block.attributes.get(attr) != 0 && !((block instanceof Floor f && f.isDeep()) && !floating))
                     .with(s -> s.sort(f -> f.attributes.get(attr)));
@@ -360,7 +360,7 @@ public class StatValues{
 
             //rebuild when map changes.
             c.update(() -> {
-                Map current = state.isGame() ? state.map : null;
+                Map current = world.state.isGame() ? world.state.map : null;
 
                 if(current != lastMap[0]){
                     rebuild[0].run();

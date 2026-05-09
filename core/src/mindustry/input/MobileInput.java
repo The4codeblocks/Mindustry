@@ -298,7 +298,7 @@ public class MobileInput extends InputHandler implements GestureListener{
         });
 
         group.fill(t -> {
-            t.visible(() -> !hasSchematic() && !ui.consolefrag.shown() && !(state.isEditor()&& Core.settings.getBool("editor-blocks-shown")));
+            t.visible(() -> !hasSchematic() && !ui.consolefrag.shown() && !(world.state.isEditor()&& Core.settings.getBool("editor-blocks-shown")));
             t.bottom().left();
 
             t.button("@command.queue", Icon.rightOpen, Styles.clearTogglet, () -> {
@@ -448,7 +448,7 @@ public class MobileInput extends InputHandler implements GestureListener{
         }
 
         //draw targeting crosshair
-        if(target != null && !state.isEditor() && !manualShooting){
+        if(target != null && !world.state.isEditor() && !manualShooting){
             if(target != lastTarget){
                 crosshairScale = 0f;
                 lastTarget = target;
@@ -516,7 +516,7 @@ public class MobileInput extends InputHandler implements GestureListener{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, KeyCode button){
-        if(state.isMenu() || locked()) return false;
+        if(world.state.isMenu() || locked()) return false;
 
         down = true;
 
@@ -547,7 +547,7 @@ public class MobileInput extends InputHandler implements GestureListener{
                 lastLineY = tileY;
             }else if(!tryTapPlayer(worldx, worldy) && Core.settings.getBool("keyboard")){
                 //shoot on touch down when in keyboard mode
-                player.shooting = !state.isEditor();
+                player.shooting = !world.state.isEditor();
             }
         }
 
@@ -604,7 +604,7 @@ public class MobileInput extends InputHandler implements GestureListener{
 
     @Override
     public boolean longPress(float x, float y){
-        if(state.isMenu()|| player.dead() || locked()) return false;
+        if(world.state.isMenu()|| player.dead() || locked()) return false;
 
         //get tile on cursor
         Tile cursor = tileAt(x, y);
@@ -647,7 +647,7 @@ public class MobileInput extends InputHandler implements GestureListener{
                 }
             }
 
-            if(!state.isPaused()) Fx.select.at(pos);
+            if(!world.state.isPaused()) Fx.select.at(pos);
         }else{
 
             //ignore off-screen taps
@@ -662,10 +662,10 @@ public class MobileInput extends InputHandler implements GestureListener{
             lineMode = true;
 
             if(mode == breaking){
-                if(!state.isPaused()) Fx.tapBlock.at(cursor.worldx(), cursor.worldy(), 1f);
+                if(!world.state.isPaused()) Fx.tapBlock.at(cursor.worldx(), cursor.worldy(), 1f);
             }else if(block != null){
                 updateLine(lineStartX, lineStartY, cursor.x, cursor.y);
-                if(!state.isPaused()) Fx.tapBlock.at(cursor.worldx() + block.offset, cursor.worldy() + block.offset, block.size);
+                if(!world.state.isPaused()) Fx.tapBlock.at(cursor.worldx() + block.offset, cursor.worldy() + block.offset, block.size);
             }
         }
 
@@ -674,7 +674,7 @@ public class MobileInput extends InputHandler implements GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, KeyCode button){
-        if(state.isMenu() || lineMode || locked()) return false;
+        if(world.state.isMenu() || lineMode || locked()) return false;
 
         float worldx = Core.input.mouseWorld(x, y).x, worldy = Core.input.mouseWorld(x, y).y;
 
@@ -743,7 +743,7 @@ public class MobileInput extends InputHandler implements GestureListener{
     public void updateState(){
         super.updateState();
 
-        if(state.isMenu()){
+        if(world.state.isMenu()){
             selectPlans.clear();
             removals.clear();
             mode = none;
@@ -829,7 +829,7 @@ public class MobileInput extends InputHandler implements GestureListener{
             }
         }
 
-        if(!player.dead() && !state.isPaused() && !locked){
+        if(!player.dead() && !world.state.isPaused() && !locked){
             updateMovement(player.unit());
         }
 
@@ -1018,7 +1018,7 @@ public class MobileInput extends InputHandler implements GestureListener{
         //reset target if:
         // - in the editor, or...
         // - it's both an invalid standard target and an invalid heal target
-        if((Units.invalidateTarget(target, unit, type.range) && !validHealTarget) || state.isEditor()){
+        if((Units.invalidateTarget(target, unit, type.range) && !validHealTarget) || world.state.isEditor()){
             target = null;
         }
 
@@ -1079,7 +1079,7 @@ public class MobileInput extends InputHandler implements GestureListener{
         unit.movePref(movement);
 
         //update shooting if not building + not mining
-        if(!unit.activelyBuilding() && unit.mineTile == null && !state.isEditor()){
+        if(!unit.activelyBuilding() && unit.mineTile == null && !world.state.isEditor()){
 
             //autofire targeting
             if(manualShooting){

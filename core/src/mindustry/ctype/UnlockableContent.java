@@ -259,7 +259,7 @@ public abstract class UnlockableContent extends MappableContent{
     }
 
     public boolean unlockedNowHost(){
-        return !state.isCampaign() || unlockedHost();
+        return !world.state.isCampaign() || unlockedHost();
     }
 
     /** @return in multiplayer, whether this is unlocked for the host player, otherwise, whether it is unlocked for the local player (same as unlocked()) */
@@ -271,7 +271,7 @@ public abstract class UnlockableContent extends MappableContent{
 
     /** @return whether this content is unlocked, or the player is in a custom (non-campaign) game. */
     public boolean unlockedNow(){
-        return unlocked() || !state.isCampaign();
+        return unlocked() || !world.state.isCampaign();
     }
 
     public boolean unlocked(){

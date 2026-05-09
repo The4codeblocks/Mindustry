@@ -26,7 +26,7 @@ public class NetworkIO{
 
         try(DataOutputStream stream = new DataOutputStream(os)){
             //write all researched content to rules if hosting
-            if(state.isCampaign()){
+            if(world.state.isCampaign()){
                 world.state.rules.researched.clear();
                 for(ContentType type : ContentType.all){
                     for(Content c : content.getBy(type)){
@@ -38,12 +38,12 @@ public class NetworkIO{
             }
 
             stream.writeUTF(JsonIO.write(world.state.rules));
-            stream.writeUTF(JsonIO.write(state.mapLocales));
-            SaveIO.getSaveWriter().writeStringMap(stream, state.map.tags);
+            stream.writeUTF(JsonIO.write(world.state.mapLocales));
+            SaveIO.getSaveWriter().writeStringMap(stream, world.state.map.tags);
 
-            stream.writeInt(state.wave);
-            stream.writeFloat(state.wavetime);
-            stream.writeDouble(state.tick);
+            stream.writeInt(world.state.wave);
+            stream.writeFloat(world.state.wavetime);
+            stream.writeDouble(world.state.tick);
             stream.writeLong(GlobalVars.rand.seed0);
             stream.writeLong(GlobalVars.rand.seed1);
 
@@ -66,12 +66,12 @@ public class NetworkIO{
         try(DataInputStream stream = new DataInputStream(is)){
             Time.clear();
             world.state.rules = JsonIO.read(Rules.class, stream.readUTF());
-            state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
-            state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
+            world.state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
+            world.state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
 
-            state.wave = stream.readInt();
-            state.wavetime = stream.readFloat();
-            state.tick = stream.readDouble();
+            world.state.wave = stream.readInt();
+            world.state.wavetime = stream.readFloat();
+            world.state.tick = stream.readDouble();
             GlobalVars.rand.seed0 = stream.readLong();
             GlobalVars.rand.seed1 = stream.readLong();
 
@@ -100,7 +100,7 @@ public class NetworkIO{
     public static ByteBuffer writeServerData(){
         String name = (headless ? Config.serverName.string() : player.name);
         String description = headless && !Config.desc.string().equals("off") ? Config.desc.string() : "";
-        String map = state.map.name();
+        String map = world.state.map.name();
 
         ByteBuffer buffer = ByteBuffer.allocate(500);
 
@@ -108,7 +108,7 @@ public class NetworkIO{
         writeString(buffer, map, 64);
 
         buffer.putInt(Core.settings.getInt("totalPlayers", Groups.player.size()));
-        buffer.putInt(state.wave);
+        buffer.putInt(world.state.wave);
         buffer.putInt(Version.build);
         writeString(buffer, Version.type);
 

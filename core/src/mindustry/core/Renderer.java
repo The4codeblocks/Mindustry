@@ -180,12 +180,12 @@ public class Renderer implements ApplicationListener{
         //don't bother drawing landing animation if core is null
         if(launchAnimator == null) landTime = 0f;
         if(landTime > 0){
-            if(!state.isPaused()) launchAnimator.updateLaunch();
+            if(!world.state.isPaused()) launchAnimator.updateLaunch();
 
             weatherAlpha = 0f;
             camerascale = launchAnimator.zoomLaunch();
 
-            if(!state.isPaused()) landTime -= Time.delta;
+            if(!world.state.isPaused()) landTime -= Time.delta;
         }else{
             weatherAlpha = Mathf.lerpDelta(weatherAlpha, 1f, 0.08f);
         }
@@ -198,7 +198,7 @@ public class Renderer implements ApplicationListener{
         camera.width = graphics.getWidth() / camerascale;
         camera.height = graphics.getHeight() / camerascale;
 
-        if(state.isMenu()){
+        if(world.state.isMenu()){
             landTime = 0f;
             graphics.clear(Color.black);
         }else{
@@ -391,7 +391,7 @@ public class Renderer implements ApplicationListener{
             }
         });
 
-        for(var marker : state.markers){
+        for(var marker : world.state.markers){
             if(marker.world){
                 marker.draw(marker.autoscale ? scaleFactor : 1);
             }

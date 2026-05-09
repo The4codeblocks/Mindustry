@@ -91,7 +91,7 @@ public class Control implements ApplicationListener, Loadable{
             player.team(netServer.assignTeam(player));
             player.add();
 
-            state.set(State.playing);
+            world.state.set(State.playing);
         });
 
         Events.on(WorldLoadEvent.class, event -> {
@@ -121,16 +121,16 @@ public class Control implements ApplicationListener, Loadable{
         });
 
         Events.on(WaveEvent.class, event -> {
-            if(state.map.getHightScore() < state.wave){
+            if(world.state.map.getHightScore() < world.state.wave){
                 hiscore = true;
-                state.map.setHighScore(state.wave);
+                world.state.map.setHighScore(world.state.wave);
             }
 
             Sounds.waveSpawn.play();
         });
 
         Events.on(GameOverEvent.class, event -> {
-            state.stats.wavesLasted = state.wave;
+            world.state.stats.wavesLasted = world.state.wave;
             Effect.shake(5, 6, Core.camera.position.x, Core.camera.position.y);
             //the restart dialog can show info for any number of scenarios
             Call.gameOver(event.winner);
@@ -153,7 +153,7 @@ public class Control implements ApplicationListener, Loadable{
                     player.admin = true;
                 }catch(IOException e){
                     ui.showException("@server.error", e);
-                    state.set(State.menu);
+                    world.state.set(State.menu);
                 }
             }
         }));
@@ -186,7 +186,7 @@ public class Control implements ApplicationListener, Loadable{
 
         //delete save on campaign game over
         Events.on(GameOverEvent.class, e -> {
-            if(state.isCampaign() && !net.client() && !headless){
+            if(world.state.isCampaign() && !net.client() && !headless){
 
                 //save gameover state immediately
                 if(saves.getCurrent() != null){
@@ -221,7 +221,7 @@ public class Control implements ApplicationListener, Loadable{
                 renderer.showLanding(core);
             }
 
-            if(state.isCampaign()){
+            if(world.state.isCampaign()){
                 if(world.state.rules.sector.info.importRateCache != null){
                     world.state.rules.sector.info.refreshImportRates(world.state.rules.sector.planet);
                 }
@@ -287,14 +287,14 @@ public class Control implements ApplicationListener, Loadable{
         });
 
         Events.on(SaveWriteEvent.class, e -> {
-            if(!net.client() && state.isCampaign()){
-                state.getPlanet().saveStats();
+            if(!net.client() && world.state.isCampaign()){
+                world.state.getPlanet().saveStats();
             }
             forcePlaceAll();
         });
         Events.on(HostEvent.class, e -> forcePlaceAll());
         Events.on(HostEvent.class, e -> {
-            state.set(State.playing);
+            world.state.set(State.playing);
         });
     }
 
@@ -375,7 +375,7 @@ public class Control implements ApplicationListener, Loadable{
             input = new DesktopInput();
         }
 
-        if(state.isGame()){
+        if(world.state.isGame()){
             player.add();
         }
 
@@ -432,7 +432,7 @@ public class Control implements ApplicationListener, Loadable{
 
     void playSector(@Nullable Sector origin, Sector sector, WorldReloader reloader){
         ui.loadAnd(() -> {
-            if(saves.getCurrent() != null && state.isGame()){
+            if(saves.getCurrent() != null && world.state.isGame()){
                 control.saves.getCurrent().save();
                 control.saves.resetSave();
             }
@@ -544,7 +544,7 @@ public class Control implements ApplicationListener, Loadable{
                             });
                         }
                     }else{
-                        state.set(State.playing);
+                        world.state.set(State.playing);
                         reloader.end();
                     }
 
@@ -583,7 +583,7 @@ public class Control implements ApplicationListener, Loadable{
         Events.fire(new SectorLaunchEvent(sector));
         Events.fire(Trigger.newGame);
         reloader.end();
-        state.set(State.playing);
+        world.state.set(State.playing);
     }
 
     public boolean isHighScore(){
@@ -593,7 +593,7 @@ public class Control implements ApplicationListener, Loadable{
     @Override
     public void dispose(){
         //try to save when exiting
-        if(saves != null && saves.getCurrent() != null && saves.getCurrent().isAutosave() && !net.client() && !state.isMenu() && !state.gameOver){
+        if(saves != null && saves.getCurrent() != null && saves.getCurrent().isAutosave() && !net.client() && !world.state.isMenu() && !world.state.gameOver){
             try{
                 SaveIO.save(control.saves.getCurrent().file);
                 settings.forceSave();
@@ -614,15 +614,15 @@ public class Control implements ApplicationListener, Loadable{
     public void pause(){
         if(settings.getBool("backgroundpause", true) && !net.active() && !world.state.rules.pauseDisabled){
             backgroundPaused = true;
-            wasPaused = state.is(State.paused);
-            if(state.is(State.playing)) state.set(State.paused);
+            wasPaused = world.state.is(State.paused);
+            if(world.state.is(State.playing)) world.state.set(State.paused);
         }
     }
 
     @Override
     public void resume(){
-        if(state.is(State.paused) && !wasPaused && settings.getBool("backgroundpause", true) && !net.active() && !world.state.rules.pauseDisabled){
-            state.set(State.playing);
+        if(world.state.is(State.paused) && !wasPaused && settings.getBool("backgroundpause", true) && !net.active() && !world.state.rules.pauseDisabled){
+            world.state.set(State.playing);
         }
         backgroundPaused = false;
     }
@@ -695,10 +695,10 @@ public class Control implements ApplicationListener, Loadable{
         if(Float.isNaN(camera.position.x)) camera.position.x = world.unitWidth()/2f;
         if(Float.isNaN(camera.position.y)) camera.position.y = world.unitHeight()/2f;
 
-        if(state.isGame()){
+        if(world.state.isGame()){
             input.update();
             input.updateSelectQuadtree();
-            if(!state.isPaused()){
+            if(!world.state.isPaused()){
                 indicators.update();
             }
 
@@ -709,29 +709,29 @@ public class Control implements ApplicationListener, Loadable{
 
             //unlock core items
             var core = world.state.rules.defaultTeam.core();
-            if(!net.client() && core != null && state.isCampaign()){
+            if(!net.client() && core != null && world.state.isCampaign()){
                 core.items.each((i, a) -> i.unlock());
             }
 
             if(backgroundPaused && settings.getBool("backgroundpause") && !net.active() && !world.state.rules.pauseDisabled){
-                state.set(State.paused);
+                world.state.set(State.paused);
             }
 
             //cannot launch while paused
-            if(state.isPaused() && renderer.isCutscene()){
-                state.set(State.playing);
+            if(world.state.isPaused() && renderer.isCutscene()){
+                world.state.set(State.playing);
             }
 
-            if(!net.client() && Core.input.keyTap(Binding.pause) && !(state.isCampaign() && state.afterGameOver) && !renderer.isCutscene() && !scene.hasDialog() && !scene.hasKeyboard() && !ui.restart.isShown() && (state.is(State.paused) || state.is(State.playing))){
+            if(!net.client() && Core.input.keyTap(Binding.pause) && !(world.state.isCampaign() && state.afterGameOver) && !renderer.isCutscene() && !scene.hasDialog() && !scene.hasKeyboard() && !ui.restart.isShown() && (world.state.is(State.paused) || world.state.is(State.playing))){
                 if(world.state.rules.pauseDisabled){
                     ui.hudfrag.showPauseDisabled();
                 }else{
-                    state.set(state.isPaused() ? State.playing : State.paused);
+                    world.state.set(world.state.isPaused() ? State.playing : State.paused);
                 }
             }
 
-            if(state.isCampaign() && state.afterGameOver){
-                state.set(State.paused);
+            if(world.state.isCampaign() && state.afterGameOver){
+                world.state.set(State.paused);
             }
 
             if(Core.input.keyTap(Binding.menu) && !ui.restart.isShown() && !ui.minimapfrag.shown()){
@@ -740,7 +740,7 @@ public class Control implements ApplicationListener, Loadable{
                 }else if(!ui.paused.isShown() && !scene.hasDialog()){
                     ui.paused.show();
                     if(!net.active() && !world.state.rules.pauseDisabled){
-                        state.set(State.paused);
+                        world.state.set(State.paused);
                     }
                 }
             }
@@ -751,7 +751,7 @@ public class Control implements ApplicationListener, Loadable{
 
         }else{
             //this runs in the menu
-            if(!state.isPaused()){
+            if(!world.state.isPaused()){
                 Time.update();
             }
 

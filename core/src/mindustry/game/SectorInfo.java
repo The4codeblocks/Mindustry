@@ -180,7 +180,7 @@ public class SectorInfo{
             winWave = world.state.rules.sector.preset.captureWave;
         }
 
-        state.wave = wave;
+        world.state.wave = wave;
         world.state.rules.waves = waves;
         world.state.rules.waveSpacing = waveSpacing;
         world.state.rules.winWave = winWave;
@@ -215,7 +215,7 @@ public class SectorInfo{
         }
 
         waveSpacing = world.state.rules.waveSpacing;
-        wave = state.wave;
+        wave = world.state.wave;
         winWave = world.state.rules.winWave;
         waves = world.state.rules.waves;
         attack = world.state.rules.attackMode;
@@ -285,7 +285,7 @@ public class SectorInfo{
 
                 if(imports.containsKey(item)){
                     //import can't exceed max import rate
-                    imports.get(item).mean = Math.min(imports.get(item).mean, getImportRate(state.getPlanet(), item));
+                    imports.get(item).mean = Math.min(imports.get(item).mean, getImportRate(world.state.getPlanet(), item));
                 }
             }
 

@@ -149,14 +149,14 @@ public class Pathfinder implements Runnable{
         Events.on(ResetEvent.class, event -> stop());
 
         Events.on(TileChangeEvent.class, event -> {
-            if(state.isEditor()) return;
+            if(world.state.isEditor()) return;
 
             updateTile(event.tile);
         });
 
         //remove nearSolid flag for tiles
         Events.on(TilePreChangeEvent.class, event -> {
-            if(state.isEditor()) return;
+            if(world.state.isEditor()) return;
 
             Tile tile = event.tile;
 
@@ -326,7 +326,7 @@ public class Pathfinder implements Runnable{
             if(net.client()) return;
             try{
 
-                if(state.isPlaying()){
+                if(world.state.isPlaying()){
                     queue.run();
 
                     //each update time (not total!) no longer than maxUpdate
@@ -554,7 +554,7 @@ public class Pathfinder implements Runnable{
         @Override
         protected void getPositions(IntSeq out){
             if(world.state.rules.randomWaveAI && team == world.state.rules.waveTeam){
-                rand.setSeed(world.state.rules.waves ? state.wave : (int)(state.tick / (5400)) + hashCode());
+                rand.setSeed(world.state.rules.waves ? world.state.wave : (int)(world.state.tick / (5400)) + hashCode());
 
                 //maximum amount of different target flag types they will attack
                 int max = 1;

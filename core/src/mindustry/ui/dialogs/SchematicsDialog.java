@@ -182,7 +182,7 @@ public class SchematicsDialog extends BaseDialog{
                         })).size(200f);
                     }, () -> {
                         if(sel[0].childrenPressed()) return;
-                        if(state.isMenu()){
+                        if(world.state.isMenu()){
                             showInfo(s);
                         }else{
                             if(!world.state.rules.schematicsAllowed){
@@ -768,7 +768,7 @@ public class SchematicsDialog extends BaseDialog{
                     r.image(s.item.uiIcon).left().size(iconMed);
                     r.label(() -> {
                         Building core = player.core();
-                        if(core == null || state.isMenu() || world.state.rules.infiniteResources || core.items.has(s.item, s.amount)) return "[lightgray]" + s.amount + "";
+                        if(core == null || world.state.isMenu() || world.state.rules.infiniteResources || core.items.has(s.item, s.amount)) return "[lightgray]" + s.amount + "";
                         return (core.items.has(s.item, s.amount) ? "[lightgray]" : "[scarlet]") + Math.min(core.items.get(s.item), s.amount) + "[lightgray]/" + s.amount;
                     }).padLeft(2).left().padRight(4);
 

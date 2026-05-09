@@ -268,7 +268,7 @@ public class DesktopInput extends InputHandler{
 
 
         if(!locked){
-            if(((player.dead() || state.isPaused() || detached) && !ui.chatfrag.shown()) && !scene.hasField() && !scene.hasDialog()){
+            if(((player.dead() || world.state.isPaused() || detached) && !ui.chatfrag.shown()) && !scene.hasField() && !scene.hasDialog()){
                 if(input.keyDown(Binding.mouseMove)){
                     panCam = true;
                 }
@@ -276,8 +276,8 @@ public class DesktopInput extends InputHandler{
                 Core.camera.position.add(Tmp.v1.setZero().add(Core.input.axis(Binding.moveX), Core.input.axis(Binding.moveY)).nor().scl(camSpeed));
             }else if((!player.dead() || spectating != null) && !panning){
                 //TODO do not pan
-                Team corePanTeam = state.won ? world.state.rules.waveTeam : player.team();
-                Position coreTarget = state.gameOver && !world.state.rules.pvp && corePanTeam.data().lastCore != null ? corePanTeam.data().lastCore : null;
+                Team corePanTeam = world.state.won ? world.state.rules.waveTeam : player.team();
+                Position coreTarget = world.state.gameOver && !world.state.rules.pvp && corePanTeam.data().lastCore != null ? corePanTeam.data().lastCore : null;
                 Position panTarget = coreTarget != null ? coreTarget : spectating != null ? spectating : player;
 
                 Core.camera.position.lerpDelta(panTarget, Core.settings.getBool("smoothcamera") ? 0.08f : 1f);
@@ -289,7 +289,7 @@ public class DesktopInput extends InputHandler{
             }
         }
 
-        shouldShoot = !scene.hasMouse() && !locked && !state.isEditor();
+        shouldShoot = !scene.hasMouse() && !locked && !world.state.isEditor();
 
         if(!locked && block == null && !scene.hasField() && !scene.hasDialog() &&
                 //disable command mode when player unit can boost and command mode binding is the same
@@ -429,7 +429,7 @@ public class DesktopInput extends InputHandler{
             }
         }
 
-        if(!player.dead() && !state.isPaused() && !scene.hasField() && !locked){
+        if(!player.dead() && !world.state.isPaused() && !scene.hasField() && !locked){
             updateMovement(player.unit());
 
             if(Core.input.keyTap(Binding.respawn)){
@@ -439,10 +439,10 @@ public class DesktopInput extends InputHandler{
             }
         }
 
-        if(state.isGame() && !scene.hasDialog() && !scene.hasField()){
+        if(world.state.isGame() && !scene.hasDialog() && !scene.hasField()){
             if(Core.input.keyTap(Binding.minimap)) ui.minimapfrag.toggle();
-            if(Core.input.keyTap(Binding.planetMap) && state.isCampaign()) ui.planet.toggle();
-            if(Core.input.keyTap(Binding.research) && state.isCampaign()) ui.research.toggle();
+            if(Core.input.keyTap(Binding.planetMap) && world.state.isCampaign()) ui.planet.toggle();
+            if(Core.input.keyTap(Binding.research) && world.state.isCampaign()) ui.research.toggle();
             if(Core.input.keyTap(Binding.schematicMenu)) ui.schematics.toggle();
 
             if(Core.input.keyTap(Binding.toggleBlockStatus)){
@@ -459,7 +459,7 @@ public class DesktopInput extends InputHandler{
             }
         }
 
-        if(state.isMenu() || Core.scene.hasDialog()) return;
+        if(world.state.isMenu() || Core.scene.hasDialog()) return;
 
         //zoom camera
         if((!Core.scene.hasScroll() || Core.input.keyDown(Binding.diagonalPlacement)) && !ui.chatfrag.shown() && !ui.consolefrag.shown() && Math.abs(Core.input.axisTap(Binding.zoom)) > 0
@@ -542,11 +542,11 @@ public class DesktopInput extends InputHandler{
 
         table.button(Icon.tree, Styles.clearNonei, () -> {
             ui.research.show();
-        }).visible(() -> state.isCampaign()).tooltip("@research");
+        }).visible(() -> world.state.isCampaign()).tooltip("@research");
 
         table.button(Icon.map, Styles.clearNonei, () -> {
             ui.planet.show();
-        }).visible(() -> state.isCampaign()).tooltip("@planetmap");
+        }).visible(() -> world.state.isCampaign()).tooltip("@planetmap");
     }
 
     void pollInputNoPlayer(){
@@ -937,7 +937,7 @@ public class DesktopInput extends InputHandler{
     public void updateState(){
         super.updateState();
 
-        if(state.isMenu()){
+        if(world.state.isMenu()){
             lastSchematic = null;
             droppingItem = false;
             mode = none;

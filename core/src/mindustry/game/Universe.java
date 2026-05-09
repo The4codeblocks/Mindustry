@@ -30,8 +30,8 @@ public class Universe{
 
         //update base coverage on capture
         Events.on(SectorCaptureEvent.class, e -> {
-            if(!net.client() && state.isCampaign()){
-                state.getSector().planet.updateBaseCoverage();
+            if(!net.client() && world.state.isCampaign()){
+                world.state.getSector().planet.updateBaseCoverage();
             }
         });
     }
@@ -84,10 +84,10 @@ public class Universe{
             }
         }
 
-        if(state.hasSector() && state.getSector().planet.updateLighting && !(state.getSector().preset != null && state.getSector().preset.noLighting)){
-            var planet = state.getSector().planet;
+        if(world.state.hasSector() && world.state.getSector().planet.updateLighting && !(world.state.getSector().preset != null && world.state.getSector().preset.noLighting)){
+            var planet = world.state.getSector().planet;
             //update sector light
-            float light = state.getSector().getLight();
+            float light = world.state.getSector().getLight();
             float alpha = Mathf.clamp(Mathf.map(light, planet.lightSrcFrom, planet.lightSrcTo, planet.lightDstFrom, planet.lightDstTo));
 
             //assign and map so darkness is not 100% dark
@@ -152,7 +152,7 @@ public class Universe{
         turn++;
 
         int newSecondsPassed = (int)(turnDuration / 60);
-        Planet current = state.getPlanet();
+        Planet current = world.state.getPlanet();
 
         //update relevant sectors
         for(Planet planet : content.planets()){
@@ -234,7 +234,7 @@ public class Universe{
 
                             //invasion chance depends on # of nearby bases
                             if(count > 0 && Mathf.chance(baseInvasionChance * (0.8f + (count - 1) * 0.3f))){
-                                int waveMax = Math.max(sector.info.winWave, sector.isBeingPlayed() ? state.wave : sector.info.wave) + Mathf.random(2, 4) * 5;
+                                int waveMax = Math.max(sector.info.winWave, sector.isBeingPlayed() ? world.state.wave : sector.info.wave) + Mathf.random(2, 4) * 5;
 
                                 //assign invasion-related things
                                 if(sector.isBeingPlayed()){

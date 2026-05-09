@@ -39,8 +39,8 @@ public class PausedDialog extends BaseDialog{
         shown(() -> {
             rebuild();
 
-            if(state.isCampaign()){
-                state.getPlanet().saveStats();
+            if(world.state.isCampaign()){
+                world.state.getPlanet().saveStats();
             }
         });
 
@@ -51,7 +51,7 @@ public class PausedDialog extends BaseDialog{
         cont.clear();
 
         update(() -> {
-            if(state.isMenu() && isShown()){
+            if(world.state.isMenu() && isShown()){
                 hide();
             }
         });
@@ -68,12 +68,12 @@ public class PausedDialog extends BaseDialog{
 
             cont.button("@abandon", Icon.cancel, () -> ui.planet.abandonSectorConfirm(world.state.rules.sector, this::hide)).padTop(-60f)
             .colspan(showObjective ? 1 : 2).width(showObjective ? dw : dw * 2 + 10f)
-            .disabled(b -> net.client() || state.gameOver).visible(() -> world.state.rules.sector != null).row();
+            .disabled(b -> net.client() || world.state.gameOver).visible(() -> world.state.rules.sector != null).row();
 
             cont.button("@back", Icon.left, this::hide).name("back");
             cont.button("@settings", Icon.settings, ui.settings::show).name("settings");
 
-            if(!state.isCampaign() && !state.isEditor()){
+            if(!world.state.isCampaign() && !world.state.isEditor()){
                 cont.row();
                 cont.button("@savegame", Icon.save, save::show);
                 cont.button("@loadgame", Icon.upload, load::show).disabled(b -> net.active());
@@ -82,16 +82,16 @@ public class PausedDialog extends BaseDialog{
             cont.row();
 
             //the button runs out of space when the editor button is added, so use the mobile text
-            cont.button(state.isEditor() ? "@hostserver.mobile" : "@hostserver", Icon.host, () -> {
+            cont.button(world.state.isEditor() ? "@hostserver.mobile" : "@hostserver", Icon.host, () -> {
                 if(net.server() && steam){
                     platform.inviteFriends();
                 }else{
                     ui.host.show();
                 }
-            }).disabled(b -> !((steam && net.server()) || !net.active())).colspan(state.isEditor() ? 1 : 2).width(state.isEditor() ? dw : dw * 2 + 10f)
-                .update(e -> e.setText(net.server() && steam ? "@invitefriends" : state.isEditor() ? "@hostserver.mobile" : "@hostserver"));
+            }).disabled(b -> !((steam && net.server()) || !net.active())).colspan(world.state.isEditor() ? 1 : 2).width(world.state.isEditor() ? dw : dw * 2 + 10f)
+                .update(e -> e.setText(net.server() && steam ? "@invitefriends" : world.state.isEditor() ? "@hostserver.mobile" : "@hostserver"));
 
-            if(state.isEditor()){
+            if(world.state.isEditor()){
                 cont.button("@editor.worldprocessors", Icon.logic, () -> {
                     hide();
                     processors.show();
@@ -107,7 +107,7 @@ public class PausedDialog extends BaseDialog{
             cont.buttonRow("@back", Icon.play, this::hide);
             cont.buttonRow("@settings", Icon.settings, ui.settings::show);
 
-            if(!state.isCampaign() && !state.isEditor()){
+            if(!world.state.isCampaign() && !world.state.isEditor()){
                 cont.buttonRow("@save", Icon.save, save::show);
 
                 cont.row();
@@ -123,7 +123,7 @@ public class PausedDialog extends BaseDialog{
                     image.setDrawable(net.active() ? Icon.book : Icon.download);
                     t.setText(net.active() ? "@database" : "@load");
                 });
-            }else if(state.isCampaign()){
+            }else if(world.state.isCampaign()){
                 cont.buttonRow("@research", Icon.tree, ui.research::show);
 
                 cont.row();
@@ -173,14 +173,14 @@ public class PausedDialog extends BaseDialog{
         boolean wasClient = net.client();
         if(net.client()) netClient.disconnectQuietly();
 
-        if(state.isEditor() && !wasClient){
+        if(world.state.isEditor() && !wasClient){
             ui.editor.resumeEditing();
             return;
         }else if(checkPlaytest()){
             return;
         }
 
-        if(control.saves.getCurrent() == null || !control.saves.getCurrent().isAutosave() || wasClient || state.gameOver || disableSave){
+        if(control.saves.getCurrent() == null || !control.saves.getCurrent().isAutosave() || wasClient || world.state.gameOver || disableSave){
             logic.reset();
             return;
         }

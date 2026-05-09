@@ -415,7 +415,7 @@ public class GameService{
         trigger(Trigger.blastFreeze, blastFrozenUnit);
 
         Events.on(UnitBulletDestroyEvent.class, e -> {
-            if(state.isCampaign() && player != null && player.team() == e.bullet.team){
+            if(world.state.isCampaign() && player != null && player.team() == e.bullet.team){
 
                 if(e.bullet.owner instanceof WallBuild){
                     killEnemyPhaseWall.complete();
@@ -461,7 +461,7 @@ public class GameService{
             if(campaign()){
                 SStat.maxWavesSurvived.max(Vars.world.state.wave);
 
-                if(state.stats.buildingsBuilt == 0 && state.wave >= 10){
+                if(world.state.stats.buildingsBuilt == 0 && world.state.wave >= 10){
                     survive10WavesNoBlocks.complete();
                 }
             }
@@ -507,7 +507,7 @@ public class GameService{
                     defeatAttack5Waves.complete();
                 }
 
-                if(state.stats.buildingsDestroyed == 0){
+                if(world.state.stats.buildingsDestroyed == 0){
                     captureNoBlocksBroken.complete();
                 }
             }
@@ -560,7 +560,7 @@ public class GameService{
             }
 
             for(Building entity : player.team().cores()){
-                if(!content.items().contains(i -> i.isOnPlanet(state.getPlanet()) && entity.items.get(i) < entity.block.itemCapacity)){
+                if(!content.items().contains(i -> i.isOnPlanet(world.state.getPlanet()) && entity.items.get(i) < entity.block.itemCapacity)){
                     fillCoreAllCampaign.complete();
                     break;
                 }

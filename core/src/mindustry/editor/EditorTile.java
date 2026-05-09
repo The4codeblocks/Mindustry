@@ -126,7 +126,7 @@ public class EditorTile extends Tile{
 
     @Override
     protected void fireChanged(){
-        if(state.isGame()){
+        if(world.state.isGame()){
             super.fireChanged();
         }else{
             updateStatic();
@@ -135,7 +135,7 @@ public class EditorTile extends Tile{
 
     @Override
     protected void firePreChanged(){
-        if(state.isGame()){
+        if(world.state.isGame()){
             super.firePreChanged();
         }else{
             updateStatic();
@@ -151,7 +151,7 @@ public class EditorTile extends Tile{
 
     @Override
     protected void changed(){
-        if(state.isGame()){
+        if(world.state.isGame()){
             super.changed();
         }
     }
@@ -192,7 +192,7 @@ public class EditorTile extends Tile{
     }
 
     private boolean skip(){
-        return state.isGame() || editor.isLoading() || world.isGenerating();
+        return world.state.isGame() || editor.isLoading() || world.isGenerating();
     }
 
     private void op(int type, short value){

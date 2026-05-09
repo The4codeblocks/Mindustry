@@ -48,7 +48,7 @@ public class FlyingAI extends AIController{
 
         if(world.state.rules.randomWaveAI){
             //when there are no waves, it's just random based on the unit
-            rand.setSeed(unit.type.id + (world.state.rules.waves ? state.wave : unit.id));
+            rand.setSeed(unit.type.id + (world.state.rules.waves ? world.state.wave : unit.id));
             //try a few random flags first
             for(int attempt = 0; attempt < 5; attempt++){
                 Teamc result = targetFlagActive(x, y, randomTargets[rand.random(randomTargets.length - 1)], true);

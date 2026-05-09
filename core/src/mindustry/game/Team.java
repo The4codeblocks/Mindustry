@@ -90,7 +90,7 @@ public class Team implements Comparable<Team>, Senseable{
     }
 
     public TeamData data(){
-        return state.teams.get(this);
+        return world.state.teams.get(this);
     }
 
     @Nullable
@@ -100,7 +100,7 @@ public class Team implements Comparable<Team>, Senseable{
 
     /** @return whether this team has any buildings on this map; in waves mode, this is always true for the enemy team. */
     public boolean active(){
-        return state.teams.isActive(this);
+        return world.state.teams.isActive(this);
     }
 
     /** @return whether this team has any active cores. Not the same as active()! */
@@ -110,7 +110,7 @@ public class Team implements Comparable<Team>, Senseable{
 
     /** @return whether this team is supposed to be AI-controlled. */
     public boolean isAI(){
-        return (world.state.rules.waves || world.state.rules.attackMode || state.isCampaign()) && this != world.state.rules.defaultTeam && !world.state.rules.pvp;
+        return (world.state.rules.waves || world.state.rules.attackMode || world.state.isCampaign()) && this != world.state.rules.defaultTeam && !world.state.rules.pvp;
     }
 
     /** @return whether this team is solely comprised of AI (with no players possible). */
@@ -125,11 +125,11 @@ public class Team implements Comparable<Team>, Senseable{
 
     /** @return whether unit factories should be active, according to the game rule. */
     public boolean activateUnitFactories(){
-        return state.tick >= rules().unitFactoryActivationDelay;
+        return world.state.tick >= rules().unitFactoryActivationDelay;
     }
 
     public Seq<CoreBuild> cores(){
-        return state.teams.cores(this);
+        return world.state.teams.cores(this);
     }
 
     public String localized(){

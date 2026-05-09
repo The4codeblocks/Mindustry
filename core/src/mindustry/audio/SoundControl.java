@@ -47,7 +47,7 @@ public class SoundControl{
 
         //only run music 10 seconds after a wave spawns
         Events.on(WaveEvent.class, e -> Time.run(Mathf.random(8f, 15f) * 60f, () -> {
-            boolean boss = world.state.rules.spawns.contains(group -> group.getSpawned(state.wave - 2) > 0 && group.effect == StatusEffects.boss);
+            boolean boss = world.state.rules.spawns.contains(group -> group.getSpawned(world.state.wave - 2) > 0 && group.effect == StatusEffects.boss);
 
             if(boss){
                 playOnce(bossMusic.random(lastRandomPlayed));
@@ -126,8 +126,8 @@ public class SoundControl{
 
     /** Update and play the right music track.*/
     public void update(){
-        boolean paused = state.isGame() && Core.scene.hasDialog();
-        boolean playing = state.isGame();
+        boolean paused = world.state.isGame() && Core.scene.hasDialog();
+        boolean playing = world.state.isGame();
 
         //check if current track is finished
         if(current != null && !current.isPlaying()){
@@ -157,9 +157,9 @@ public class SoundControl{
             }
         }
 
-        Core.audio.setPaused(Core.audio.soundBus.id, state.isPaused());
+        Core.audio.setPaused(Core.audio.soundBus.id, world.state.isPaused());
 
-        if(state.isMenu()){
+        if(world.state.isMenu()){
             silenced = false;
             if(ui.planet.isShown()){
                 play(ui.planet.state.planet.launchMusic);
@@ -193,12 +193,12 @@ public class SoundControl{
 
     protected void updateLoops(){
         //clear loops when in menu
-        if(!state.isGame()){
+        if(!world.state.isGame()){
             sounds.clear();
             return;
         }
 
-        if(state.isPaused()) return;
+        if(world.state.isPaused()) return;
 
         float avol = Core.settings.getInt("ambientvol", 100) / 100f;
 
@@ -235,7 +235,7 @@ public class SoundControl{
 
     /** Plays a random track.*/
     public void playRandom(){
-        if(state.boss() != null){
+        if(world.state.boss() != null){
             playOnce(bossMusic.random(lastRandomPlayed));
         }else if(isDark()){
             playOnce(darkMusic.random(lastRandomPlayed));
@@ -252,12 +252,12 @@ public class SoundControl{
         }
 
         //it may be dark based on wave
-        if(Mathf.chance((float)(Math.log10((state.wave - 17f)/19f) + 1) / 4f)){
+        if(Mathf.chance((float)(Math.log10((world.state.wave - 17f)/19f) + 1) / 4f)){
             return true;
         }
 
         //dark based on enemies
-        return Mathf.chance(state.enemies / 70f + 0.1f);
+        return Mathf.chance(world.state.enemies / 70f + 0.1f);
     }
 
     /** Plays and fades in a music track. This must be called every frame.

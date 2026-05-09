@@ -162,7 +162,7 @@ public class ControlPathfinder implements Runnable{
         @Nullable PathfindQueue frontier = new PathfindQueue();
 
         //main thread only!
-        long lastUpdateId = state.updateId;
+        long lastUpdateId = world.state.updateId;
 
         //both threads
         volatile boolean notFound = false;
@@ -196,7 +196,7 @@ public class ControlPathfinder implements Runnable{
         final long mapKey;
 
         //main thread only!
-        long lastUpdateId = state.updateId;
+        long lastUpdateId = world.state.updateId;
 
         //TODO: how are the nodes merged? CAN they be merged?
 
@@ -237,7 +237,7 @@ public class ControlPathfinder implements Runnable{
         Events.run(Trigger.update, () -> {
             for(var req : controlPath.unitRequests.values()){
                 //skipped N update -> drop it
-                if(req.lastUpdateId <= state.updateId - 10 || !req.unit.isAdded()){
+                if(req.lastUpdateId <= world.state.updateId - 10 || !req.unit.isAdded()){
                     req.invalidated = true;
                     //concurrent modification!
                     controlPath.queue.post(() -> controlPath.threadPathRequests.remove(req));
@@ -247,7 +247,7 @@ public class ControlPathfinder implements Runnable{
 
             for(var field : controlPath.fieldList){
                 //skipped N update -> drop it
-                if(field.lastUpdateId <= state.updateId - 30){
+                if(field.lastUpdateId <= world.state.updateId - 30){
                     //make sure it's only modified on the main thread...? but what about calling get() on this thread??
                     controlPath.queue.post(() -> controlPath.fields.remove(field.mapKey));
                     Time.run(0f, () -> controlPath.fieldList.remove(field));
@@ -1147,7 +1147,7 @@ public class ControlPathfinder implements Runnable{
 
         //use existing request if it exists.
         if(request != null && request.destination == destPos){
-            request.lastUpdateId = state.updateId;
+            request.lastUpdateId = world.state.updateId;
 
             Tile initialTileOn = tileOn;
             //TODO: should fields be accessible from this thread?
@@ -1167,7 +1167,7 @@ public class ControlPathfinder implements Runnable{
                     request.oldCache = null;
                 }
 
-                fieldCache.lastUpdateId = state.updateId;
+                fieldCache.lastUpdateId = world.state.updateId;
                 int maxIterations = 30; //TODO higher/lower number? is this still too slow?
                 int i = 0;
                 boolean recalc = false;
@@ -1507,7 +1507,7 @@ public class ControlPathfinder implements Runnable{
         while(true){
             if(net.client() || invalidated) return;
             try{
-                if(state.isPlaying()){
+                if(world.state.isPlaying()){
                     queue.run();
 
                     clustersToUpdate.each(cluster -> {

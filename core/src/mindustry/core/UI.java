@@ -228,10 +228,10 @@ public class UI implements ApplicationListener, Loadable{
 
         menuGroup.setFillParent(true);
         menuGroup.touchable = Touchable.childrenOnly;
-        menuGroup.visible(() -> state.isMenu());
+        menuGroup.visible(() -> world.state.isMenu());
         hudGroup.setFillParent(true);
         hudGroup.touchable = Touchable.childrenOnly;
-        hudGroup.visible(() -> state.isGame());
+        hudGroup.visible(() -> world.state.isGame());
 
         Core.scene.add(menuGroup);
         Core.scene.add(hudGroup);
@@ -371,7 +371,7 @@ public class UI implements ApplicationListener, Loadable{
         Table table = new Table();
         table.touchable = Touchable.disabled;
         table.setFillParent(true);
-        if(cinfo.visible && !state.isMenu()) table.marginTop(cinfo.getPrefHeight() / Scl.scl() / 2);
+        if(cinfo.visible && !world.state.isMenu()) table.marginTop(cinfo.getPrefHeight() / Scl.scl() / 2);
         table.actions(Actions.fadeOut(duration, Interp.fade), Actions.remove());
         table.top().add(info).style(Styles.outlineLabel).padTop(10);
         Core.scene.add(table);
@@ -401,9 +401,9 @@ public class UI implements ApplicationListener, Loadable{
         Table table = new Table();
         table.touchable = Touchable.disabled;
         table.setFillParent(true);
-        if(cinfo.visible && !state.isMenu()) table.marginTop(cinfo.getPrefHeight() / Scl.scl() / 2);
+        if(cinfo.visible && !world.state.isMenu()) table.marginTop(cinfo.getPrefHeight() / Scl.scl() / 2);
         table.update(() -> {
-            if(state.isMenu()) table.remove();
+            if(world.state.isMenu()) table.remove();
         });
         table.actions(Actions.delay(duration * 0.9f), Actions.fadeOut(duration * 0.1f, Interp.fade), Actions.remove());
         table.top().table(Styles.black3, t -> t.margin(4).add(info).style(Styles.outlineLabel)).padTop(10);
@@ -426,7 +426,7 @@ public class UI implements ApplicationListener, Loadable{
         table.setFillParent(true);
         table.touchable = Touchable.disabled;
         table.update(() -> {
-            if(state.isMenu()){
+            if(world.state.isMenu()){
                 table.remove();
                 if(id != null) popups.remove(id);
             }
@@ -450,7 +450,7 @@ public class UI implements ApplicationListener, Loadable{
         }
         table.touchable = Touchable.disabled;
         table.update(() -> {
-            if(state.isMenu()){
+            if(world.state.isMenu()){
                 table.remove();
                 if(id != -1) labels.remove(id);
             }
@@ -645,7 +645,7 @@ public class UI implements ApplicationListener, Loadable{
             t.setPosition(Core.graphics.getWidth()/2f, Core.graphics.getHeight()/2f, Align.center);
             t.toFront();
 
-            if(state.isMenu() || !ui.hudfrag.shown){
+            if(world.state.isMenu() || !ui.hudfrag.shown){
                 t.remove();
             }
         });

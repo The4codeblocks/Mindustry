@@ -118,7 +118,7 @@ public class Units{
 
     public static int getCap(Team team){
         //wave team has no cap
-        if((team == world.state.rules.waveTeam && !world.state.rules.pvp) || (state.isCampaign() && team == world.state.rules.waveTeam) || world.state.rules.disableUnitCap || team.ignoreUnitCap){
+        if((team == world.state.rules.waveTeam && !world.state.rules.pvp) || (world.state.isCampaign() && team == world.state.rules.waveTeam) || world.state.rules.disableUnitCap || team.ignoreUnitCap){
             return Integer.MAX_VALUE;
         }
         return Math.max(0, world.state.rules.unitCapVariable ? world.state.rules.unitCap + team.data().unitCap : world.state.rules.unitCap);
@@ -430,7 +430,7 @@ public class Units{
         if(team != null){
             team.data().tree().intersect(x, y, width, height, cons);
         }else{
-            for(var other : state.teams.present){
+            for(var other : world.state.teams.present){
                 other.tree().intersect(x, y, width, height, cons);
             }
         }
@@ -465,7 +465,7 @@ public class Units{
 
     /** Iterates over all units that are enemies of this team. */
     public static void nearbyEnemies(Team team, float x, float y, float width, float height, Cons<Unit> cons){
-        Seq<TeamData> data = state.teams.present;
+        Seq<TeamData> data = world.state.teams.present;
         for(int i = 0; i < data.size; i++){
             if(data.items[i].team != team){
                 nearby(data.items[i].team, x, y, width, height, cons);
@@ -489,7 +489,7 @@ public class Units{
 
     /** @return whether there is an enemy in this rectangle. */
     public static boolean nearEnemy(Team team, float x, float y, float width, float height){
-        Seq<TeamData> data = state.teams.present;
+        Seq<TeamData> data = world.state.teams.present;
         for(int i = 0; i < data.size; i++){
             var other = data.items[i];
             if(other.team != team && other.team != Team.derelict){

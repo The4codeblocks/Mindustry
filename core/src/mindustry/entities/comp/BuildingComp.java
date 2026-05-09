@@ -331,7 +331,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
     }
 
     public void addPlan(boolean checkPrevious, boolean ignoreConditions){
-        if(!ignoreConditions && (!block.rebuildable || (team == world.state.rules.defaultTeam && state.isCampaign() && !block.isVisible()))) return;
+        if(!ignoreConditions && (!block.rebuildable || (team == world.state.rules.defaultTeam && world.state.isCampaign() && !block.isVisible()))) return;
 
         Object overrideConfig = null;
         Block toAdd = this.block;
@@ -592,7 +592,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
     }
 
     public boolean interactable(Team team){
-        return state.teams.canInteract(team, team());
+        return world.state.teams.canInteract(team, team());
     }
 
     public float timeScale(){
@@ -637,7 +637,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
             return BlockStatus.noInput;
         }
 
-        return ((state.tick / 30f) % 1f) < efficiency ? BlockStatus.active : BlockStatus.noInput;
+        return ((world.state.tick / 30f) % 1f) < efficiency ? BlockStatus.active : BlockStatus.noInput;
     }
 
     /** Call when nothing is happening to the entity. This increments the internal sleep timer. */
@@ -883,7 +883,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc, 
 
         if(liquids.get(liquid) <= 0.0001f) return;
 
-        if(!net.client() && state.isCampaign() && team == world.state.rules.defaultTeam) liquid.unlock();
+        if(!net.client() && world.state.isCampaign() && team == world.state.rules.defaultTeam) liquid.unlock();
 
         for(int i = 0; i < proximity.size; i++){
             incrementDump(proximity.size);

@@ -392,7 +392,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
             }
         }
 
-        if(unitIds.length > 0 && player == Vars.player && !state.isPaused()){
+        if(unitIds.length > 0 && player == Vars.player && !world.state.isPaused()){
             if(anyCommandedTarget){
                 Fx.attackCommand.at(teamTarget);
             }else{
@@ -478,7 +478,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
             build.onCommand(target);
             build.updateLastAccess(player);
 
-            if(!state.isPaused() && player == Vars.player){
+            if(!world.state.isPaused() && player == Vars.player){
                 Fx.moveCommand.at(target);
             }
 
@@ -560,7 +560,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
             throw new ValidateException(player, "Player cannot pick up a block.");
         }
 
-        if(state.teams.canInteract(unit.team, build.team)){
+        if(world.state.teams.canInteract(unit.team, build.team)){
             //pick up block's payload
             Payload current = build.getPayload();
             if(current != null && pay.canPickupPayload(current)){
@@ -1040,7 +1040,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
             if(build == null) return;
             Payload current = build.getPayload();
 
-            if(state.teams.canInteract(unit.team, build.team) &&
+            if(world.state.teams.canInteract(unit.team, build.team) &&
                 ((current != null && pay.canPickupPayload(current)) || (build.block.buildVisibility != BuildVisibility.hidden && build.canPickup() && pay.canPickup(build)))){
                 Call.requestBuildPayload(player, build);
             }
@@ -1071,7 +1071,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
     }
 
     public void updateState(){
-        if(state.isMenu()){
+        if(world.state.isMenu()){
             controlledType = null;
             logicCutscene = false;
             config.forceHide();
@@ -1447,7 +1447,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
         playerPlanTree.intersect(Tmp.r1, plansOut);
 
         for(BuildPlan plan : plansOut){
-            if(plan.progress > 0.01f || (current == plan && plan.initialized && (u.within(plan.x * tilesize, plan.y * tilesize, u.type.buildRange) || state.isEditor()))) continue;
+            if(plan.progress > 0.01f || (current == plan && plan.initialized && (u.within(plan.x * tilesize, plan.y * tilesize, u.type.buildRange) || world.state.isEditor()))) continue;
 
             plan.animScale = 1f;
             if(plan.breaking){
@@ -1463,7 +1463,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
 
         //TODO: cannot query for links that are offscreen
         for(BuildPlan plan : u.plans){
-            if(plan.progress > 0.01f || plan.breaking || (current == plan && plan.initialized && (u.within(plan.x * tilesize, plan.y * tilesize, u.type.buildRange) || state.isEditor()))) continue;
+            if(plan.progress > 0.01f || plan.breaking || (current == plan && plan.initialized && (u.within(plan.x * tilesize, plan.y * tilesize, u.type.buildRange) || world.state.isEditor()))) continue;
 
             if(Tmp.r2.setCentered(plan.drawx(), plan.drawy(), plan.block.planConfigClipSize()).overlaps(Tmp.r3)){
                 Draw.mixcol(Color.white, 0.24f + Mathf.absin(Time.globalTime, 6f, 0.28f));
@@ -2187,7 +2187,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
         tmpUnits.clear();
         float rad = 4f;
 
-        Seq<TeamData> data = state.teams.present;
+        Seq<TeamData> data = world.state.teams.present;
         for(int i = 0; i < data.size; i++){
             if(data.items[i].team != player.team()){
                 data.items[i].tree().intersect(x - rad / 2f, y - rad / 2f, rad, rad, tmpUnits);
@@ -2288,7 +2288,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
     public void tryDropItems(@Nullable Building build, float x, float y){
         if(player.dead()) return;
 
-        if(!droppingItem || player.unit().stack.amount <= 0 || canTapPlayer(x, y) || state.isPaused() ){
+        if(!droppingItem || player.unit().stack.amount <= 0 || canTapPlayer(x, y) || world.state.isPaused() ){
             droppingItem = false;
             return;
         }

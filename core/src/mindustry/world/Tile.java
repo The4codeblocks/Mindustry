@@ -311,7 +311,7 @@ public class Tile implements Position, QuadTreeObject, Displayable{
         if(build != null){
             build.onProximityUpdate();
         }
-        if(!world.isGenerating() && pathfinder != null && !state.isEditor()){
+        if(!world.isGenerating() && pathfinder != null && !world.state.isEditor()){
             pathfinder.updateTile(this);
         }
 
@@ -561,7 +561,7 @@ public class Tile implements Position, QuadTreeObject, Displayable{
     }
 
     public boolean interactable(Team team){
-        return state.teams.canInteract(team, team());
+        return world.state.teams.canInteract(team, team());
     }
 
     public @Nullable Item drop(){
@@ -652,7 +652,7 @@ public class Tile implements Position, QuadTreeObject, Displayable{
         }
 
         if(block.hasBuilding()){
-            build = entityprov.get().init(this, team, block.update && !state.isEditor(), rotation);
+            build = entityprov.get().init(this, team, block.update && !world.state.isEditor(), rotation);
         }
     }
 

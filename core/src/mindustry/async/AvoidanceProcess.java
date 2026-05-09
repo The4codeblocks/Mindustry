@@ -56,7 +56,7 @@ public class AvoidanceProcess implements AsyncProcess{
 
         avoidance = !swap ? buffer1 : buffer2;
 
-        for(var team : state.teams.present){
+        for(var team : world.state.teams.present){
             //only do avoidance if it's relevant to the team
             if(team.team.isAI() && !team.team.rules().rtsAi){
                 for(var unit : team.units){

@@ -63,7 +63,7 @@ public class BaseBuilderAI{
             int coreUnits = data.countType(block.unitType);
 
             //create AI core unit(s)
-            if(!state.isEditor() && coreUnits < data.cores.size * coreUnitMultiplier){
+            if(!world.state.isEditor() && coreUnits < data.cores.size * coreUnitMultiplier){
                 Unit unit = block.unitType.create(data.team);
                 unit.set(data.cores.random());
                 unit.add();

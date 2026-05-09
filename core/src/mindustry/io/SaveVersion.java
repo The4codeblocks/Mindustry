@@ -114,7 +114,7 @@ public abstract class SaveVersion extends SaveFileReader{
 
     public void writeMeta(DataOutput stream, StringMap tags) throws IOException{
         //prepare campaign data for writing
-        if(state.isCampaign()){
+        if(world.state.isCampaign()){
             world.state.rules.sector.info.prepare(world.state.rules.sector);
             world.state.rules.sector.saveInfo();
         }
@@ -131,14 +131,14 @@ public abstract class SaveVersion extends SaveFileReader{
             "saved", Time.millis(),
             "playtime", headless ? 0 : control.saves.getTotalPlaytime(),
             "build", Version.build,
-            "mapname", state.map.name(),
-            "wave", state.wave,
-            "tick", state.tick,
-            "wavetime", state.wavetime,
-            "stats", JsonIO.write(state.stats),
+            "mapname", world.state.map.name(),
+            "wave", world.state.wave,
+            "tick", world.state.tick,
+            "wavetime", world.state.wavetime,
+            "stats", JsonIO.write(world.state.stats),
             "rules", JsonIO.write(world.state.rules),
             "sectorPreset", world.state.rules.sector != null && world.state.rules.sector.preset != null ? world.state.rules.sector.preset.name : "", //empty string is a placeholder for null (null is possible but may be finicky)
-            "locales", JsonIO.write(state.mapLocales),
+            "locales", JsonIO.write(world.state.mapLocales),
             "mods", JsonIO.write(mods.getModStrings().toArray(String.class)),
             "controlGroups", headless || control == null ? "null" : JsonIO.write(control.input.controlGroups),
             "width", world.width(),
@@ -153,12 +153,12 @@ public abstract class SaveVersion extends SaveFileReader{
     public void readMeta(DataInput stream, WorldContext context) throws IOException{
         StringMap map = readStringMap(stream);
 
-        state.wave = map.getInt("wave");
-        state.wavetime = map.getFloat("wavetime", world.state.rules.waveSpacing);
-        state.tick = map.getFloat("tick");
-        state.stats = JsonIO.read(GameStats.class, map.get("stats", "{}"));
+        world.state.wave = map.getInt("wave");
+        world.state.wavetime = map.getFloat("wavetime", world.state.rules.waveSpacing);
+        world.state.tick = map.getFloat("tick");
+        world.state.stats = JsonIO.read(GameStats.class, map.get("stats", "{}"));
         world.state.rules = JsonIO.read(Rules.class, map.get("rules", "{}"));
-        state.mapLocales = JsonIO.read(MapLocales.class, map.get("locales", "{}"));
+        world.state.mapLocales = JsonIO.read(MapLocales.class, map.get("locales", "{}"));
         if(world.state.rules.spawns.isEmpty()) world.state.rules.spawns = waves.get();
 
         if(context.getSector() != null){
@@ -191,7 +191,7 @@ public abstract class SaveVersion extends SaveFileReader{
         }
 
         Map worldmap = maps.byName(map.get("mapname", "\\\\\\"));
-        state.map = worldmap == null ? new Map(StringMap.of(
+        world.state.map = worldmap == null ? new Map(StringMap.of(
             "name", map.get("mapname", "Unknown"),
             "width", 1,
             "height", 1
@@ -381,7 +381,7 @@ public abstract class SaveVersion extends SaveFileReader{
 
     public void writeTeamBlocks(DataOutput stream) throws IOException{
         //write team data with entities.
-        Seq<TeamData> data = state.teams.getActive().copy();
+        Seq<TeamData> data = world.state.teams.getActive().copy();
         if(!data.contains(Team.sharded.data())) data.add(Team.sharded.data());
 
         Writes writes = new Writes(stream);
@@ -429,11 +429,11 @@ public abstract class SaveVersion extends SaveFileReader{
     }
 
     public void writeMarkers(DataOutput stream) throws IOException{
-        state.markers.write(stream);
+        world.state.markers.write(stream);
     }
 
     public void readMarkers(DataInput stream) throws IOException{
-        state.markers.read(stream);
+        world.state.markers.read(stream);
     }
 
     public void readTeamBlocks(DataInput stream) throws IOException{
@@ -543,7 +543,7 @@ public abstract class SaveVersion extends SaveFileReader{
 
         if(patches.size > 0){
             try{
-                state.patcher.apply(patches);
+                world.state.patcher.apply(patches);
             }catch(Throwable e){
                 Log.err("Failed to apply patches: " + patches, e);
             }
@@ -551,8 +551,8 @@ public abstract class SaveVersion extends SaveFileReader{
     }
 
     public void writeContentPatches(DataOutput stream) throws IOException{
-        if(state.patcher.patches.size > 0){
-            var patches = state.patcher.patches;
+        if(world.state.patcher.patches.size > 0){
+            var patches = world.state.patcher.patches;
             stream.writeByte(patches.size);
             for(var patchset : patches){
                 byte[] bytes = patchset.patch.getBytes(Strings.utf8);
@@ -591,7 +591,7 @@ public abstract class SaveVersion extends SaveFileReader{
 
             if(patches.size > 0){
                 try{
-                    state.patcher.apply(patches);
+                    world.state.patcher.apply(patches);
                 }catch(Throwable e){
                     Log.err("Failed to apply patches: " + patches, e);
                 }

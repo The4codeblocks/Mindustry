@@ -48,7 +48,7 @@ abstract class FireComp implements Timedc, Posc, Syncc, Drawc{
         }
 
         //faster updates -> disappears more quickly
-        float speedMultiplier = 1f + Math.max(state.envAttrs.get(Attribute.water) * 10f, 0);
+        float speedMultiplier = 1f + Math.max(world.state.envAttrs.get(Attribute.water) * 10f, 0);
         time = Mathf.clamp(time + Time.delta * speedMultiplier, 0, lifetime);
 
         if(Vars.net.client()){

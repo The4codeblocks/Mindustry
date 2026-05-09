@@ -133,7 +133,7 @@ public class Sector{
 
     /** @return whether the player has a base (active save with a core) here. */
     public boolean hasBase(){
-        return save != null && info.hasCore && !(Vars.world.state.isGame() && Vars.world.state.rules.sector == this && state.gameOver);
+        return save != null && info.hasCore && !(Vars.world.state.isGame() && Vars.world.state.rules.sector == this && world.state.gameOver);
     }
 
     public boolean isFrozen(){

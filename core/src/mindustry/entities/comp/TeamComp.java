@@ -30,11 +30,11 @@ abstract class TeamComp implements Posc{
 
     @Nullable
     public CoreBuild closestCore(){
-        return state.teams.closestCore(x, y, team);
+        return world.state.teams.closestCore(x, y, team);
     }
 
     @Nullable
     public CoreBuild closestEnemyCore(){
-        return state.teams.closestEnemyCore(x, y, team);
+        return world.state.teams.closestEnemyCore(x, y, team);
     }
 }

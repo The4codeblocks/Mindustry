@@ -390,7 +390,7 @@ public class BlockRenderer{
         int rangex = (int)(camera.width / tilesize / 2);
         int rangey = (int)(camera.height / tilesize / 2);
 
-        if(!state.isPaused()){
+        if(!world.state.isPaused()){
             int updates = updateFloors.size;
             var uitems = updateFloors.items;
             for(int i = 0; i < updates; i++){

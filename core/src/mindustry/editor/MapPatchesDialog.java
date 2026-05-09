@@ -35,7 +35,7 @@ public class MapPatchesDialog extends BaseDialog{
 
     private void setup(){
         list.clearChildren();
-        var patches = state.patcher.patches;
+        var patches = world.state.patcher.patches;
 
         if(patches.isEmpty()){
             list.add("@editor.patches.none");
@@ -131,20 +131,20 @@ public class MapPatchesDialog extends BaseDialog{
     }
 
     void addPatch(String patch, int replaceIndex){
-        var oldPatches = state.patcher.patches.copy();
+        var oldPatches = world.state.patcher.patches.copy();
         try{
             Jval.read(patch); //validation
-            Seq<String> patches = state.patcher.patches.map(p -> p.patch);
+            Seq<String> patches = world.state.patcher.patches.map(p -> p.patch);
             if(replaceIndex == -1){
                 patches.add(patch);
             }else{
                 patches.set(replaceIndex, patch);
             }
-            state.patcher.apply(patches);
+            world.state.patcher.apply(patches);
 
             setup();
         }catch(Exception e){
-            state.patcher.patches.set(oldPatches);
+            world.state.patcher.patches.set(oldPatches);
             ui.showException("@editor.patches.importerror", e);
         }
     }

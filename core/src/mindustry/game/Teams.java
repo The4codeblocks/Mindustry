@@ -373,7 +373,7 @@ public class Teams{
             finishScheduleDerelict();
 
             //do block replacements in a radius
-            var sector = state.getSector();
+            var sector = world.state.getSector();
             if(sector != null){
                 boolean any = false;
                 for(var entry : sector.planet.sectorCaptureReplacements){

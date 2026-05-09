@@ -108,7 +108,7 @@ public class LogicBlock extends Block{
     }
 
     public boolean accessible(){
-        return !privileged || world.state.rules.editor || state.playtestingMap != null || world.state.rules.allowEditWorldProcessors;
+        return !privileged || world.state.rules.editor || world.state.playtestingMap != null || world.state.rules.allowEditWorldProcessors;
     }
 
     @Override

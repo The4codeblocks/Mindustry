@@ -496,7 +496,7 @@ public class Schematics implements Loadable{
             }
 
             if(tile.build instanceof CoreBuild cb){
-                state.teams.registerCore(cb);
+                world.state.teams.registerCore(cb);
             }
         });
     }

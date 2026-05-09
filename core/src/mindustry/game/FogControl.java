@@ -240,7 +240,7 @@ public final class FogControl implements CustomChunk{
             lastEntityUpdateIndex = i;
         }
 
-        for(var team : state.teams.present){
+        for(var team : world.state.teams.present){
             //AI teams do not have fog
             if(!team.team.isOnlyAI()){
                 //separate for each team

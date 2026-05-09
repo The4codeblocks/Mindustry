@@ -61,7 +61,7 @@ public class GameOverDialog extends BaseDialog{
             if(world.state.rules.pvp && winner != null){
                 t.add(Core.bundle.format("gameover.pvp", winner.coloredName())).center().pad(6);
             }else{
-                t.add(state.isCampaign() ? Core.bundle.format("sector.lost", state.getSector().name()) : "@gameover").center().pad(6);
+                t.add(world.state.isCampaign() ? Core.bundle.format("sector.lost", world.state.getSector().name()) : "@gameover").center().pad(6);
             }
             t.row();
 
@@ -76,12 +76,12 @@ public class GameOverDialog extends BaseDialog{
                 p.setBackground(Styles.black3);
 
                 p.table(stats -> {
-                    if(world.state.rules.waves) addStat(stats, Core.bundle.get("stats.wave"), state.stats.wavesLasted, 0f);
-                    addStat(stats, Core.bundle.get("stats.unitsCreated"), state.stats.unitsCreated, 0.05f);
-                    addStat(stats, Core.bundle.get("stats.enemiesDestroyed"), state.stats.enemyUnitsDestroyed, 0.1f);
-                    addStat(stats, Core.bundle.get("stats.built"), state.stats.buildingsBuilt, 0.15f);
-                    addStat(stats, Core.bundle.get("stats.destroyed"), state.stats.buildingsDestroyed, 0.2f);
-                    addStat(stats, Core.bundle.get("stats.deconstructed"), state.stats.buildingsDeconstructed, 0.25f);
+                    if(world.state.rules.waves) addStat(stats, Core.bundle.get("stats.wave"), world.state.stats.wavesLasted, 0f);
+                    addStat(stats, Core.bundle.get("stats.unitsCreated"), world.state.stats.unitsCreated, 0.05f);
+                    addStat(stats, Core.bundle.get("stats.enemiesDestroyed"), world.state.stats.enemyUnitsDestroyed, 0.1f);
+                    addStat(stats, Core.bundle.get("stats.built"), world.state.stats.buildingsBuilt, 0.15f);
+                    addStat(stats, Core.bundle.get("stats.destroyed"), world.state.stats.buildingsDestroyed, 0.2f);
+                    addStat(stats, Core.bundle.get("stats.deconstructed"), world.state.stats.buildingsDeconstructed, 0.25f);
                 }).top().grow().row();
 
                 if(control.saves.getCurrent() != null){
@@ -93,19 +93,19 @@ public class GameOverDialog extends BaseDialog{
             }).grow().pad(12).top();
         }).center().minWidth(370).maxSize(600, 550).grow();
 
-        if(state.isCampaign() && net.client()){
+        if(world.state.isCampaign() && net.client()){
             cont.row();
             cont.add("@gameover.waiting").padTop(20f).row();
         }
 
-        if(state.isCampaign()){
-            Sector prev = state.getSector();
+        if(world.state.isCampaign()){
+            Sector prev = world.state.getSector();
             if(net.client()){
                 buttons.button("@gameover.disconnect", () -> {
                     logic.reset();
                     net.reset();
                     hide();
-                    state.set(State.menu);
+                    world.state.set(State.menu);
                 }).size(170f, 60f);
             }else{
                 buttons.button("@continue", () -> {

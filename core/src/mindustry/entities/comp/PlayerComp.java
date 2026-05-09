@@ -109,7 +109,7 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
     }
 
     public @Nullable CoreBuild closestCore(){
-        return state.teams.closestCore(x, y, team);
+        return world.state.teams.closestCore(x, y, team);
     }
 
     public @Nullable CoreBuild core(){

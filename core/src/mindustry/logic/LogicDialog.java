@@ -168,14 +168,14 @@ public class LogicDialog extends BaseDialog{
 
             BaseDialog dialog = new BaseDialog("@variables");
             dialog.hidden(() -> {
-                if(!wasPaused && !net.active() && !state.isMenu()){
-                    state.set(State.paused);
+                if(!wasPaused && !net.active() && !world.state.isMenu()){
+                    world.state.set(State.paused);
                 }
             });
 
             dialog.shown(() -> {
-                if(!wasPaused && !net.active() && !state.isMenu()){
-                    state.set(State.playing);
+                if(!wasPaused && !net.active() && !world.state.isMenu()){
+                    world.state.set(State.playing);
                 }
             });
 
@@ -250,7 +250,7 @@ public class LogicDialog extends BaseDialog{
     }
 
     public boolean shouldShowVariables(){
-        return executor != null && executor.vars.length > 0 && !state.isMenu();
+        return executor != null && executor.vars.length > 0 && !world.state.isMenu();
     }
 
     public void showAddDialog(){

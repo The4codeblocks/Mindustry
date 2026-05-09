@@ -57,7 +57,7 @@ public class NetServer implements ApplicationListener{
     public TeamAssigner assigner = (player, players) -> {
         if(world.state.rules.pvp){
             //find team with minimum amount of players and auto-assign player to that.
-            TeamData re = state.teams.getActive().min(data -> {
+            TeamData re = world.state.teams.getActive().min(data -> {
                 if((world.state.rules.waveTeam == data.team && world.state.rules.waves) || !data.hasCore() || data.team == Team.derelict || !data.team.rules().protectCores) return Integer.MAX_VALUE;
 
                 int count = 0;
@@ -922,9 +922,9 @@ public class NetServer implements ApplicationListener{
     }
 
     public boolean isWaitingForPlayers(){
-        if(world.state.rules.pvp && !state.gameOver){
+        if(world.state.rules.pvp && !world.state.gameOver){
             int used = 0;
-            for(TeamData t : state.teams.getActive()){
+            for(TeamData t : world.state.teams.getActive()){
                 if(Groups.player.count(p -> p.team() == t.team) > 0){
                     used++;
                 }
@@ -936,7 +936,7 @@ public class NetServer implements ApplicationListener{
 
     @Override
     public void update(){
-        if(!headless && !closing && net.server() && state.isMenu()){
+        if(!headless && !closing && net.server() && world.state.isMenu()){
             closing = true;
             ui.loadfrag.show("@server.closing");
             Time.runTask(5f, () -> {
@@ -946,17 +946,17 @@ public class NetServer implements ApplicationListener{
             });
         }
 
-        if(state.isGame() && net.server()){
+        if(world.state.isGame() && net.server()){
             if(world.state.rules.pvp && world.state.rules.pvpAutoPause){
-                boolean waiting = isWaitingForPlayers(), paused = state.isPaused();
+                boolean waiting = isWaitingForPlayers(), paused = world.state.isPaused();
                 if(waiting != paused){
                     if(waiting){
                         //is now waiting, enable pausing, flag it correctly
                         pvpAutoPaused = true;
-                        state.set(State.paused);
+                        world.state.set(State.paused);
                     }else if(pvpAutoPaused){
                         //no longer waiting, stop pausing
-                        state.set(State.playing);
+                        world.state.set(State.playing);
                         pvpAutoPaused = false;
                     }
                 }
@@ -979,10 +979,10 @@ public class NetServer implements ApplicationListener{
             info("Opened a server on port @.", Config.port.num());
         }catch(BindException e){
             err("Unable to host: Port " + Config.port.num() + " already in use! Make sure no other servers are running on the same port in your network.");
-            state.set(State.menu);
+            world.state.set(State.menu);
         }catch(IOException e){
             err(e);
-            state.set(State.menu);
+            world.state.set(State.menu);
         }
     }
 
@@ -997,7 +997,7 @@ public class NetServer implements ApplicationListener{
         syncStream.reset();
 
         short sent = 0;
-        for(var team : state.teams.present){
+        for(var team : world.state.teams.present){
             for(var build : indexer.getFlagged(team.team, BlockFlag.synced)){
                 sent++;
 
@@ -1023,13 +1023,13 @@ public class NetServer implements ApplicationListener{
     public void writeEntitySnapshot(Player player) throws IOException{
         byte tps = (byte)Math.min(Core.graphics.getFramesPerSecond(), 255);
         syncStream.reset();
-        int activeTeams = (byte)state.teams.present.count(t -> t.cores.size > 0);
+        int activeTeams = (byte)world.state.teams.present.count(t -> t.cores.size > 0);
 
         dataStream.writeByte(activeTeams);
         dataWrites.output = dataStream;
 
         //block data isn't important, just send the items for each team, they're synced across cores
-        for(TeamData data : state.teams.present){
+        for(TeamData data : world.state.teams.present){
             if(data.cores.size > 0){
                 dataStream.writeByte(data.team.id);
                 data.cores.first().items.write(dataWrites);
@@ -1039,7 +1039,7 @@ public class NetServer implements ApplicationListener{
         dataStream.close();
 
         //write basic state data.
-        Call.stateSnapshot(player.con, state.wavetime, state.wave, state.enemies, state.isPaused(), state.gameOver,
+        Call.stateSnapshot(player.con, world.state.wavetime, world.state.wave, state.enemies, world.state.isPaused(), world.state.gameOver,
         universe.seconds(), tps, GlobalVars.rand.seed0, GlobalVars.rand.seed1, syncStream.toByteArray());
 
         syncStream.reset();

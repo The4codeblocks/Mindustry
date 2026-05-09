@@ -113,7 +113,7 @@ public class CoreBlock extends StorageBlock{
             unit.add();
         }
 
-        if(state.isCampaign() && player == Vars.player){
+        if(world.state.isCampaign() && player == Vars.player){
             spawnType.unlock();
         }
     }
@@ -169,7 +169,7 @@ public class CoreBlock extends StorageBlock{
 
     @Override
     public boolean canBreak(Tile tile){
-        return state.isEditor();
+        return world.state.isEditor();
     }
 
     @Override
@@ -182,7 +182,7 @@ public class CoreBlock extends StorageBlock{
     public boolean canPlaceOn(Tile tile, Team team, int rotation){
         if(tile == null) return false;
         //in the editor, you can place them anywhere for convenience
-        if(state.isEditor()) return true;
+        if(world.state.isEditor()) return true;
 
         CoreBuild core = team.core();
 
@@ -331,7 +331,7 @@ public class CoreBlock extends StorageBlock{
                     image.update(() -> {
                         image.toFront();
                         ui.loadfrag.toFront();
-                        if(state.isMenu()){
+                        if(world.state.isMenu()){
                             image.remove();
                         }
                     });
@@ -345,7 +345,7 @@ public class CoreBlock extends StorageBlock{
                     image.update(() -> {
                         image.toFront();
                         ui.loadfrag.toFront();
-                        if(state.isMenu()){
+                        if(world.state.isMenu()){
                             image.remove();
                         }
                     });
@@ -356,7 +356,7 @@ public class CoreBlock extends StorageBlock{
                         Effect.shake(5f, 5f, this);
                         thrusterTime = 1f;
 
-                        if(state.isCampaign() && Vars.showSectorLandInfo && (world.state.rules.sector.preset == null || world.state.rules.sector.preset.showSectorLandInfo)){
+                        if(world.state.isCampaign() && Vars.showSectorLandInfo && (world.state.rules.sector.preset == null || world.state.rules.sector.preset.showSectorLandInfo)){
                             ui.announce("[accent]" + world.state.rules.sector.name() + "\n" +
                                 (world.state.rules.sector.info.resources.any() ? "[lightgray]" + Core.bundle.get("sectors.resources") + "[white] " +
                                     world.state.rules.sector.info.resources.toString(" ", UnlockableContent::emoji) : ""), 5);
@@ -642,7 +642,7 @@ public class CoreBlock extends StorageBlock{
             Fx.coreExplosion.at(x, y, team.color);
 
             //add a spawn to the map for future reference - waves should be disabled, so it shouldn't matter
-            if(state.isCampaign() && team == world.state.rules.waveTeam && team.cores().size <= 1 && spawner.getSpawns().size == 0 && world.state.rules.sector.planet.enemyCoreSpawnReplace){
+            if(world.state.isCampaign() && team == world.state.rules.waveTeam && team.cores().size <= 1 && spawner.getSpawns().size == 0 && world.state.rules.sector.planet.enemyCoreSpawnReplace){
                 //do not recache
                 tile.setOverlayQuiet(Blocks.spawn);
 
@@ -703,12 +703,12 @@ public class CoreBlock extends StorageBlock{
         public void onProximityUpdate(){
             super.onProximityUpdate();
 
-            for(Building other : state.teams.cores(team)){
+            for(Building other : world.state.teams.cores(team)){
                 if(other.tile != tile){
                     this.items = other.items;
                 }
             }
-            state.teams.registerCore(this);
+            world.state.teams.registerCore(this);
 
             storageCapacity = itemCapacity + proximity.sum(e -> owns(e) ? e.block.itemCapacity : 0);
             proximity.each(this::owns, t -> {
@@ -719,7 +719,7 @@ public class CoreBlock extends StorageBlock{
                 ((StorageBuild)t).linkedCore = this;
             });
 
-            for(Building other : state.teams.cores(team)){
+            for(Building other : world.state.teams.cores(team)){
                 if(other.tile == tile) continue;
                 storageCapacity += other.block.itemCapacity + other.proximity.sum(e -> owns(other, e) ? e.block.itemCapacity : 0);
             }
@@ -730,7 +730,7 @@ public class CoreBlock extends StorageBlock{
                 }
             }
 
-            for(CoreBuild other : state.teams.cores(team)){
+            for(CoreBuild other : world.state.teams.cores(team)){
                 other.storageCapacity = storageCapacity;
             }
         }
@@ -741,7 +741,7 @@ public class CoreBlock extends StorageBlock{
             int realAmount = incinerate ? 0 : Math.min(amount, storageCapacity - items.get(item));
             super.handleStack(item, realAmount, source);
 
-            if(team == world.state.rules.defaultTeam && state.isCampaign()){
+            if(team == world.state.rules.defaultTeam && world.state.isCampaign()){
                 if(!incinerate){
                     world.state.rules.sector.info.handleCoreItem(item, amount);
                 }
@@ -756,7 +756,7 @@ public class CoreBlock extends StorageBlock{
         public int removeStack(Item item, int amount){
             int result = super.removeStack(item, amount);
 
-            if(team == world.state.rules.defaultTeam && state.isCampaign()){
+            if(team == world.state.rules.defaultTeam && world.state.isCampaign()){
                 world.state.rules.sector.info.handleCoreItem(item, -result);
             }
 
@@ -813,9 +813,9 @@ public class CoreBlock extends StorageBlock{
                 }
             });
 
-            state.teams.unregisterCore(this);
+            world.state.teams.unregisterCore(this);
 
-            for(CoreBuild other : state.teams.cores(team)){
+            for(CoreBuild other : world.state.teams.cores(team)){
                 other.onProximityUpdate();
             }
         }
@@ -823,12 +823,12 @@ public class CoreBlock extends StorageBlock{
         @Override
         public void placed(){
             super.placed();
-            state.teams.registerCore(this);
+            world.state.teams.registerCore(this);
         }
 
         @Override
         public void itemTaken(Item item){
-            if(state.isCampaign() && team == world.state.rules.defaultTeam){
+            if(world.state.isCampaign() && team == world.state.rules.defaultTeam){
                 //update item taken amount
                 world.state.rules.sector.info.handleCoreItem(item, -1);
             }
@@ -839,11 +839,11 @@ public class CoreBlock extends StorageBlock{
             boolean incinerate = incinerateNonBuildable && !item.buildable;
 
             if(team == world.state.rules.defaultTeam){
-                state.stats.coreItemCount.increment(item);
+                world.state.stats.coreItemCount.increment(item);
             }
 
             if(net.server() || !net.active()){
-                if(team == world.state.rules.defaultTeam && state.isCampaign() && !incinerate){
+                if(team == world.state.rules.defaultTeam && world.state.isCampaign() && !incinerate){
                     world.state.rules.sector.info.handleCoreItem(item, 1);
                 }
 

@@ -202,19 +202,19 @@ public class Saves{
     }
 
     public void update(){
-        if(current != null && state.isGame()
-        && !(state.isPaused() && Core.scene.hasDialog())){
+        if(current != null && world.state.isGame()
+        && !(world.state.isPaused() && Core.scene.hasDialog())){
             if(lastTimestamp != 0){
                 long change = Time.timeSinceMillis(lastTimestamp);
                 totalPlaytime += change;
-                if(state.isCampaign()){
-                    state.getPlanet().stats().playtime += change;
+                if(world.state.isCampaign()){
+                    world.state.getPlanet().stats().playtime += change;
                 }
             }
             lastTimestamp = Time.millis();
         }
 
-        if(state.isGame() && !state.gameOver && current != null && current.isAutosave()){
+        if(world.state.isGame() && !world.state.gameOver && current != null && current.isAutosave()){
             time += Time.delta;
             if(time > Core.settings.getInt("saveinterval") * 60 && !Vars.disableSave){
                 saving = true;
@@ -332,7 +332,7 @@ public class Saves{
 
             SaveIO.save(file);
             meta = SaveIO.getMeta(file);
-            if(state.isGame()){
+            if(world.state.isGame()){
                 current = this;
             }
 

@@ -98,7 +98,7 @@ public class BlockInventoryFragment{
         table.touchable = Touchable.enabled;
         table.update(() -> {
 
-            if(state.isMenu() || build == null || !build.isValid() || !build.block.isAccessible() || emptyTime >= holdShrink){
+            if(world.state.isMenu() || build == null || !build.isValid() || !build.block.isAccessible() || emptyTime >= holdShrink){
                 hide();
             }else{
                 if(build.items.total() == 0){
@@ -153,7 +153,7 @@ public class BlockInventoryFragment{
 
                 container.add(i);
 
-                Boolp canPick = () -> !player.dead() && player.unit().acceptsItem(item) && !state.isPaused() && player.within(build, itemTransferRange);
+                Boolp canPick = () -> !player.dead() && player.unit().acceptsItem(item) && !world.state.isPaused() && player.within(build, itemTransferRange);
 
                 HandCursorListener l = new HandCursorListener();
                 l.enabled = canPick;

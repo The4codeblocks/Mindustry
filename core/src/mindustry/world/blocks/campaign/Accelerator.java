@@ -229,7 +229,7 @@ public class Accelerator extends Block{
         }
 
         public boolean canLaunch(){
-            return isValid() && !net.client() && state.isCampaign() && efficiency > 0f && power.graph.getBatteryStored() >= powerBufferRequirement-0.00001f && progress >= 1f && !launching;
+            return isValid() && !net.client() && world.state.isCampaign() && efficiency > 0f && power.graph.getBatteryStored() >= powerBufferRequirement-0.00001f && progress >= 1f && !launching;
         }
 
         @Override
@@ -340,7 +340,7 @@ public class Accelerator extends Block{
             image.update(() -> {
                 image.toFront();
                 ui.loadfrag.toFront();
-                if(state.isMenu()){
+                if(world.state.isMenu()){
                     image.remove();
                 }
             });

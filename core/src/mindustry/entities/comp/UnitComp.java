@@ -729,7 +729,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
         wasHealed = false;
 
         //die on captured sectors immediately
-        if(team.isOnlyAI() && state.isCampaign() && state.getSector().isCaptured()){
+        if(team.isOnlyAI() && world.state.isCampaign() && world.state.getSector().isCaptured()){
             kill();
         }
 
@@ -765,7 +765,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
         drag = type.drag * (isGrounded() ? (floorOn().dragMultiplier) : 1f) * dragMultiplier * world.state.rules.dragMultiplier;
 
         //apply knockback based on spawns
-        if(team != world.state.rules.waveTeam && state.hasSpawns() && (!net.client() || isLocal()) && hittable()){
+        if(team != world.state.rules.waveTeam && world.state.hasSpawns() && (!net.client() || isLocal()) && hittable()){
             float relativeSize = world.state.rules.dropZoneRadius + hitSize/2f + 1f;
             for(Tile spawn : spawner.getSpawns()){
                 if(within(spawn.worldx(), spawn.worldy(), relativeSize)){

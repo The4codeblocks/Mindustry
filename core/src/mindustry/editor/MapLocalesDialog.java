@@ -69,20 +69,20 @@ public class MapLocalesDialog extends BaseDialog{
             t.button("@back", Icon.left, () -> {
                 if(!saved) ui.showConfirm("@editor.locales", "@editor.savechanges", () -> {
                     editor.tags.put("locales", JsonIO.write(locales));
-                    state.mapLocales = locales;
+                    world.state.mapLocales = locales;
                 });
                 hide();
             }).size(210f, 64f);
             closeOnBack(() -> {
                 if(!saved) ui.showConfirm("@editor.locales", "@editor.savechanges", () -> {
                     editor.tags.put("locales", JsonIO.write(locales));
-                    state.mapLocales = locales;
+                    world.state.mapLocales = locales;
                 });
             });
 
             t.button("@editor.apply", Icon.ok, () -> {
                 editor.tags.put("locales", JsonIO.write(locales));
-                state.mapLocales = locales;
+                world.state.mapLocales = locales;
                 lastSaved = locales.copy();
                 saved = true;
             }).size(210f, 64f).disabled(b -> saved);

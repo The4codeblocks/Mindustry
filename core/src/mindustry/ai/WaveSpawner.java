@@ -56,7 +56,7 @@ public class WaveSpawner{
 
     /** @return true if the player is near a ground spawn point. */
     public boolean playerNear(){
-        return state.hasSpawns() && !player.dead() && spawns.contains(g -> Mathf.dst(g.x * tilesize, g.y * tilesize, player.x, player.y) < world.state.rules.dropZoneRadius && player.team() != world.state.rules.waveTeam);
+        return world.state.hasSpawns() && !player.dead() && spawns.contains(g -> Mathf.dst(g.x * tilesize, g.y * tilesize, player.x, player.y) < world.state.rules.dropZoneRadius && player.team() != world.state.rules.waveTeam);
     }
 
     public void spawnEnemies(){
@@ -71,14 +71,14 @@ public class WaveSpawner{
         for(SpawnGroup group : world.state.rules.spawns){
             if(group.type == null) continue;
 
-            int spawned = group.getSpawned(state.wave - 1);
+            int spawned = group.getSpawned(world.state.wave - 1);
             if(spawned == 0) continue;
 
-            if(state.isCampaign()){
+            if(world.state.isCampaign()){
                 //when spawning a boss, round down, so 1.5x (hard) * 1 boss does not result in 2 bosses
                 spawned = Math.max(1, group.effect == StatusEffects.boss ?
-                          (int)(spawned * state.getPlanet().campaignRules.difficulty.enemySpawnMultiplier) :
-                    Mathf.round(spawned * state.getPlanet().campaignRules.difficulty.enemySpawnMultiplier));
+                          (int)(spawned * world.state.getPlanet().campaignRules.difficulty.enemySpawnMultiplier) :
+                    Mathf.round(spawned * world.state.getPlanet().campaignRules.difficulty.enemySpawnMultiplier));
             }
 
             int spawnedf = spawned;
@@ -110,7 +110,7 @@ public class WaveSpawner{
 
     public void spawnUnit(SpawnGroup group, float x, float y){
         group.createUnit(group.team == null ? world.state.rules.waveTeam : group.team, x, y,
-            Angles.angle(x, y, world.width()/2f * tilesize, world.height()/2f * tilesize), state.wave - 1, this::spawnEffect);
+            Angles.angle(x, y, world.width()/2f * tilesize, world.height()/2f * tilesize), world.state.wave - 1, this::spawnEffect);
     }
 
     public void doShockwave(float x, float y){
@@ -123,7 +123,7 @@ public class WaveSpawner{
     }
 
     private void eachGroundSpawn(int filterPos, SpawnConsumer cons){
-        if(state.hasSpawns()){
+        if(world.state.hasSpawns()){
             for(Tile spawn : spawns){
                 if(filterPos != -1 && filterPos != spawn.pos()) continue;
 
@@ -131,8 +131,8 @@ public class WaveSpawner{
             }
         }
 
-        if(world.state.rules.wavesSpawnAtCores && world.state.rules.attackMode && state.teams.isActive(world.state.rules.waveTeam) && !state.teams.playerCores().isEmpty()){
-            Building firstCore = state.teams.playerCores().first();
+        if(world.state.rules.wavesSpawnAtCores && world.state.rules.attackMode && world.state.teams.isActive(world.state.rules.waveTeam) && !world.state.teams.playerCores().isEmpty()){
+            Building firstCore = world.state.teams.playerCores().first();
             for(CoreBuild core : world.state.rules.waveTeam.cores()){
                 if(filterPos != -1 && filterPos != core.pos()) continue;
 
@@ -189,7 +189,7 @@ public class WaveSpawner{
             }
         }
 
-        if(world.state.rules.wavesSpawnAtCores && world.state.rules.attackMode && state.teams.isActive(world.state.rules.waveTeam)){
+        if(world.state.rules.wavesSpawnAtCores && world.state.rules.attackMode && world.state.teams.isActive(world.state.rules.waveTeam)){
             for(Building core : world.state.rules.waveTeam.data().cores){
                 if(filterPos != -1 && filterPos != core.pos()) continue;
 

@@ -285,7 +285,7 @@ public class MinimapRenderer{
             }
         });
 
-        for(var marker : state.markers){
+        for(var marker : world.state.markers){
             if(marker.minimap){
                 marker.draw(1);
             }
@@ -295,7 +295,7 @@ public class MinimapRenderer{
     }
 
     public void drawSpawns(){
-        if(!world.state.rules.showSpawns || !state.hasSpawns() || !world.state.rules.waves) return;
+        if(!world.state.rules.showSpawns || !world.state.hasSpawns() || !world.state.rules.waves) return;
 
         TextureRegion icon = Icon.units.getRegion();
 
@@ -342,7 +342,7 @@ public class MinimapRenderer{
     }
 
     public void update(Tile tile){
-        if(world.isGenerating() || !state.isGame()) return;
+        if(world.isGenerating() || !world.state.isGame()) return;
 
         if(tile.build != null && tile.isCenter()){
             tile.getLinkedTiles(other -> {

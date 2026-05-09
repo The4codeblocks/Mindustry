@@ -34,7 +34,7 @@ public class BaseGenerator{
         Seq<Block> wallsSmall = content.blocks().select(b -> b instanceof Wall && b.isVanilla() && b.size == size
             && !b.insulated && b.buildVisibility == BuildVisibility.shown
             && !(b instanceof Door)
-            && b.isOnPlanet(state.getPlanet()));
+            && b.isOnPlanet(world.state.getPlanet()));
         wallsSmall.sort(b -> b.buildTime);
         return wallsSmall.getFrac(difficulty * 0.91f);
     }
@@ -281,7 +281,7 @@ public class BaseGenerator{
     }
 
     static boolean isTaken(Block block, int x, int y){
-        if(state.teams.anyEnemyCoresWithin(world.state.rules.waveTeam, x * tilesize + block.offset, y * tilesize + block.offset, world.state.rules.enemyCoreBuildRadius + tilesize)) return true;
+        if(world.state.teams.anyEnemyCoresWithin(world.state.rules.waveTeam, x * tilesize + block.offset, y * tilesize + block.offset, world.state.rules.enemyCoreBuildRadius + tilesize)) return true;
 
         int offsetx = -(block.size - 1) / 2;
         int offsety = -(block.size - 1) / 2;

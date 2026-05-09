@@ -23,16 +23,16 @@ public class BaseDialog extends Dialog{
         titleTable.image(Tex.whiteui, Pal.accent).growX().height(3f).pad(4f);
 
         hidden(() -> {
-            if(shouldPause && state.isGame() && !net.active() && !wasPaused){
-                state.set(State.playing);
+            if(shouldPause && world.state.isGame() && !net.active() && !wasPaused){
+                world.state.set(State.playing);
             }
             Sounds.uiBack.play();
         });
 
         shown(() -> {
-            if(shouldPause && state.isGame() && !net.active()){
-                wasPaused = state.is(State.paused);
-                state.set(State.paused);
+            if(shouldPause && world.state.isGame() && !net.active()){
+                wasPaused = world.state.is(State.paused);
+                world.state.set(State.paused);
             }
         });
     }

@@ -767,14 +767,14 @@ public class LExecutor{
                     bestValue = 0;
 
                     if(enemies){
-                        Seq<TeamData> data = state.teams.present;
+                        Seq<TeamData> data = world.state.teams.present;
                         for(int i = 0; i < data.size; i++){
                             if(data.items[i].team != r.team()){
                                 find(r, range, sortDir, data.items[i].team);
                             }
                         }
                     }else if(!allies){
-                        Seq<TeamData> data = state.teams.present;
+                        Seq<TeamData> data = world.state.teams.present;
                         for(int i = 0; i < data.size; i++){
                             find(r, range, sortDir, data.items[i].team);
                         }
@@ -1461,7 +1461,7 @@ public class LExecutor{
                     if(team != null){
                         team.data().tree().intersect(x, y, w, h, results.as());
                     }else{
-                        for(var other : state.teams.present){
+                        for(var other : world.state.teams.present){
                             other.tree().intersect(x, y, w, h, results.as());
                         }
                     }
@@ -1480,7 +1480,7 @@ public class LExecutor{
                         if(team.data().buildingTree == null) return;
                         team.data().buildingTree.intersect(x, y, w, h, results.as());
                     }else{
-                        for(var other : state.teams.present){
+                        for(var other : world.state.teams.present){
                             if(other.buildingTree != null){
                                 other.buildingTree.intersect(x, y, w, h, results.as());
                             }
@@ -1758,8 +1758,8 @@ public class LExecutor{
         public void run(LExecutor exec){
             switch(rule){
                 case waveTimer -> world.state.rules.waveTimer = value.bool();
-                case wave -> state.wave = Math.max(value.numi(), 1);
-                case currentWaveTime -> state.wavetime = Math.max(value.numf() * 60f, 0f);
+                case wave -> world.state.wave = Math.max(value.numi(), 1);
+                case currentWaveTime -> world.state.wavetime = Math.max(value.numf() * 60f, 0f);
                 case waves -> world.state.rules.waves = value.bool();
                 case waveSending -> world.state.rules.waveSending = value.bool();
                 case attackMode -> world.state.rules.attackMode = value.bool();
@@ -2166,7 +2166,7 @@ public class LExecutor{
             for(SpawnGroup group : world.state.rules.spawns){
                 if(group.type == null || (group.spawn != -1 && group.spawn != packed)) continue;
 
-                int spawned = group.getSpawned(state.wave - 1);
+                int spawned = group.getSpawned(world.state.wave - 1);
                 float spread = tilesize * 2;
 
                 for(int i = 0; i < spawned; i++){
@@ -2256,9 +2256,9 @@ public class LExecutor{
         @Override
         public void run(LExecutor exec){
             if(type == LMarkerControl.remove){
-                state.markers.remove(id.numi());
+                world.state.markers.remove(id.numi());
             }else{
-                var marker = state.markers.get(id.numi());
+                var marker = world.state.markers.get(id.numi());
                 if(marker == null) return;
 
                 if(type == LMarkerControl.flushText){
@@ -2300,12 +2300,12 @@ public class LExecutor{
         public void run(LExecutor exec){
             var cons = MapObjectives.markerNameToType.get(type);
 
-            if(cons != null && state.markers.size() < maxMarkers){
+            if(cons != null && world.state.markers.size() < maxMarkers){
                 int mid = id.numi();
-                if(replace.bool() || !state.markers.has(mid)){
+                if(replace.bool() || !world.state.markers.has(mid)){
                     var marker = cons.get();
                     marker.control(LMarkerControl.pos, x.num(), y.num(), 0);
-                    state.markers.add(mid, marker);
+                    world.state.markers.add(mid, marker);
                 }
             }
         }
@@ -2313,17 +2313,17 @@ public class LExecutor{
 
     @Remote(called = Loc.server, variants = Variant.both, unreliable = true)
     public static void createMarker(int id, ObjectiveMarker marker){
-        state.markers.add(id, marker);
+        world.state.markers.add(id, marker);
     }
 
     @Remote(called = Loc.server, variants = Variant.both, unreliable = true)
     public static void removeMarker(int id){
-        state.markers.remove(id);
+        world.state.markers.remove(id);
     }
 
     @Remote(called = Loc.server, variants = Variant.both, unreliable = true)
     public static void updateMarker(int id, LMarkerControl control, double p1, double p2, double p3){
-        var marker = state.markers.get(id);
+        var marker = world.state.markers.get(id);
         if(marker != null){
             marker.control(control, p1, p2, p3);
         }
@@ -2331,7 +2331,7 @@ public class LExecutor{
 
     @Remote(called = Loc.server, variants = Variant.both, unreliable = true)
     public static void updateMarkerText(int id, LMarkerControl type, boolean fetch, String text){
-        var marker = state.markers.get(id);
+        var marker = world.state.markers.get(id);
         if(marker != null){
             if(type == LMarkerControl.flushText){
                 marker.setText(text, fetch);
@@ -2341,7 +2341,7 @@ public class LExecutor{
 
     @Remote(called = Loc.server, variants = Variant.both, unreliable = true)
     public static void updateMarkerTexture(int id, Object texture){
-        var marker = state.markers.get(id);
+        var marker = world.state.markers.get(id);
         if(marker != null){
             marker.setTexture(texture);
         }
@@ -2368,11 +2368,11 @@ public class LExecutor{
                 String strValue;
 
                 if(mobile){
-                    strValue = state.mapLocales.containsProperty(name + ".mobile") ?
-                    state.mapLocales.getProperty(name + ".mobile") :
-                    state.mapLocales.getProperty(name);
+                    strValue = world.state.mapLocales.containsProperty(name + ".mobile") ?
+                    world.state.mapLocales.getProperty(name + ".mobile") :
+                    world.state.mapLocales.getProperty(name);
                 }else{
-                    strValue = state.mapLocales.getProperty(name);
+                    strValue = world.state.mapLocales.getProperty(name);
                 }
 
                 exec.textBuffer.append(strValue);

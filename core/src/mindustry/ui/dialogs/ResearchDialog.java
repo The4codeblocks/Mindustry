@@ -123,7 +123,7 @@ public class ResearchDialog extends BaseDialog{
 
             Planet currPlanet = ui.planet.isShown() ?
                 ui.planet.state.planet :
-                state.isCampaign() ? world.state.rules.sector.planet : null;
+                world.state.isCampaign() ? world.state.rules.sector.planet : null;
 
             if(currPlanet != null && currPlanet.techTree != null){
                 switchTree(currPlanet.techTree);
@@ -283,7 +283,7 @@ public class ResearchDialog extends BaseDialog{
     public @Nullable TechNode getPrefRoot(){
         Planet currPlanet = ui.planet.isShown() ?
             ui.planet.state.planet :
-            state.isCampaign() ? world.state.rules.sector.planet : null;
+            world.state.isCampaign() ? world.state.rules.sector.planet : null;
         return currPlanet == null ? null : currPlanet.techTree;
     }
 

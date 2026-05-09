@@ -41,9 +41,9 @@ public class DatabaseDialog extends BaseDialog{
         shown(() -> {
             checkTabList();
             sortContents();
-            if(state.isCampaign() && allTabs.contains(state.getPlanet())){
-                tab = state.getPlanet();
-            }else if(state.isGame() && world.state.rules.planet != null && allTabs.contains(world.state.rules.planet)){
+            if(world.state.isCampaign() && allTabs.contains(world.state.getPlanet())){
+                tab = world.state.getPlanet();
+            }else if(world.state.isGame() && world.state.rules.planet != null && allTabs.contains(world.state.rules.planet)){
                 tab = world.state.rules.planet;
             }
 
@@ -141,7 +141,7 @@ public class DatabaseDialog extends BaseDialog{
                 categoryHasResult = true;
 
                 //sorting only makes sense when in-game; otherwise, banned blocks can't exist
-                if(state.isGame()){
+                if(world.state.isGame()){
                     array.sort(Structs.comps(Structs.comparingBool(UnlockableContent::isBanned), Structs.comparingInt(u -> u.id)));
                 }
 
@@ -179,12 +179,12 @@ public class DatabaseDialog extends BaseDialog{
                             Image image = unlocked(unlock) ? new Image(new TextureRegionDrawable(unlock.uiIcon), mobile ? Color.white : Color.lightGray).setScaling(Scaling.fit) : new Image(Icon.lock, Pal.gray);
 
                             //banned cross
-                            if(state.isGame() && unlock.isBanned()){
+                            if(world.state.isGame() && unlock.isBanned()){
                                 list.stack(image, new Image(Icon.cancel){{
                                     setColor(Color.scarlet);
                                     touchable = Touchable.disabled;
                                 }}).size(8 * 4).pad(3);
-                            }else if(state.isGame() && state.patcher.isPatched(unlock)){
+                            }else if(world.state.isGame() && world.state.patcher.isPatched(unlock)){
                                 list.stack(image, new Table(){{
                                     right().bottom().touchable = Touchable.disabled;
                                     // Interpolated color (lerp lightishGray and white) for better contrast

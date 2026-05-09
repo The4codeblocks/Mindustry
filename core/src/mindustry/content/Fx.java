@@ -45,7 +45,7 @@ public class Fx{
         //lifetime is how many frames it takes to fade out the trail
         e.lifetime = trail.length * 1.4f;
 
-        if(!state.isPaused()){
+        if(!world.state.isPaused()){
             trail.shorten();
         }
         trail.drawCap(e.color, e.rotation);

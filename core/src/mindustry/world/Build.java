@@ -191,7 +191,7 @@ public class Build{
             if(world.state.rules.polygonCoreProtection){
                 float mindst = Float.MAX_VALUE;
                 CoreBuild closest = null;
-                for(TeamData data : state.teams.active){
+                for(TeamData data : world.state.teams.active){
                     if(!data.team.rules().protectCores){
                         continue;
                     }
@@ -207,7 +207,7 @@ public class Build{
                 if(closest != null && closest.team != team){
                     return false;
                 }
-            }else if(state.teams.anyEnemyCoresWithinBuildRadius(team, x * tilesize + type.offset, y * tilesize + type.offset)){
+            }else if(world.state.teams.anyEnemyCoresWithinBuildRadius(team, x * tilesize + type.offset, y * tilesize + type.offset)){
                 return false;
             }
         }
@@ -262,7 +262,7 @@ public class Build{
             }
         }
 
-        if(world.state.rules.placeRangeCheck && checkCoreRadius && !state.isEditor() && getEnemyOverlap(type, team, x, y) != null){
+        if(world.state.rules.placeRangeCheck && checkCoreRadius && !world.state.isEditor() && getEnemyOverlap(type, team, x, y) != null){
             return false;
         }
 

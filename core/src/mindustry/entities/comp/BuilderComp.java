@@ -158,7 +158,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
                 Vars.control.sound.loop(Sounds.loopBuild, tile, 1.3f);
             }
 
-            boolean allowBuildCurrent = current.block != null && (state.isEditor() || (world.state.rules.waves && team == world.state.rules.waveTeam && current.block.isVisible()) || (current.block.unlockedNowHost() && current.block.environmentBuildable() && current.block.isPlaceable()));
+            boolean allowBuildCurrent = current.block != null && (world.state.isEditor() || (world.state.rules.waves && team == world.state.rules.waveTeam && current.block.isVisible()) || (current.block.unlockedNowHost() && current.block.environmentBuildable() && current.block.isPlaceable()));
 
             if(!(tile.build instanceof ConstructBuild cb)){
                 if(!current.initialized && !current.breaking && Build.validPlaceIgnoreUnits(current.block, team, current.x, current.y, current.rotation, true, true) && allowBuildCurrent){
@@ -302,7 +302,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
         //not actively building when not near the build plan
         if(isBuilding()){
             var plan = buildPlan();
-            if(!state.isEditor() && plan != null && !within(plan, world.state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange)){
+            if(!world.state.isEditor() && plan != null && !within(plan, world.state.rules.infiniteResources ? Float.MAX_VALUE : type.buildRange)){
                 return false;
             }
         }
@@ -330,7 +330,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
         }
 
         //draw remote plans.
-        if(core != null && active && !isLocal() && !(tile.block() instanceof ConstructBlock) && !state.isPaused()){
+        if(core != null && active && !isLocal() && !(tile.block() instanceof ConstructBlock) && !world.state.isPaused()){
             Draw.z(Layer.plans - 1f);
             drawPlan(plan, 0.5f);
             drawPlanTop(plan, 0.5f);

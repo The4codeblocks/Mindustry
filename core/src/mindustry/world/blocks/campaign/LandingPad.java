@@ -152,21 +152,21 @@ public class LandingPad extends Block{
             liquidRemoved = 0f;
             landSound.at(x, y, 1f, landSoundVolume);
 
-            if(state.isCampaign() && !isFake()){
+            if(world.state.isCampaign() && !isFake()){
                 world.state.rules.sector.info.importCooldownTimers.put(config, 0f);
             }
         }
 
         public boolean accessible(){
             //In custom games, this block can be configured by anyone except the player team; this allows for enemy builder AI to use it
-            return world.state.rules.editor || world.state.rules.allowEditWorldProcessors || state.isCampaign() || world.state.rules.infiniteResources || (team != world.state.rules.defaultTeam && !world.state.rules.pvp && team != Team.derelict);
+            return world.state.rules.editor || world.state.rules.allowEditWorldProcessors || world.state.isCampaign() || world.state.rules.infiniteResources || (team != world.state.rules.defaultTeam && !world.state.rules.pvp && team != Team.derelict);
         }
 
         public void updateTimers(){
-            if(state.isCampaign() && lastUpdateId != state.updateId){
+            if(world.state.isCampaign() && lastUpdateId != state.updateId){
                 lastUpdateId = state.updateId;
 
-                float[] imports = world.state.rules.sector.info.getImportRates(state.getPlanet());
+                float[] imports = world.state.rules.sector.info.getImportRates(world.state.getPlanet());
 
                 for(Item item : content.items()){
                     float importedPerFrame = imports[item.id]/60f;
@@ -311,7 +311,7 @@ public class LandingPad extends Block{
                     if(!isFake()){
                         //receiving items counts as "production" for now
                         produced(arriving, itemCapacity);
-                        state.getSector().info.handleItemImport(arriving, itemCapacity);
+                        world.state.getSector().info.handleItemImport(arriving, itemCapacity);
                     }
 
                     arriving = null;
@@ -328,9 +328,9 @@ public class LandingPad extends Block{
                 cooldown = Mathf.clamp(cooldown);
             }
 
-            if(config != null && (isFake() || (state.isCampaign() && !state.getPlanet().campaignRules.legacyLaunchPads))){
+            if(config != null && (isFake() || (world.state.isCampaign() && !world.state.getPlanet().campaignRules.legacyLaunchPads))){
 
-                if(cooldown <= 0f && efficiency > 0f && items.total() == 0 && (isFake() || (world.state.rules.sector.info.getImportRate(state.getPlanet(), config) > 0f && world.state.rules.sector.info.importCooldownTimers.get(config, 0f) >= 1f))){
+                if(cooldown <= 0f && efficiency > 0f && items.total() == 0 && (isFake() || (world.state.rules.sector.info.getImportRate(world.state.getPlanet(), config) > 0f && world.state.rules.sector.info.importCooldownTimers.get(config, 0f) >= 1f))){
 
                     if(isFake()){
                         //there is no queue for enemy team blocks, it's all fake
@@ -345,7 +345,7 @@ public class LandingPad extends Block{
 
         /** @return whether this pad should receive items forever, essentially acting as an item source for maps. */
         public boolean isFake(){
-            return team != world.state.rules.defaultTeam || !state.isCampaign();
+            return team != world.state.rules.defaultTeam || !world.state.isCampaign();
         }
 
         @Override
@@ -385,35 +385,35 @@ public class LandingPad extends Block{
                     t.background(Styles.black6);
 
                     t.button(Icon.downOpen, Styles.clearNonei, 40f, () -> {
-                        if(config == null || !state.isCampaign()) return;
+                        if(config == null || !world.state.isCampaign()) return;
 
-                        for(Sector sector : state.getPlanet().sectors){
+                        for(Sector sector : world.state.getPlanet().sectors){
                             if(!canRedirectExports(sector)) continue;
-                            sector.info.destination = state.getSector();
+                            sector.info.destination = world.state.getSector();
                             sector.saveInfo();
                         }
-                        state.getSector().info.refreshImportRates(state.getPlanet());
-                    }).disabled(button -> config == null || !state.isCampaign() || (!state.getPlanet().sectors.contains(this::canRedirectExports)))
+                        world.state.getSector().info.refreshImportRates(world.state.getPlanet());
+                    }).disabled(button -> config == null || !world.state.isCampaign() || (!world.state.getPlanet().sectors.contains(this::canRedirectExports)))
                     .tooltip("@sectors.redirect").get();
                 }).fillX().left();
             }
         }
 
         private boolean canRedirectExports(Sector sector){
-            return sector.hasBase() && sector != state.getSector() && sector.info.hasExport(config) && sector.info.destination != state.getSector();
+            return sector.hasBase() && sector != world.state.getSector() && sector.info.hasExport(config) && sector.info.destination != world.state.getSector();
         }
 
         @Override
         public void display(Table table){
             super.display(table);
 
-            if(!state.isCampaign() || net.client() || team != player.team() || isFake()) return;
+            if(!world.state.isCampaign() || net.client() || team != player.team() || isFake()) return;
 
             table.row();
             table.label(() -> {
-                if(!state.isCampaign() || isFake()) return "";
+                if(!world.state.isCampaign() || isFake()) return "";
 
-                if(state.getPlanet().campaignRules.legacyLaunchPads){
+                if(world.state.getPlanet().campaignRules.legacyLaunchPads){
                     return Core.bundle.get("landingpad.legacy.disabled");
                 }
 
@@ -421,8 +421,8 @@ public class LandingPad extends Block{
 
                 int sources = 0;
                 float perSecond = 0f;
-                for(var otherSector : state.getPlanet().sectors){
-                    if(otherSector == state.getSector() || !otherSector.hasBase() || otherSector.info.destination != state.getSector()) continue;
+                for(var otherSector : world.state.getPlanet().sectors){
+                    if(otherSector == world.state.getSector() || !otherSector.hasBase() || otherSector.info.destination != world.state.getSector()) continue;
 
                     float amount = otherSector.info.getExport(config);
                     if(amount <= 0) continue;

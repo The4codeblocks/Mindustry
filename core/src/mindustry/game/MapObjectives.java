@@ -402,12 +402,12 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
 
         @Override
         public boolean update(){
-            return state.stats.coreItemCount.get(item) >= amount;
+            return world.state.stats.coreItemCount.get(item) >= amount;
         }
 
         @Override
         public String text(){
-            return Core.bundle.format("objective.coreitem", state.stats.coreItemCount.get(item), amount, item.emoji(), item.localizedName);
+            return Core.bundle.format("objective.coreitem", world.state.stats.coreItemCount.get(item), amount, item.emoji(), item.localizedName);
         }
 
         @Override
@@ -435,12 +435,12 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
 
         @Override
         public boolean update(){
-            return state.stats.placedBlockCount.get(block, 0) >= count;
+            return world.state.stats.placedBlockCount.get(block, 0) >= count;
         }
 
         @Override
         public String text(){
-            return Core.bundle.format("objective.build", count - state.stats.placedBlockCount.get(block, 0), block.emoji(), block.localizedName);
+            return Core.bundle.format("objective.build", count - world.state.stats.placedBlockCount.get(block, 0), block.emoji(), block.localizedName);
         }
 
         @Override
@@ -499,12 +499,12 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
 
         @Override
         public boolean update(){
-            return state.stats.enemyUnitsDestroyed >= count;
+            return world.state.stats.enemyUnitsDestroyed >= count;
         }
 
         @Override
         public String text(){
-            return Core.bundle.format("objective.destroyunits", count - state.stats.enemyUnitsDestroyed);
+            return Core.bundle.format("objective.destroyunits", count - world.state.stats.enemyUnitsDestroyed);
         }
 
         @Override
@@ -556,9 +556,9 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
                 timeString.append(s);
 
                 if(text.startsWith("@")){
-                    if(state.mapLocales.containsProperty(text.substring(1))){
+                    if(Vars.world.state.mapLocales.containsProperty(text.substring(1))){
                         try{
-                            return state.mapLocales.getFormatted(text.substring(1), timeString.toString());
+                            return Vars.world.state.mapLocales.getFormatted(text.substring(1), timeString.toString());
                         }catch(IllegalArgumentException e){
                             //illegal text.
                             text = "";
@@ -706,7 +706,7 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
             if(text == null) return null;
 
             if(text.startsWith("@")){
-                if(state.mapLocales.containsProperty(text.substring(1))) return state.mapLocales.getProperty(text.substring(1));
+                if(Vars.world.state.mapLocales.containsProperty(text.substring(1))) return Vars.world.state.mapLocales.getProperty(text.substring(1));
                 return Core.bundle.get(text.substring(1));
             }else{
                 return text;
@@ -784,15 +784,15 @@ public class MapObjectives implements Iterable<MapObjective>, Eachable<MapObject
                 String out;
                 if(mobile){
                     out =
-                        state.mapLocales.containsProperty(key + ".mobile") ?
-                        state.mapLocales.getProperty(key + ".mobile") :
-                        state.mapLocales.containsProperty(key) ?
-                        state.mapLocales.getProperty(key) :
+                        Vars.world.state.mapLocales.containsProperty(key + ".mobile") ?
+                        Vars.world.state.mapLocales.getProperty(key + ".mobile") :
+                        Vars.world.state.mapLocales.containsProperty(key) ?
+                        Vars.world.state.mapLocales.getProperty(key) :
                         Core.bundle.get(key + ".mobile", Core.bundle.get(key));
                 }else{
                     out =
-                        state.mapLocales.containsProperty(key) ?
-                        state.mapLocales.getProperty(key) :
+                        Vars.world.state.mapLocales.containsProperty(key) ?
+                        Vars.world.state.mapLocales.getProperty(key) :
                         Core.bundle.get(key);
                 }
                 return UI.formatIcons(out);

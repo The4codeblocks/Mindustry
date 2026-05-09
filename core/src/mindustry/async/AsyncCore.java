@@ -38,7 +38,7 @@ public class AsyncCore{
     }
 
     public void begin(){
-        if(state.isPlaying()){
+        if(world.state.isPlaying()){
             //sync begin
             for(AsyncProcess p : processes){
                 p.begin();
@@ -66,7 +66,7 @@ public class AsyncCore{
     }
 
     public void end(){
-        if(state.isPlaying()){
+        if(world.state.isPlaying()){
             complete();
 
             //sync end (flush data)

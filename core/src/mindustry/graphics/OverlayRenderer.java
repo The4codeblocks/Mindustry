@@ -50,7 +50,7 @@ public class OverlayRenderer{
 
         Seq<Vec2> pos = new Seq<>();
         Seq<CoreBuild> teams = new Seq<>();
-        for(TeamData data : state.teams.active){
+        for(TeamData data : world.state.teams.active){
             if(!data.team.rules().protectCores){
                 continue;
             }
@@ -184,7 +184,7 @@ public class OverlayRenderer{
 
                 Draw.color();
             }else{
-                state.teams.eachEnemyCore(player.team(), core -> {
+                world.state.teams.eachEnemyCore(player.team(), core -> {
                     //it must be clear that there is a core here.
                     float br = world.state.rules.buildRadius(core.team);
                     if(/*core.wasVisible && */br > 0f && Core.camera.bounds(Tmp.r1).overlaps(Tmp.r2.setCentered(core.x, core.y, br * 2f))){
@@ -200,7 +200,7 @@ public class OverlayRenderer{
         Lines.stroke(2f);
         Draw.color(Color.gray, Color.lightGray, Mathf.absin(Time.time, 8f, 1f));
 
-        if(state.hasSpawns()){
+        if(world.state.hasSpawns()){
             for(Tile tile : spawner.getSpawns()){
                 if(tile.within(player.x, player.y, world.state.rules.dropZoneRadius + spawnerMargin)){
                     Draw.alpha(Mathf.clamp(1f - (player.dst(tile) - world.state.rules.dropZoneRadius) / spawnerMargin));
@@ -233,7 +233,7 @@ public class OverlayRenderer{
 
         input.drawOverSelect();
 
-        if(ui.hudfrag.blockfrag.hover() instanceof Unit unit && unit.controller() instanceof LogicAI ai && ai.controller != null && ai.controller.isValid() && (state.isEditor() || !ai.controller.block.privileged)){
+        if(ui.hudfrag.blockfrag.hover() instanceof Unit unit && unit.controller() instanceof LogicAI ai && ai.controller != null && ai.controller.isValid() && (world.state.isEditor() || !ai.controller.block.privileged)){
             var build = ai.controller;
             Drawf.square(build.x, build.y, build.block.size * tilesize/2f + 2f);
             if(!unit.within(build, unit.hitSize * 2f)){

@@ -37,7 +37,7 @@ abstract class StatusComp implements Posc{
         if(effect == StatusEffects.none || effect == null || isImmune(effect)) return; //don't apply empty or immune effects
 
         //unlock status effects regardless of whether they were applied to friendly units
-        if(state.isCampaign()){
+        if(world.state.isCampaign()){
             effect.unlock();
         }
 

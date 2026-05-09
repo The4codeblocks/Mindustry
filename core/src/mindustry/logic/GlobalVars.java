@@ -187,16 +187,16 @@ public class GlobalVars{
     public void update(){
         //set up time; note that @time is now only updated once every invocation and directly based off of @tick.
         //having time be based off of user system time was a very bad idea.
-        varTime.numval = state.tick / 60.0 * 1000.0;
-        varTick.numval = state.tick;
+        varTime.numval = world.state.tick / 60.0 * 1000.0;
+        varTick.numval = world.state.tick;
 
         //shorthands for seconds/minutes spent in save
-        varSecond.numval = state.tick / 60f;
-        varMinute.numval = state.tick / 60f / 60f;
+        varSecond.numval = world.state.tick / 60f;
+        varMinute.numval = world.state.tick / 60f / 60f;
 
         //wave state
-        varWave.numval = state.wave;
-        varWaveTime.numval = state.wavetime / 60f;
+        varWave.numval = world.state.wave;
+        varWaveTime.numval = world.state.wavetime / 60f;
 
         varMapW.numval = world.width();
         varMapH.numval = world.height();

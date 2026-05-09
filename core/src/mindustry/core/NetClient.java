@@ -542,21 +542,21 @@ public class NetClient implements ApplicationListener{
     @Remote(variants = Variant.one, priority = PacketPriority.low, unreliable = true)
     public static void stateSnapshot(float waveTime, int wave, int enemies, boolean paused, boolean gameOver, int timeData, byte tps, long rand0, long rand1, byte[] coreData){
         try{
-            if(wave > state.wave){
-                state.wave = wave;
+            if(wave > world.state.wave){
+                world.state.wave = wave;
                 Events.fire(new WaveEvent());
             }
 
-            state.gameOver = gameOver;
-            state.wavetime = waveTime;
-            state.wave = wave;
+            world.state.gameOver = gameOver;
+            world.state.wavetime = waveTime;
+            world.state.wave = wave;
             state.enemies = enemies;
-            if(!state.isMenu()){
-                state.set(paused ? State.paused : State.playing);
+            if(!world.state.isMenu()){
+                world.state.set(paused ? State.paused : State.playing);
             }
             state.serverTps = tps & 0xff;
 
-            //note that this is far from a guarantee that random state is synced - tiny changes in delta and ping can throw everything off again.
+            //note that this is far from a guarantee that random world.state.is synced - tiny changes in delta and ping can throw everything off again.
             //syncing will only make much of a difference when rand() is called infrequently
             GlobalVars.rand.seed0 = rand0;
             GlobalVars.rand.seed1 = rand1;
@@ -587,7 +587,7 @@ public class NetClient implements ApplicationListener{
     public void update(){
         if(!net.client()) return;
 
-        if(state.isGame()){
+        if(world.state.isGame()){
             if(!connecting){
                 sync();
 
@@ -629,7 +629,7 @@ public class NetClient implements ApplicationListener{
     }
 
     private void finishConnecting(){
-        state.set(State.playing);
+        world.state.set(State.playing);
         connecting = false;
         ui.join.hide();
         net.setClientLoaded(true);
