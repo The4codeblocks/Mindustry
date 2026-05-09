@@ -370,8 +370,6 @@ public class Vars implements Loadable{
             Core.files.local("jre/bin/java.exe").exists() ? Core.files.local("jre/bin/java.exe").absolutePath() : // Windows
             "java";
 
-        world.state = new GameState();
-
         mobile = Core.app.isMobile() || testMobile;
         ios = Core.app.isIOS();
         android = Core.app.isAndroid();

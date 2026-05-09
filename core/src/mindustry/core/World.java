@@ -52,6 +52,8 @@ public class World{
                 build.checkAllowUpdate();
             }
         });
+
+        state = new GameState();
     }
 
     /** Adds a custom handler function for loading a custom map - usually a generated one. */

@@ -1,9 +1,11 @@
 package mindustry.entities.comp;
 
 import arc.util.io.*;
+import mindustry.*;
 import mindustry.annotations.Annotations.*;
 import mindustry.entities.*;
 import mindustry.gen.*;
+import mindustry.core.*;
 
 import static mindustry.Vars.*;
 
@@ -12,6 +14,7 @@ import static mindustry.Vars.*;
 abstract class EntityComp{
     private transient boolean added;
     transient int id = EntityGroup.nextId();
+    public transient World world = Vars.world;
 
     boolean isAdded(){
         return added;
