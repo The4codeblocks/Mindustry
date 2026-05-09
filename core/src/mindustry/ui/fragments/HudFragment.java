@@ -412,7 +412,7 @@ public class HudFragment{
                             i.setDisabled(false);
                             i.getStyle().imageUp = Icon.players;
                         }else{
-                            i.setDisabled(world.state.rules.pauseDisabled || (world.state.isCampaign() && state.afterGameOver));
+                            i.setDisabled(world.state.rules.pauseDisabled || (world.state.isCampaign() && world.state.afterGameOver));
                             i.getStyle().imageUp = world.state.isPaused() ? Icon.play : Icon.pause;
                         }
                     });
@@ -567,7 +567,7 @@ public class HudFragment{
                 info.row();
 
                 info.label(() -> ping.get(netClient.getPing())).visible(net::client).left().style(Styles.outlineLabel).name("ping").row();
-                info.label(() -> tps.get(state.serverTps == -1 ? 60 : state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
+                info.label(() -> tps.get(world.state.serverTps == -1 ? 60 : world.state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
 
             }).top().left();
         });
@@ -636,7 +636,7 @@ public class HudFragment{
                 bossb.append(bossText);
                 return bossb;
             }, () -> Pal.health, () -> {
-                if(state.boss() == null) return 0f;
+                if(world.state.boss() == null) return 0f;
                 float max = 0f, val = 0f;
                 for(var boss : world.state.teams.bosses){
                     max += boss.maxHealth;
@@ -644,7 +644,7 @@ public class HudFragment{
                 }
                 return max == 0f ? 0f : val / max;
             }).blink(Color.white).outline(new Color(0, 0, 0, 0.6f), 7f)).grow())
-            .fillX().width(320f).height(60f).name("boss").visible(() -> world.state.rules.waves && state.boss() != null && !(mobile && Core.graphics.isPortrait())).padTop(7).row();
+            .fillX().width(320f).height(60f).name("boss").visible(() -> world.state.rules.waves && world.state.boss() != null && !(mobile && Core.graphics.isPortrait())).padTop(7).row();
 
             t.table(Styles.black3, p -> p.margin(4).label(() -> hudText).style(Styles.outlineLabel)).touchable(Touchable.disabled).with(p -> hudLabel = p)
                 .with(p -> p.visible(() -> (p.color.a = Mathf.lerpDelta(p.color.a, Mathf.num(showHudText), 0.2f)) >= 0.001f));
@@ -1073,7 +1073,7 @@ public class HudFragment{
             }
 
             //do not show status after game over
-            if(state.afterGameOver && world.state.isCampaign()){
+            if(world.state.afterGameOver && world.state.isCampaign()){
                 return builder;
             }
 
@@ -1092,18 +1092,18 @@ public class HudFragment{
             }
             builder.append("\n");
 
-            if(state.enemies > 0){
-                if(state.enemies == 1){
-                    builder.append(enemyf.get(state.enemies));
+            if(world.state.enemies > 0){
+                if(world.state.enemies == 1){
+                    builder.append(enemyf.get(world.state.enemies));
                 }else{
-                    builder.append(enemiesf.get(state.enemies));
+                    builder.append(enemiesf.get(world.state.enemies));
                 }
                 builder.append("\n");
             }
 
             if(world.state.rules.waveTimer){
                 builder.append((logic.isWaitingWave() ? Core.bundle.get("wave.waveInProgress") : (waitingf.get((int)(world.state.wavetime/60)))));
-            }else if(state.enemies == 0){
+            }else if(world.state.enemies == 0){
                 builder.append(Core.bundle.get("waiting"));
             }
 
@@ -1188,7 +1188,7 @@ public class HudFragment{
     }
 
     private boolean canSkipWave(){
-        return world.state.rules.waves && world.state.rules.waveSending && ((net.server() || player.admin) || !net.active()) && state.enemies == 0 && !spawner.isSpawning();
+        return world.state.rules.waves && world.state.rules.waveSending && ((net.server() || player.admin) || !net.active()) && world.state.enemies == 0 && !spawner.isSpawning();
     }
 
 }

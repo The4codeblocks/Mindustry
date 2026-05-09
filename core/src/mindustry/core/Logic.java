@@ -339,7 +339,7 @@ public class Logic implements ApplicationListener{
             }
 
             //if there's a "win" wave and no enemies are present, win automatically
-            if(world.state.rules.waves && (state.enemies == 0 && world.state.rules.winWave > 0 && world.state.wave >= world.state.rules.winWave && !spawner.isSpawning()) ||
+            if(world.state.rules.waves && (world.state.enemies == 0 && world.state.rules.winWave > 0 && world.state.wave >= world.state.rules.winWave && !spawner.isSpawning()) ||
                 (world.state.rules.attackMode && !world.state.rules.waveTeam.isAlive())){
 
                 if(world.state.rules.sector.preset != null && world.state.rules.sector.preset.attackAfterWaves && !world.state.rules.attackMode){
@@ -365,7 +365,7 @@ public class Logic implements ApplicationListener{
                     Events.fire(new GameOverEvent(left == null ? Team.derelict : left.team));
                     world.state.gameOver = true;
                 }
-            }else if(!world.state.gameOver && world.state.rules.waves && (state.enemies == 0 && world.state.rules.winWave > 0 && world.state.wave >= world.state.rules.winWave && !spawner.isSpawning())){
+            }else if(!world.state.gameOver && world.state.rules.waves && (world.state.enemies == 0 && world.state.rules.winWave > 0 && world.state.wave >= world.state.rules.winWave && !spawner.isSpawning())){
                 world.state.gameOver = true;
                 Events.fire(new GameOverEvent(world.state.rules.defaultTeam));
             }
@@ -425,14 +425,14 @@ public class Logic implements ApplicationListener{
     public static void updateGameOver(Team winner){
         world.state.gameOver = true;
         if(!headless){
-            state.won = player.team() == winner;
+            world.state.won = player.team() == winner;
         }
     }
 
     @Remote(called = Loc.both)
     public static void gameOver(Team winner){
         world.state.stats.wavesLasted = world.state.wave;
-        state.won = player.team() == winner;
+        world.state.won = player.team() == winner;
         Time.run(60f * 3f, () -> ui.restart.show(winner));
         netClient.setQuiet();
     }
@@ -476,7 +476,7 @@ public class Logic implements ApplicationListener{
 
         if(world.state.isGame()){
             if(!net.client()){
-                state.enemies = Groups.unit.count(u -> u.team() == world.state.rules.waveTeam && u.isEnemy());
+                world.state.enemies = Groups.unit.count(u -> u.team() == world.state.rules.waveTeam && u.isEnemy());
             }
 
             if(!world.state.isPaused()){
@@ -484,7 +484,7 @@ public class Logic implements ApplicationListener{
 
                 float delta = Core.graphics.getDeltaTime();
                 world.state.tick += Float.isNaN(delta) || Float.isInfinite(delta) ? 0f : delta * 60f;
-                state.updateId ++;
+                world.state.updateId ++;
                 world.state.teams.updateTeamStats();
                 MapPreviewLoader.checkPreviews();
 
@@ -559,9 +559,9 @@ public class Logic implements ApplicationListener{
                 }
 
                 //apply weather attributes
-                state.envAttrs.clear();
-                state.envAttrs.add(world.state.rules.attributes);
-                Groups.weather.each(w -> state.envAttrs.add(w.weather.attrs, w.opacity));
+                world.state.envAttrs.clear();
+                world.state.envAttrs.add(world.state.rules.attributes);
+                Groups.weather.each(w -> world.state.envAttrs.add(w.weather.attrs, w.opacity));
 
                 PerfCounter.entityUpdate.begin();
                 Groups.update();
@@ -580,6 +580,6 @@ public class Logic implements ApplicationListener{
 
     /** @return whether the wave timer is paused due to enemies */
     public boolean isWaitingWave(){
-        return (world.state.rules.waitEnemies || (world.state.wave >= world.state.rules.winWave && world.state.rules.winWave > 0)) && state.enemies > 0;
+        return (world.state.rules.waitEnemies || (world.state.wave >= world.state.rules.winWave && world.state.rules.winWave > 0)) && world.state.enemies > 0;
     }
 }

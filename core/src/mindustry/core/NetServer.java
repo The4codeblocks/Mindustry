@@ -1039,7 +1039,7 @@ public class NetServer implements ApplicationListener{
         dataStream.close();
 
         //write basic state data.
-        Call.stateSnapshot(player.con, world.state.wavetime, world.state.wave, state.enemies, world.state.isPaused(), world.state.gameOver,
+        Call.stateSnapshot(player.con, world.state.wavetime, world.state.wave, world.state.enemies, world.state.isPaused(), world.state.gameOver,
         universe.seconds(), tps, GlobalVars.rand.seed0, GlobalVars.rand.seed1, syncStream.toByteArray());
 
         syncStream.reset();

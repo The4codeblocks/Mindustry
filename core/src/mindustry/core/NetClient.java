@@ -550,11 +550,11 @@ public class NetClient implements ApplicationListener{
             world.state.gameOver = gameOver;
             world.state.wavetime = waveTime;
             world.state.wave = wave;
-            state.enemies = enemies;
+            world.state.enemies = enemies;
             if(!world.state.isMenu()){
                 world.state.set(paused ? State.paused : State.playing);
             }
-            state.serverTps = tps & 0xff;
+            world.state.serverTps = tps & 0xff;
 
             //note that this is far from a guarantee that random world.state.is synced - tiny changes in delta and ping can throw everything off again.
             //syncing will only make much of a difference when rand() is called infrequently

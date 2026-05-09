@@ -163,8 +163,8 @@ public class RegenProjector extends Block{
                 }
             }
 
-            if(lastUpdateFrame != state.updateId){
-                lastUpdateFrame = state.updateId;
+            if(lastUpdateFrame != world.state.updateId){
+                lastUpdateFrame = world.state.updateId;
 
                 for(var entry : mendMap.entries()){
                     var build = world.build(entry.key);

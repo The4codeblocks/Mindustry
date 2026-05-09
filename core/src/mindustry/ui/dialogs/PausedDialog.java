@@ -159,9 +159,9 @@ public class PausedDialog extends BaseDialog{
     }
 
     public boolean checkPlaytest(){
-        if(state.playtestingMap != null){
+        if(world.state.playtestingMap != null){
             //no exit save here
-            var testing = state.playtestingMap;
+            var testing = world.state.playtestingMap;
             logic.reset();
             ui.editor.resumeAfterPlaytest(testing);
             return true;

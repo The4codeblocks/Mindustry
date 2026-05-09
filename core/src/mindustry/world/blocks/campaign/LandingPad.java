@@ -163,8 +163,8 @@ public class LandingPad extends Block{
         }
 
         public void updateTimers(){
-            if(world.state.isCampaign() && lastUpdateId != state.updateId){
-                lastUpdateId = state.updateId;
+            if(world.state.isCampaign() && lastUpdateId != world.state.updateId){
+                lastUpdateId = world.state.updateId;
 
                 float[] imports = world.state.rules.sector.info.getImportRates(world.state.getPlanet());
 

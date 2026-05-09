@@ -402,7 +402,7 @@ public class Control implements ApplicationListener, Loadable{
             logic.reset();
             world.loadMap(map, rules);
             world.state.rules = rules;
-            if(playtest) state.playtestingMap = map;
+            if(playtest) world.state.playtestingMap = map;
             world.state.rules.sector = null;
             world.state.rules.editor = false;
             logic.play();
@@ -722,7 +722,7 @@ public class Control implements ApplicationListener, Loadable{
                 world.state.set(State.playing);
             }
 
-            if(!net.client() && Core.input.keyTap(Binding.pause) && !(world.state.isCampaign() && state.afterGameOver) && !renderer.isCutscene() && !scene.hasDialog() && !scene.hasKeyboard() && !ui.restart.isShown() && (world.state.is(State.paused) || world.state.is(State.playing))){
+            if(!net.client() && Core.input.keyTap(Binding.pause) && !(world.state.isCampaign() && world.state.afterGameOver) && !renderer.isCutscene() && !scene.hasDialog() && !scene.hasKeyboard() && !ui.restart.isShown() && (world.state.is(State.paused) || world.state.is(State.playing))){
                 if(world.state.rules.pauseDisabled){
                     ui.hudfrag.showPauseDisabled();
                 }else{
@@ -730,7 +730,7 @@ public class Control implements ApplicationListener, Loadable{
                 }
             }
 
-            if(world.state.isCampaign() && state.afterGameOver){
+            if(world.state.isCampaign() && world.state.afterGameOver){
                 world.state.set(State.paused);
             }
 

@@ -258,8 +258,8 @@ public class HintsFragment{
         ),
 
         guardian(
-            () -> state.boss() != null && isSerpulo() && state.boss().armor >= 4 && Blocks.salvo.unlocked() && !state.boss().isFlying(),
-            () -> state.boss() == null
+            () -> world.state.boss() != null && isSerpulo() && world.state.boss().armor >= 4 && Blocks.salvo.unlocked() && !world.state.boss().isFlying(),
+            () -> world.state.boss() == null
         ),
 
         cannotUpgrade(
